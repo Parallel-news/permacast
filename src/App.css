@@ -1,5 +1,10 @@
+body {
+
+}
+
 .App {
   text-align: center;
+  font-family: monospace;
 }
 
 .App-logo {
@@ -35,4 +40,19 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.podcast-grid-cover {
+  margin: 2em;
+  max-width: 300px;
+}
+
+.topBar {
+
+  
+}
+
+audio {
+  width: 30rem;
+  border-radius: 0px !important;
 }
