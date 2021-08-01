@@ -2499,10 +2499,10 @@
   "resolved" "https://registry.npmjs.org/arrify/-/arrify-2.0.1.tgz"
   "version" "2.0.1"
 
-"arweave@^1.10.13", "arweave@^1.10.15":
-  "integrity" "sha512-dzct71xkkuGIqb3Cp0HI6X9V+5AvhpCLO70MGawPZ5sZ7n1QUrTKeGuOfWOGGMZx4r4vXRxQg33PUiJScDmNhA=="
-  "resolved" "https://registry.npmjs.org/arweave/-/arweave-1.10.15.tgz"
-  "version" "1.10.15"
+"arweave@^1.10.13", "arweave@^1.10.16":
+  "integrity" "sha512-j2UM7C/2MHO7Mv7wbzhihgVs8uN2+QltA+3cYaM82dNNEBBJylIClJUHHMqsK/2ejCnziQm4FofiUFbsQDdQDg=="
+  "resolved" "https://registry.npmjs.org/arweave/-/arweave-1.10.16.tgz"
+  "version" "1.10.16"
   dependencies:
     "arconnect" "^0.2.8"
     "asn1.js" "^5.4.1"
