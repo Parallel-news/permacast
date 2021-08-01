@@ -275,6 +275,99 @@ export async function handle(state, action) {
 		return { state }
 
 	}
+	
+	// EPISODES ACTIONS:
+
+	if (input.function === "editEpisodeName") {
+		const name = input.name
+		const pid = input.pid
+		const eid = input.eid 
+
+		if (caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having id: ${eid} not found`)
+		}
+
+		if (typeof name !== "string") {
+			throw new ContractError(`invalid name format`)
+		}
+
+		if (name.length < 2 || name.length > 50) {
+			throw new ContractError(`${name} does not meet the name limits`)
+		}
+
+		if ( podcasts[pid][eid]["episodeName"] === name ) {
+			throw new ContractError(`new name and old name cannot be the same`)
+		}
+
+		podcasts[pid][eid]["episodeName"] = name
+
+		return { state }
+	}
+
+	if (input.function === "editEpisodeDesc") {
+		const pid = input.pid
+		const eid = input.id
+		const desc = input.desc
+
+		if (caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having id: ${eid} not found`)
+		}
+
+		if (typeof desc !== "string") {
+			throw new ContractError(`invalid description format`)
+		}
+
+		if ( desc.length < 25 || desc.length > 500 ) {
+			throw new ContractError(`the description text does not meet the desc limits`)
+		}
+
+		if ( podcasts[pid][eid]["description"] === desc) {
+			throw new ContractError(`old description and new description canot be the same`)
+		}
+
+		podcasts[pid][eid]["description"] = desc
+
+		return { state }
+	}
+
+	if (input.function === "deleteEpisode") {
+		const pid = input.pid
+		const eid = input.eid
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having ID: ${eid} not found`)
+		}
+
+		delete podcast[pid][eid]
+
+		return { state }
+	}
+
+	throw new ContractError(`unknow function supplied: '${input.function}'`)
 
 }
 
