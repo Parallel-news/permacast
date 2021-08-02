@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navbar, Container, Row } from 'react-bootstrap'
+import { Navbar, Row } from 'react-bootstrap'
 import { NavLink } from 'react-router-dom'
 import UploadShow from './upload_show.jsx'
 import WalletLoader from './wallet_loader.jsx'

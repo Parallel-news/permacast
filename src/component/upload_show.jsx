@@ -12,26 +12,37 @@ const arweave = Arweave.init({
 
 
 export default function UploadShow()  {
-
+    let finalShowObj = {} 
     const [show, setShow] = useState(false);
 
     const handleUploadClick = () => {
         setShow(true);
       };
 
-    const readFile = (file) => {
-      let fileType = file.type
-      let reader = new FileReader();
-      reader.readAsArrayBuffer(file);
-      reader.onload = async function() { 
-        return await uploadToArweave(reader.result, fileType)
-      }
-       reader.onerror = function() {
-          console.log(reader.error);
+    function readFileAsync(file) {
+      return new Promise((resolve, reject) => {
+        let reader = new FileReader();
+    
+        reader.onload = () => {
+          resolve(reader.result);
         };
-     }
+    
+        reader.onerror = reject;
+    
+        reader.readAsArrayBuffer(file);
+      })
+    }
 
-    const uploadToArweave = (data, fileType) => {
+    async function processFile(file) {
+      try {
+        let contentBuffer = await readFileAsync(file);
+        return contentBuffer
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    const uploadToArweave = async (data, fileType, showObj) => {
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
@@ -39,8 +50,10 @@ export default function UploadShow()  {
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
-                console.log(tx)
-                return tx.id
+                showObj.cover = tx.id
+                finalShowObj = showObj;
+                console.log(finalShowObj)
+                // call the SWC!
               }
             });
           });
@@ -49,18 +62,17 @@ export default function UploadShow()  {
     }
 
     const handleShowUpload = async (event) => {
+      const showObj = {}
       event.preventDefault()
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
-      const podcastCoverTxId = readFile(podcastCover)
-      const showObj = {
-        "name" : podcastName,
-        "desc" : podcastDescription,
-        "cover" : podcastCoverTxId
-      }
-      console.log(showObj);
-    }
+      const coverFileType = podcastCover.type
+      showObj.name = podcastName
+      showObj.desc = podcastDescription
+      let cover = await processFile(podcastCover)
+      await uploadToArweave(cover, coverFileType, showObj)
+   }
 
     const handleClose = () => {
         setShow(false);
