@@ -137,5 +137,237 @@ export async function handle(state, action) {
 		return { state }
 
 	}
+
+	
+	// PODCAST ACTIONS:
+
+	if (input.function === "deletePodcast") {
+		const pid = input.pid 
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (typeof pid !== "string" || pid.length !== 43) {
+			throw new ContractError(`invalid pid `)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		}
+
+		delete podcast[pid]
+
+		return { state }
+	}
+
+	if (input.function === "editPodcastName") {
+		const pid = input.pid 
+		const name = input.name
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (typeof pid !== "string" || pid.length !== 43) {
+			throw new ContractError(`invalid pid `)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		}
+
+		if (typeof name !== "string") {
+			throw new ContractError(`invalid name type`)
+		}
+
+		if ( name.length < 3 || name.length > 50 ) {
+			throw new ContractError(`the name does not meet the name limits`)
+		}
+
+		if ( podcasts[pid]["podcastName"] ===  name) {
+			throw new ContractError(`old name and new name cannot be equals`)
+		}
+
+		podcasts[pid]["podcastName"] = name
+
+		return { state }
+	}
+
+	if (input.function === "editPodcastDesc") {
+		const pid = input.pid 
+		const desc = input.desc
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (typeof pid !== "string" || pid.length !== 43) {
+			throw new ContractError(`invalid pid `)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		}
+
+		if ( typeof desc !== "string" ) {
+			throw new ContractError(`invalid description type`)
+		}
+
+		if ( desc.length > 250 ) {
+			throw new ContractError(`description length too high`)
+		}
+
+		if ( podcasts[pid]["description"] === desc ) {
+			throw new ContractError(`old description and new description cannot be equals`)
+		}
+
+		podcasts[pid]["description"] = desc
+
+		return { state }
+
+	}
+
+	if (input.function === "editPodcastCover") {
+		const pid = input.pid 
+		const cover = input.cover
+		const tagsMap = new Map();
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (typeof pid !== "string" || pid.length !== 43) {
+			throw new ContractError(`invalid pid `)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		}
+
+		if (typeof cover !== "string" || cover.length !== 43) {
+			throw new ContractError(`uncorrect cover format`)
+		}
+
+		const coverTx = await SmartWeave.unsafeClient.transactions.get(cover)
+		const tags = coverTx.get("tags")
+
+		for (let tag of tags) {
+			const key = tag.get("name", {decode: true, string: true} )
+			const value = tag.get("value", {decode: true, string: true})
+			tagsMap.set(key, value)
+		}
+
+		if (! tagsMap.has("Content-Type")) {
+			throw new ContractError(`uncorrect data transaction`)
+		}
+
+		if (! tagsMap.get("Content-Type").startsWith("image/") ) {
+			throw new ContractError(`invalid mime type`)
+		}
+
+		if ( podcasts[pid]["cover"] === cover ) {
+			throw new ContractError(`old cover and new cover cannot be equals`)
+		}
+
+		podcasts[pid]["cover"] = cover
+
+		return { state }
+
+	}
+	
+	// EPISODES ACTIONS:
+
+	if (input.function === "editEpisodeName") {
+		const name = input.name
+		const pid = input.pid
+		const eid = input.eid 
+
+		if (caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having id: ${eid} not found`)
+		}
+
+		if (typeof name !== "string") {
+			throw new ContractError(`invalid name format`)
+		}
+
+		if (name.length < 2 || name.length > 50) {
+			throw new ContractError(`${name} does not meet the name limits`)
+		}
+
+		if ( podcasts[pid][eid]["episodeName"] === name ) {
+			throw new ContractError(`new name and old name cannot be the same`)
+		}
+
+		podcasts[pid][eid]["episodeName"] = name
+
+		return { state }
+	}
+
+	if (input.function === "editEpisodeDesc") {
+		const pid = input.pid
+		const eid = input.id
+		const desc = input.desc
+
+		if (caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having id: ${eid} not found`)
+		}
+
+		if (typeof desc !== "string") {
+			throw new ContractError(`invalid description format`)
+		}
+
+		if ( desc.length < 25 || desc.length > 500 ) {
+			throw new ContractError(`the description text does not meet the desc limits`)
+		}
+
+		if ( podcasts[pid][eid]["description"] === desc) {
+			throw new ContractError(`old description and new description canot be the same`)
+		}
+
+		podcasts[pid][eid]["description"] = desc
+
+		return { state }
+	}
+
+	if (input.function === "deleteEpisode") {
+		const pid = input.pid
+		const eid = input.eid
+
+		if ( caller !== contractOwner) {
+			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
+		}
+
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
+		}
+
+		if (! podcasts[pid][eid]) {
+			throw new ContractError(`episode having ID: ${eid} not found`)
+		}
+
+		delete podcast[pid][eid]
+
+		return { state }
+	}
+
+	throw new ContractError(`unknow function supplied: '${input.function}'`)
+
 }
 
