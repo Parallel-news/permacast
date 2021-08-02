@@ -11,7 +11,7 @@ const arweave = Arweave.init({
 });
 
 
-export default function PodcastHtml()  {
+export default function UploadShow()  {
 
     const [show, setShow] = useState(false);
 
@@ -19,28 +19,28 @@ export default function PodcastHtml()  {
         setShow(true);
       };
 
-    const readFile = async (e) => {
-      //e.preventDefault()
-      const reader = new FileReader()
-      reader.onload = async (e) => { 
-        const file = (e.target.result)
-        return file
-      };
-      reader.readAsArrayBuffer(e.target.files[0])
-    }
+    const readFile = (file) => {
+      let fileType = file.type
+      let reader = new FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onload = async function() { 
+        return await uploadToArweave(reader.result, fileType)
+      }
+       reader.onerror = function() {
+          console.log(reader.error);
+        };
+     }
 
-     const uploadToArweave = (file) => {
+    const uploadToArweave = (data, fileType) => {
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
-      const data = readFile(file)
-      console.log(data)
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
-          tx.addTag("Content-Type", data.type);
+          tx.addTag("Content-Type", fileType);
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
-              console.log(response)
               if (response.statusText === "OK") {
-                console.log(response.statusText)
+                console.log(tx)
+                return tx.id
               }
             });
           });
@@ -48,13 +48,12 @@ export default function PodcastHtml()  {
       }
     }
 
-    const handleShowUpload = (event) => {
+    const handleShowUpload = async (event) => {
       event.preventDefault()
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
-      console.log(podcastCover)
-      const podcastCoverTxId = uploadToArweave(podcastCover)
+      const podcastCoverTxId = readFile(podcastCover)
       const showObj = {
         "name" : podcastName,
         "desc" : podcastDescription,
@@ -96,7 +95,7 @@ export default function PodcastHtml()  {
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastCover" />
               <Form.Label>Cover image</Form.Label>
-              <Form.Control type="file" onChange={(e) => readFile(e)} name="podcastCover"/>
+              <Form.Control type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
         <br/><br/>
         <Modal.Footer className="m-2">
         <Button variant="danger" onClick={handleClose} color="danger">
