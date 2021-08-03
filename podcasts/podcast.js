@@ -107,7 +107,9 @@ export async function handle(state, action) {
 			throw new ContractError(`description too long`)
 		}
 
-		if (typeof audio !== "string" || audio.length !== 43)
+		if (typeof audio !== "string" || audio.length !== 43) {
+			throw new ContractError(`invalid audio TX`)
+		}
 
 		const audioTx = await SmartWeave.unsafeClient.transactions.get(audio)
 		const tags = audioTx.get("tags")
@@ -156,7 +158,7 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} does not exist`)
 		}
 
-		delete podcast[pid]
+		delete podcasts[pid]
 
 		return { state }
 	}
@@ -291,7 +293,7 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
-		if (! podcasts[pid][eid]) {
+		if (! podcasts[pid]["episodes"][eid]) {
 			throw new ContractError(`episode having id: ${eid} not found`)
 		}
 
@@ -307,14 +309,14 @@ export async function handle(state, action) {
 			throw new ContractError(`new name and old name cannot be the same`)
 		}
 
-		podcasts[pid][eid]["episodeName"] = name
+		podcasts[pid]["episodes"][eid]["episodeName"] = name
 
 		return { state }
 	}
 
 	if (input.function === "editEpisodeDesc") {
 		const pid = input.pid
-		const eid = input.id
+		const eid = input.eid
 		const desc = input.desc
 
 		if (caller !== contractOwner) {
@@ -325,7 +327,7 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
-		if (! podcasts[pid][eid]) {
+		if (! podcasts[pid]["episodes"][eid]) {
 			throw new ContractError(`episode having id: ${eid} not found`)
 		}
 
@@ -337,11 +339,11 @@ export async function handle(state, action) {
 			throw new ContractError(`the description text does not meet the desc limits`)
 		}
 
-		if ( podcasts[pid][eid]["description"] === desc) {
+		if ( podcasts[pid]["episodes"][eid]["description"] === desc) {
 			throw new ContractError(`old description and new description canot be the same`)
 		}
 
-		podcasts[pid][eid]["description"] = desc
+		podcasts[pid]["episodes"][eid]["description"] = desc
 
 		return { state }
 	}
@@ -362,7 +364,7 @@ export async function handle(state, action) {
 			throw new ContractError(`episode having ID: ${eid} not found`)
 		}
 
-		delete podcast[pid][eid]
+		podcasts[pid]["episodes"].splice(eid, 1)
 
 		return { state }
 	}
