@@ -77,7 +77,8 @@ export async function handle(state, action) {
 			"podcastName": name,
 			"description": desc,
 			"cover": cover,
-			"episodes":[]
+			"episodes":[],
+			"logs": [pid]
 		}
 
 		return { state }
@@ -133,7 +134,8 @@ export async function handle(state, action) {
 			"episodeName": name,
 			"description": desc,
 			"audioTx": audio,
-			"uploadedAt": SmartWeave.block.height
+			"uploadedAt": SmartWeave.block.height,
+			"logs": [SmartWeave.transaction.id]
 		})
 
 		return { state }
@@ -166,6 +168,8 @@ export async function handle(state, action) {
 	if (input.function === "editPodcastName") {
 		const pid = input.pid 
 		const name = input.name
+		
+		const actionTx = SmartWeave.transaction.id
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -192,6 +196,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[pid]["podcastName"] = name
+		podcasts[pid]["logs"].push(actionTx)
 
 		return { state }
 	}
@@ -199,6 +204,8 @@ export async function handle(state, action) {
 	if (input.function === "editPodcastDesc") {
 		const pid = input.pid 
 		const desc = input.desc
+		
+		const actionTx = SmartWeave.transaction.id
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -225,6 +232,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[pid]["description"] = desc
+		podcasts[pid]["logs"].push(actionTx)
 
 		return { state }
 
@@ -233,7 +241,9 @@ export async function handle(state, action) {
 	if (input.function === "editPodcastCover") {
 		const pid = input.pid 
 		const cover = input.cover
+		
 		const tagsMap = new Map();
+		const actionTx = SmartWeave.transaction.id
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -273,6 +283,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[pid]["cover"] = cover
+		podcasts[pid]["logs"].push(actionTx)
 
 		return { state }
 
@@ -283,7 +294,9 @@ export async function handle(state, action) {
 	if (input.function === "editEpisodeName") {
 		const name = input.name
 		const pid = input.pid
-		const id = input.id 
+		const id = input.id
+		
+		const actionTx = SmartWeave.transaction.id
 
 		if (caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -310,6 +323,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[pid]["episodes"][id]["episodeName"] = name
+		podcasts[pid]["episodes"][id]["logs"].push(actionTx)
 
 		return { state }
 	}
@@ -318,6 +332,8 @@ export async function handle(state, action) {
 		const pid = input.pid
 		const id = input.id
 		const desc = input.desc
+		
+		const actionTx = SmartWeave.transaction.id
 
 		if (caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -344,6 +360,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[pid]["episodes"][id]["description"] = desc
+		podcasts[pid]["episodes"][id]["logs"].push(actionTx)
 
 		return { state }
 	}
