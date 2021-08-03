@@ -96,18 +96,18 @@ export default function UploadShow()  {
           <br/>
         </Modal.Title>
         <Modal.Body className="m-2">
-          <Form onSubmit={handleShowUpload}>
+          <Form hasValidation onSubmit={handleShowUpload}>
             <Form.Group className="mb-3" controlId="podcastName">
               <Form.Label>Show name</Form.Label>
-              <Form.Control type="text" name="podcastName" placeholder="The Arweave Show" />
+              <Form.Control required type="text" name="podcastName" placeholder="The Arweave Show" />
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastDescription">
               <Form.Label>Show description</Form.Label>
-              <Form.Control as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
+              <Form.Control required as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastCover" />
               <Form.Label>Cover image</Form.Label>
-              <Form.Control type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
+              <Form.Control required type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
         <br/><br/>
         <Modal.Footer className="m-2">
         <Button variant="danger" onClick={handleClose} color="danger">

@@ -32,6 +32,7 @@ export default function WalletLoader() {
     try {
       var wallet_file = JSON.parse(content);
       arweave.wallets.jwkToAddress(wallet_file).then((address) => {
+        console.log(address)
         sessionStorage.setItem("wallet_address", address);
       });
       sessionStorage.setItem("arweaveWallet", content);

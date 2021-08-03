@@ -56,3 +56,22 @@ audio {
   width: 30rem;
   border-radius: 0px !important;
 }
+
+.modal-dialog {
+  font-family: monospace;
+}
+
+.upload-form {
+  text-align: center !important;
+  margin: 0 auto !important;
+}
+
+.text-gray {
+  color: gray;
+}
+
+.dropzone-border {
+  border-style: dashed !important;
+  /*border-color: gray !important;*/
+  border-width: 2px !important;
+}

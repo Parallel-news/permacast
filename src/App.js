@@ -9,6 +9,7 @@ const allPodcasts = {
   'podcasts' : [
     {
       'id' : '1',
+      'owner' : 'kaYP9bJtpqON8Kyy3RbqnqdtDBDUsPTQTNUCvZtKiFI',
       'name' : 'The Arweave Show',
       'description' : 'A show about the most exciting projects built on top of the blockweave.',
       'image' : 'https://pic.onlinewebfonts.com/svg/img_32158.png',
