@@ -25,7 +25,7 @@ export async function handle(state, action) {
 		const name = input.name
 		const desc = input.desc
 		const cover = input.cover
-		const podcastID = SmartWeave.transaction.id
+		const pid = SmartWeave.transaction.id
 
 		const tagsMap = new Map();
 
@@ -68,8 +68,8 @@ export async function handle(state, action) {
 
 		// ------------------------>
 
-		if ( podcastID in podcasts ) {
-			throw new ContractError(`podcast having ID: ${podcastID} is already registered`)
+		if ( pid in podcasts ) {
+			throw new ContractError(`podcast having ID: ${pid} is already registered`)
 		}
 
 		podcasts[podcastID] = {
@@ -84,7 +84,7 @@ export async function handle(state, action) {
 	}
 
 	if ( input.function === "addEpisode") {
-		const podcast = input.podcast
+		const pid = input.pid
 		const name = input.name
 		const audio = input.audio
 		const desc = input.desc
@@ -95,8 +95,8 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (! podcasts[podcast]) {
-			throw new ContractError(`podcast having ID: ${podcast} not found`)
+		if (! podcasts[pid]) {
+			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
 		if (typeof name !== "string" || name.length > 50) {
@@ -129,7 +129,7 @@ export async function handle(state, action) {
 		}
 
 		podcasts[podcast]["episodes"].push({
-			"id": SmartWeave.transaction.id,
+			"eid": SmartWeave.transaction.id,
 			"episodeName": name,
 			"description": desc,
 			"audioTx": audio,
@@ -283,7 +283,7 @@ export async function handle(state, action) {
 	if (input.function === "editEpisodeName") {
 		const name = input.name
 		const pid = input.pid
-		const eid = input.eid 
+		const id = input.id 
 
 		if (caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -293,8 +293,8 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
-		if (! podcasts[pid]["episodes"][eid]) {
-			throw new ContractError(`episode having id: ${eid} not found`)
+		if (! podcasts[pid]["episodes"][id]) {
+			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
 		if (typeof name !== "string") {
@@ -305,18 +305,18 @@ export async function handle(state, action) {
 			throw new ContractError(`${name} does not meet the name limits`)
 		}
 
-		if ( podcasts[pid][eid]["episodeName"] === name ) {
+		if ( podcasts[pid][id]["episodeName"] === name ) {
 			throw new ContractError(`new name and old name cannot be the same`)
 		}
 
-		podcasts[pid]["episodes"][eid]["episodeName"] = name
+		podcasts[pid]["episodes"][id]["episodeName"] = name
 
 		return { state }
 	}
 
 	if (input.function === "editEpisodeDesc") {
 		const pid = input.pid
-		const eid = input.eid
+		const id = input.id
 		const desc = input.desc
 
 		if (caller !== contractOwner) {
@@ -327,8 +327,8 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
-		if (! podcasts[pid]["episodes"][eid]) {
-			throw new ContractError(`episode having id: ${eid} not found`)
+		if (! podcasts[pid]["episodes"][id]) {
+			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
 		if (typeof desc !== "string") {
@@ -339,18 +339,18 @@ export async function handle(state, action) {
 			throw new ContractError(`the description text does not meet the desc limits`)
 		}
 
-		if ( podcasts[pid]["episodes"][eid]["description"] === desc) {
+		if ( podcasts[pid]["episodes"][id]["description"] === desc) {
 			throw new ContractError(`old description and new description canot be the same`)
 		}
 
-		podcasts[pid]["episodes"][eid]["description"] = desc
+		podcasts[pid]["episodes"][id]["description"] = desc
 
 		return { state }
 	}
 
 	if (input.function === "deleteEpisode") {
 		const pid = input.pid
-		const eid = input.eid
+		const id = input.id
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
@@ -360,11 +360,11 @@ export async function handle(state, action) {
 			throw new ContractError(`podcast having ID: ${pid} not found`)
 		}
 
-		if (! podcasts[pid][eid]) {
-			throw new ContractError(`episode having ID: ${eid} not found`)
+		if (! podcasts[pid][id]) {
+			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
-		podcasts[pid]["episodes"].splice(eid, 1)
+		podcasts[pid]["episodes"].splice(id, 1)
 
 		return { state }
 	}
