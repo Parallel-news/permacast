@@ -1,6 +1,8 @@
 import { React, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import Arweave from 'arweave'
+import { readContract, interactWrite, interactWriteDryRun, createContractFromTx } from 'smartweave'
+import ArDB from 'ardb';
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -10,6 +12,8 @@ const arweave = Arweave.init({
   logging: false,
 });
 
+const ardb = new ArDB(arweave)
+const masterContract = "mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8"
 
 export default function UploadShow()  {
     let finalShowObj = {} 
@@ -19,16 +23,46 @@ export default function UploadShow()  {
         setShow(true);
       };
 
+    const findUserSwc = async () => {
+      const addr = sessionStorage.getItem("wallet_address");
+      let tx
+      if (!addr) { return null } else {
+      ardb.search('transactions')
+      .from(addr)
+      .tag('App-Name', 'permacast')
+      .tag('App-Function', 'createOwner')
+      .find()
+      .then((txs) => {
+        if(txs) {
+        tx = txs
+        } else {
+          return null
+        }
+        return tx
+        // find the SWC ID in the tx, save to localStorage 'swcId'
+      }
+      )
+    }
+  }
+
+    async function getSwcId() {
+      let id;
+      if (localStorage.getItem('swcId')) {
+        id = localStorage.getItem('swcId')
+      } else {
+        console.log('hit else in getSwcId')
+        id = await findUserSwc()
+      }
+      return id
+    }
+
     function readFileAsync(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
-    
         reader.onload = () => {
           resolve(reader.result);
         };
-    
         reader.onerror = reject;
-    
         reader.readAsArrayBuffer(file);
       })
     }
@@ -42,8 +76,30 @@ export default function UploadShow()  {
       }
     }
 
+    const uploadShow = async (show) => {
+      //let id
+      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
+      //id = !localStorage.getItem('swcId') && getSwcId()
+      //if (!id) {
+      //  id = createContractFromTx(arweave, wallet, masterContract, '')
+      //  localStorage.setItem('swcId', id)
+      //console.log(`swcId is ${id}`)
+      //}
+
+      let input = {
+        'function': 'createPodcast',
+        'name': show.name,
+        'desc': show.desc,
+        'cover': show.cover
+      }
+
+      let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+      let test = await interactWrite(arweave, wallet, masterContract, input, tags)
+      console.log(test)
+    }
+
     const uploadToArweave = async (data, fileType, showObj) => {
-      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
+      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
           tx.addTag("Content-Type", fileType);
@@ -53,7 +109,7 @@ export default function UploadShow()  {
                 showObj.cover = tx.id
                 finalShowObj = showObj;
                 console.log(finalShowObj)
-                // call the SWC!
+                uploadShow(finalShowObj)
               }
             });
           });

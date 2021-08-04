@@ -1,7 +1,10 @@
 import { React, Component } from 'react'
-import { Col, Row, Container, Button, Form, Card } from 'react-bootstrap'
+import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import Arweave from 'arweave'
 import Dropzone from 'react-dropzone'
+import { interactWrite } from 'smartweave'
+
+const masterContract = 'mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8'
 
 const arweave = Arweave.init({
     host: "arweave.net",
@@ -71,6 +74,29 @@ export default class UploadEpisode extends Component {
            this.uploadToArweave(file, fileType, epObj)
        })
        }
+
+    uploadShow = async (show) => {
+        //let id
+        const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
+        //id = !localStorage.getItem('swcId') && getSwcId()
+        //if (!id) {
+        //  id = createContractFromTx(arweave, wallet, masterContract, '')
+        //  localStorage.setItem('swcId', id)
+        //console.log(`swcId is ${id}`)
+        //}
+  
+        let input = {
+          'function': 'createPodcast',
+          'name': show.name,
+          'desc': show.desc,
+          'cover': show.cover
+        }
+  
+        let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+        let test = await interactWrite(arweave, wallet, masterContract, input, tags)
+        console.log(test)
+      }
+  
     
       toFixed(x) {
         if (Math.abs(x) < 1.0) {
@@ -114,12 +140,13 @@ export default class UploadEpisode extends Component {
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 
                 <Dropzone accept="audio/*" onDrop={acceptedFiles => this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})}>
-                    {({getRootProps, getInputProps, isDragReject}) => (
+                    {({getRootProps, getInputProps, isDragReject, isDragAccept}) => (
                         <section>
                             <div {...getRootProps()}>
                              <input {...getInputProps()} />
-                             {isDragReject && "Only audio files accepted" }
+                             {(isDragReject && !isDragAccept) ? "⚠️ Only audio files accepted" :
                              <Card className="dropzone-border p-2"><span className="text-gray">{ !this.state.dropped ? <p>⬆️ Drop your podcast's audio file here</p> : <p>✅ File added. Cost to upload to Arweave ~{0.00052 * (this.state.files[0].size / 1000000).toFixed(3)}</p>}</span></Card>
+                                }
                             </div>
                         </section>
                      )}
