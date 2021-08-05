@@ -139,12 +139,12 @@ export default class UploadEpisode extends Component {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 
-                <Dropzone accept="audio/*" onDrop={acceptedFiles => this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})}>
+                <Dropzone accept="audio/mp3" onDrop={acceptedFiles => this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})}>
                     {({getRootProps, getInputProps, isDragReject, isDragAccept}) => (
                         <section>
                             <div {...getRootProps()}>
                              <input {...getInputProps()} />
-                             {(isDragReject && !isDragAccept) ? "⚠️ Only audio files accepted" :
+                             {(isDragReject && !isDragAccept) ? "⚠️ Only mp3 audio files accepted" :
                              <Card className="dropzone-border p-2"><span className="text-gray">{ !this.state.dropped ? <p>⬆️ Drop your podcast's audio file here</p> : <p>✅ File added. Cost to upload to Arweave ~{0.00052 * (this.state.files[0].size / 1000000).toFixed(3)}</p>}</span></Card>
                                 }
                             </div>

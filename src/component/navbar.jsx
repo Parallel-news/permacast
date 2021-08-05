@@ -6,7 +6,7 @@ import WalletLoader from './wallet_loader.jsx'
 
 export default function Header() {
   return(
-    <div class="topBar">
+    <div className="topBar">
         <Navbar className="">
         <NavLink className="btn navbar-item text-decoration-none mr-4" to="/"><Navbar.Brand>permacast</Navbar.Brand></NavLink>
         <Navbar.Toggle />

@@ -1,20 +1,41 @@
 import { React, Component } from 'react'
 import { CardColumns } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
+import { readContract } from 'smartweave'
+import Arweave from 'arweave'
+
+const arweave = Arweave.init({
+  host: "arweave.net",
+  port: 443,
+  protocol: "https",
+  timeout: 100000,
+  logging: false,
+});
+
+let podcasts
 
 class Index extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            test: true
+            test: true,
+            podcasts: {}
         }
     }
 
+  loadPodcasts = async () => {
+    const swcId = 'mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8'
+    let res = await readContract(arweave, swcId)
+    console.log(res)
+    return res
+  }
+ 
+
     linkValues = (podcast) => {
-      const keys = Object.keys(podcast)
-      console.log(keys)
-      const values =  Object.values(podcast)
+      let p = podcast.podcasts
+      const keys = Object.keys(p)
+      const values =  Object.values(p)
       const resultArr = []
     
       for ( let i = 0 ; i < keys.length ; i++) {
@@ -29,8 +50,10 @@ class Index extends Component {
     
 
 
-    podcasts = () => {
-        const podcast = this.linkValues(this.props.podcasts.podcasts);
+    podcasts = async () => {
+      console.log(this.state.podcasts)
+        let podcast = this.linkValues(this.state.podcasts)
+        console.log(podcast)
         const podcasts = []
         for (let i in podcast) {
           let p = podcast[i];
@@ -49,12 +72,18 @@ class Index extends Component {
         return podcasts
     }
 
+    async componentDidMount() {
+      let p = await this.loadPodcasts()
+      this.setState({podcasts: p})
+      podcasts = await this.podcasts(this.state.p)
+      this.setState({podcastHtml: podcasts})
+    }
 
     render() {
-        return(
+        return( 
           <>
           <CardColumns>
-          {this.podcasts()}
+            {this.state.podcastHtml}
           </CardColumns>
           </>
         )
