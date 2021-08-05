@@ -19,6 +19,26 @@ export default function UploadShow()  {
     let finalShowObj = {} 
     const [show, setShow] = useState(false);
 
+    async function deployContract() {
+      const initialState = `{"podcasts": {}}`
+      const jwk = sessionStorage.getItem('arweaveWallet')
+      const tx = await arweave.createTransaction({data: initialState}, jwk)
+    
+      tx.addTag("Protocol", "permacast-testnet")
+      tx.addTag("Action", "launchCreator")
+      tx.addTag("App-Name", "SmartWeaveContract")
+      tx.addTag("App-Version", "0.3.0")
+      tx.addTag("Contract-Src", "mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8")
+      tx.addTag("Content-Type", "application/json")
+      tx.addTag("Timestamp", Date.now())
+    
+      await arweave.transactions.sign(tx, jwk)
+      await arweave.transactions.post(tx)
+      console.log(tx)
+      console.log(`transaction's ID is: ${tx.id}`)
+    }
+    
+
     const handleUploadClick = () => {
         setShow(true);
       };
@@ -77,6 +97,9 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
+
+
+
       //let id
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
       //id = !localStorage.getItem('swcId') && getSwcId()
@@ -180,6 +203,7 @@ export default function UploadShow()  {
         </Modal.Footer>
         </Form>
         </Modal.Body>
+        <Button onClick={deployContract}>Deploy</Button>
       </Modal>
       </>
     )
