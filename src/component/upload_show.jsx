@@ -13,70 +13,36 @@ const arweave = Arweave.init({
 });
 
 const ardb = new ArDB(arweave)
-const masterContract = "mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8"
+const masterContract = "vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4"
 
 export default function UploadShow()  {
     let finalShowObj = {} 
     const [show, setShow] = useState(false);
 
-    async function deployContract() {
+    const deployContract = async () => {
       const initialState = `{"podcasts": {}}`
-      const jwk = sessionStorage.getItem('arweaveWallet')
+      const jwk = JSON.parse(sessionStorage.getItem('arweaveWallet'))
       const tx = await arweave.createTransaction({data: initialState}, jwk)
     
-      tx.addTag("Protocol", "permacast-testnet")
+      tx.addTag("Protocol", "permacast-testnet-v0")
       tx.addTag("Action", "launchCreator")
-      tx.addTag("App-Name", "SmartWeaveContract")
+      tx.addTag("App-Name", "SmartWeaveAction")
       tx.addTag("App-Version", "0.3.0")
-      tx.addTag("Contract-Src", "mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8")
+      tx.addTag("Contract-Src", masterContract)
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
     
       await arweave.transactions.sign(tx, jwk)
       await arweave.transactions.post(tx)
       console.log(tx)
-      console.log(`transaction's ID is: ${tx.id}`)
+      return tx.id
     }
     
-
     const handleUploadClick = () => {
         setShow(true);
       };
-
-    const findUserSwc = async () => {
-      const addr = sessionStorage.getItem("wallet_address");
-      let tx
-      if (!addr) { return null } else {
-      ardb.search('transactions')
-      .from(addr)
-      .tag('App-Name', 'permacast')
-      .tag('App-Function', 'createOwner')
-      .find()
-      .then((txs) => {
-        if(txs) {
-        tx = txs
-        } else {
-          return null
-        }
-        return tx
-        // find the SWC ID in the tx, save to localStorage 'swcId'
-      }
-      )
-    }
-  }
-
-    async function getSwcId() {
-      let id;
-      if (localStorage.getItem('swcId')) {
-        id = localStorage.getItem('swcId')
-      } else {
-        console.log('hit else in getSwcId')
-        id = await findUserSwc()
-      }
-      return id
-    }
-
-    function readFileAsync(file) {
+    
+  function readFileAsync(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
         reader.onload = () => {
@@ -97,18 +63,26 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
-
-
-
-      //let id
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
-      //id = !localStorage.getItem('swcId') && getSwcId()
-      //if (!id) {
-      //  id = createContractFromTx(arweave, wallet, masterContract, '')
-      //  localStorage.setItem('swcId', id)
-      //console.log(`swcId is ${id}`)
-      //}
-
+      let contractId
+      let tx
+      const addr = sessionStorage.getItem("wallet_address");
+      if (!addr) { return null } else {
+      tx = await ardb.search('transactions')
+      .from(addr)
+      .tag('App-Name', 'SmartWeaveAction')
+      .tag('Action', 'launchCreator')
+      .tag('Protocol', 'permacast-testnet-v0')
+      .tag('Contract-Src', 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4')
+      .find()
+      }
+      console.log(tx)
+      if (tx.length !==0) {
+        contractId = tx[0].node.id
+      }
+      if (!contractId) {
+        contractId = await deployContract()
+      }
       let input = {
         'function': 'createPodcast',
         'name': show.name,
@@ -116,9 +90,15 @@ export default function UploadShow()  {
         'cover': show.cover
       }
 
-      let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-      let test = await interactWrite(arweave, wallet, masterContract, input, tags)
-      console.log(test)
+      let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
+      let uploadTxId = await interactWrite(arweave, wallet, contractId, input, tags)
+      if (uploadTxId) {
+        window.location(`/${uploadTxId}`)
+        // load the page that their podcast is on, or index
+        console.log(uploadTxId)
+      } else {
+        alert('An error occured.')
+      }
     }
 
     const uploadToArweave = async (data, fileType, showObj) => {
@@ -203,7 +183,6 @@ export default function UploadShow()  {
         </Modal.Footer>
         </Form>
         </Modal.Body>
-        <Button onClick={deployContract}>Deploy</Button>
       </Modal>
       </>
     )

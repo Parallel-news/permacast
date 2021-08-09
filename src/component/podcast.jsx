@@ -99,7 +99,7 @@ class Podcast extends Component {
     }
 
     loadPodcasts = async () => {
-      const swcId = 'mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8'
+      const swcId = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
       let res = await readContract(arweave, swcId)
       return res
     }  
@@ -110,7 +110,6 @@ class Podcast extends Component {
       this.setState({thePodcast: await this.getPodcast()})
       let podcastHtml = this.loadPodcast(this.state.thePodcast)
       this.setState({podcastHtml: podcastHtml})
-      console.log('state from cDM')
       let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
       this.setState({podcastEpisodes: podcastEpisodes})
 

@@ -2,9 +2,10 @@ import { React, Component } from 'react'
 import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import Arweave from 'arweave'
 import Dropzone from 'react-dropzone'
+import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 
-const masterContract = 'mvBG00Ccigq9htgOVCdAe9vXM8efbGzm8ax89NIlZS8'
+const masterContract = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
 
 const arweave = Arweave.init({
     host: "arweave.net",
@@ -13,6 +14,8 @@ const arweave = Arweave.init({
     timeout: 100000,
     logging: false,
   });
+
+const ardb = new ArDB(arweave)
 
 export default class UploadEpisode extends Component {
      constructor(props) {
@@ -46,7 +49,7 @@ export default class UploadEpisode extends Component {
         }
       }
 
-    uploadToArweave = (data, fileType, epObj) => {
+    uploadToArweave = async (data, fileType, epObj) => {
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
@@ -56,7 +59,6 @@ export default class UploadEpisode extends Component {
               if (response.statusText === "OK") {
                   epObj.media = tx.id
                   console.log(epObj)
-                // call the SWC!
               }
             });
           });
@@ -64,7 +66,7 @@ export default class UploadEpisode extends Component {
       }
     }
   
-    handleEpisodeUpload = (event) => {
+    handleEpisodeUpload = async (event) => {
        const fileType = this.state.fileType
        let epObj = {}
        event.preventDefault()
@@ -74,6 +76,21 @@ export default class UploadEpisode extends Component {
            this.uploadToArweave(file, fileType, epObj)
        })
        }
+
+      getSwcId = async () => {
+        let tx
+        const addr = sessionStorage.getItem("wallet_address");
+        if (!addr) { return null } else {
+        tx = await ardb.search('transactions')
+        .from(addr)
+        .tag('App-Name', 'SmartWeaveAction')
+        .tag('Action', 'launchCreator')
+        .tag('Protocol', 'permacast-testnet-v0')
+        .tag('Contract-Src', 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4')
+        .find()
+        }
+      console.log(tx)
+      }
 
     uploadShow = async (show) => {
         //let id
