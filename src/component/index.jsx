@@ -20,7 +20,7 @@ tags: [
 
     { name: "Contract-Src", values: "vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4"},
     { name: "Action", values: "launchCreator"},
-    { name: "Protocol", values: "perma}
+    { name: "Protocol", values: "permacast-testnet-v0"}
   
     ]
 first: 1000000
@@ -72,7 +72,10 @@ class Index extends Component {
     tx = await this.getStates(swcIds)
     console.log(tx)
     for (let i in tx) {
-      let thisPodcast = await readContract(arweave, tx[i])
+      console.log('about to break:')
+      console.log(tx[i])
+      let thisPodcast = await readContract(arweave, tx[i].pid)
+      console.log(thisPodcast)
       podcastList.push(thisPodcast.podcasts)
     }
     return podcastList

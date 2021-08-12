@@ -93,7 +93,7 @@ export default function UploadShow()  {
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
       let uploadTxId = await interactWrite(arweave, wallet, contractId, input, tags)
       if (uploadTxId) {
-        window.location(`/${uploadTxId}`)
+        //window.location(`/${uploadTxId}`)
         // load the page that their podcast is on, or index
         console.log(uploadTxId)
       } else {
