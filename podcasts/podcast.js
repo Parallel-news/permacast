@@ -68,24 +68,20 @@ export async function handle(state, action) {
 
 		// ------------------------>
 
-		if ( pid in podcasts ) {
-			throw new ContractError(`podcast having ID: ${pid} is already registered`)
-		}
-
-		podcasts[podcastID] = {
-
+		podcasts.push( {
+			"pid": pid,
 			"podcastName": name,
 			"description": desc,
 			"cover": cover,
 			"episodes":[],
 			"logs": [pid]
-		}
+		} )
 
 		return { state }
 	}
 
 	if ( input.function === "addEpisode") {
-		const pid = input.pid
+		const index = input.index // podcast index
 		const name = input.name
 		const audio = input.audio
 		const desc = input.desc
@@ -96,9 +92,14 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} not found`)
+		if (! Number.isInteger(index) ) {
+			throw new ContractError(`index must be an integer`)
 		}
+
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} not found`)
+		}
+		
 
 		if (typeof name !== "string" || name.length > 50) {
 			throw new ContractError(`uncorrect name limit`)
@@ -129,8 +130,8 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid mime type`)
 		}
 
-		podcasts[podcast]["episodes"].push({
-			"eid": SmartWeave.transaction.id,
+		podcasts[index]["episodes"].push({
+			"eid": SmartWeave.transaction.id, // episode TXID
 			"episodeName": name,
 			"description": desc,
 			"audioTx": audio,
@@ -146,27 +147,27 @@ export async function handle(state, action) {
 	// PODCAST ACTIONS:
 
 	if (input.function === "deletePodcast") {
-		const pid = input.pid 
+		const index = input.index //podcast index 
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
-
-		if (typeof pid !== "string" || pid.length !== 43) {
-			throw new ContractError(`invalid pid `)
+		
+		if (! Number.isInteger(index) ) {
+			throw new ContractError(`index must be an integer`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} does not exist`)
 		}
 
-		delete podcasts[pid]
+		podcasts.splice(index, 1)
 
 		return { state }
 	}
 
 	if (input.function === "editPodcastName") {
-		const pid = input.pid 
+		const index = input.index
 		const name = input.name
 		
 		const actionTx = SmartWeave.transaction.id
@@ -175,12 +176,12 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (typeof pid !== "string" || pid.length !== 43) {
-			throw new ContractError(`invalid pid `)
+		if (! Number.isInteger(index) ) {
+			throw new ContractError(`index must be an integer`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} does not exist`)
 		}
 
 		if (typeof name !== "string") {
@@ -191,18 +192,18 @@ export async function handle(state, action) {
 			throw new ContractError(`the name does not meet the name limits`)
 		}
 
-		if ( podcasts[pid]["podcastName"] ===  name) {
+		if ( podcasts[index]["podcastName"] ===  name) {
 			throw new ContractError(`old name and new name cannot be equals`)
 		}
 
-		podcasts[pid]["podcastName"] = name
-		podcasts[pid]["logs"].push(actionTx)
+		podcasts[index]["podcastName"] = name
+		podcasts[index]["logs"].push(actionTx)
 
 		return { state }
 	}
 
 	if (input.function === "editPodcastDesc") {
-		const pid = input.pid 
+		const index = input.index
 		const desc = input.desc
 		
 		const actionTx = SmartWeave.transaction.id
@@ -211,12 +212,12 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (typeof pid !== "string" || pid.length !== 43) {
-			throw new ContractError(`invalid pid `)
+		if (! Number.isInteger(index) ) {
+			throw new ContractError(`index must be an integer`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} does not exist`)
 		}
 
 		if ( typeof desc !== "string" ) {
@@ -227,19 +228,19 @@ export async function handle(state, action) {
 			throw new ContractError(`description length too high`)
 		}
 
-		if ( podcasts[pid]["description"] === desc ) {
+		if ( podcasts[index]["description"] === desc ) {
 			throw new ContractError(`old description and new description cannot be equals`)
 		}
 
-		podcasts[pid]["description"] = desc
-		podcasts[pid]["logs"].push(actionTx)
+		podcasts[index]["description"] = desc
+		podcasts[index]["logs"].push(actionTx)
 
 		return { state }
 
 	}
 
 	if (input.function === "editPodcastCover") {
-		const pid = input.pid 
+		const index = input.index
 		const cover = input.cover
 		
 		const tagsMap = new Map();
@@ -249,12 +250,12 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (typeof pid !== "string" || pid.length !== 43) {
-			throw new ContractError(`invalid pid `)
+		if (! Number.isInteger(index) ) {
+			throw new ContractError(`index must be an integer`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} does not exist`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} does not exist`)
 		}
 
 		if (typeof cover !== "string" || cover.length !== 43) {
@@ -278,12 +279,12 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid mime type`)
 		}
 
-		if ( podcasts[pid]["cover"] === cover ) {
+		if ( podcasts[index]["cover"] === cover ) {
 			throw new ContractError(`old cover and new cover cannot be equals`)
 		}
 
-		podcasts[pid]["cover"] = cover
-		podcasts[pid]["logs"].push(actionTx)
+		podcasts[index]["cover"] = cover
+		podcasts[index]["logs"].push(actionTx)
 
 		return { state }
 
@@ -293,8 +294,8 @@ export async function handle(state, action) {
 
 	if (input.function === "editEpisodeName") {
 		const name = input.name
-		const pid = input.pid
-		const id = input.id
+		const index = input.index // podcast index
+		const id = input.id // episode index
 		
 		const actionTx = SmartWeave.transaction.id
 
@@ -302,11 +303,11 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} not found`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} not found`)
 		}
 
-		if (! podcasts[pid]["episodes"][id]) {
+		if (! podcasts[index]["episodes"][id]) {
 			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
@@ -318,18 +319,18 @@ export async function handle(state, action) {
 			throw new ContractError(`${name} does not meet the name limits`)
 		}
 
-		if ( podcasts[pid][id]["episodeName"] === name ) {
+		if ( podcasts[index]["episodes"][id]["episodeName"] === name ) {
 			throw new ContractError(`new name and old name cannot be the same`)
 		}
 
-		podcasts[pid]["episodes"][id]["episodeName"] = name
-		podcasts[pid]["episodes"][id]["logs"].push(actionTx)
+		podcasts[index]["episodes"][id]["episodeName"] = name
+		podcasts[index]["episodes"][id]["logs"].push(actionTx)
 
 		return { state }
 	}
 
 	if (input.function === "editEpisodeDesc") {
-		const pid = input.pid
+		const index = input.index
 		const id = input.id
 		const desc = input.desc
 		
@@ -339,11 +340,11 @@ export async function handle(state, action) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} not found`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having index: ${index} not found`)
 		}
 
-		if (! podcasts[pid]["episodes"][id]) {
+		if (! podcasts[index]["episodes"][id]) {
 			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
@@ -355,33 +356,33 @@ export async function handle(state, action) {
 			throw new ContractError(`the description text does not meet the desc limits`)
 		}
 
-		if ( podcasts[pid]["episodes"][id]["description"] === desc) {
+		if ( podcasts[index]["episodes"][id]["description"] === desc) {
 			throw new ContractError(`old description and new description canot be the same`)
 		}
 
-		podcasts[pid]["episodes"][id]["description"] = desc
-		podcasts[pid]["episodes"][id]["logs"].push(actionTx)
+		podcasts[index]["episodes"][id]["description"] = desc
+		podcasts[index]["episodes"][id]["logs"].push(actionTx)
 
 		return { state }
 	}
 
 	if (input.function === "deleteEpisode") {
-		const pid = input.pid
+		const index = input.index
 		const id = input.id
 
 		if ( caller !== contractOwner) {
 			throw new ContractError(`invalid caller. Only ${contractOwner} can perform this action`)
 		}
 
-		if (! podcasts[pid]) {
-			throw new ContractError(`podcast having ID: ${pid} not found`)
+		if (! podcasts[index]) {
+			throw new ContractError(`podcast having ID: ${index} not found`)
 		}
 
-		if (! podcasts[pid][id]) {
+		if (! podcasts[index][id]) {
 			throw new ContractError(`episode having index: ${id} not found`)
 		}
 
-		podcasts[pid]["episodes"].splice(id, 1)
+		podcasts[index]["episodes"].splice(id, 1)
 
 		return { state }
 	}
