@@ -12,13 +12,16 @@ const arweave = Arweave.init({
   logging: false,
 });
 
+// -8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8
+
+
 const queryObject = {
   query: 
     `query {
 transactions(
 tags: [
 
-    { name: "Contract-Src", values: "vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4"},
+    { name: "Contract-Src", values: "-8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8"},
     { name: "Action", values: "launchCreator"},
     { name: "Protocol", values: "permacast-testnet-v0"}
   
@@ -78,6 +81,7 @@ class Index extends Component {
       console.log(thisPodcast)
       podcastList.push(thisPodcast.podcasts)
     }
+    console.log(podcastList)
     return podcastList
   }
 
@@ -101,15 +105,13 @@ class Index extends Component {
     getStates = async (ids) => {
       const data = []
       for (let swc of ids) {
-        const tx = await readContract(arweave, swc) // sm is just a browserified web bundle for smartweave-ja
-        console.log(tx)
+        const tx = await readContract(arweave, swc) 
         const txObj = (Object.values(tx)[0])
         const state = Object.values(txObj)
         state[0]["pid"] = swc
     
         data.push(state[0])
       }
-    
       return data
     }
 
@@ -117,21 +119,28 @@ class Index extends Component {
         let podcast = this.state.podcasts.filter(
           obj => !(obj && Object.keys(obj).length === 0)
         )
+
+        console.log(podcast)
+
         //this.linkValues(this.state.podcasts)
         const podcasts = []
-        for (let i in podcast) {
-          let p = podcast[i];
+        const ids = Object.values(podcast['0'])
+        for (let i in ids) {
+          let p = Object.values(podcast[i]);
+          console.log(p)
+          for (let i in p) {
+            console.log(p[i].podcastName)
           podcasts.push(
             <>
             <PodcastHtml
-            name={p.podcastName}
-            link={p.pid}
-            description={p.description}
-            image={`https://arweave.net/${p.cover}`}
-            media={p.media}
+            name={p[i].podcastName}
+            //link={p[i].pid}
+            //description={p[i].description}
+            //image={`https://arweave.net/${p[i].cover}`}
             />
             </>
           ) 
+          }
         }
         return podcasts
     }
@@ -150,6 +159,7 @@ class Index extends Component {
     }
 
     render() {
+      const podcasts = this.state.podcastHtml
         return( 
           <>
           <Container className="mt-5">
@@ -160,7 +170,7 @@ class Index extends Component {
           </Container>
           <div>
           <CardColumns>
-            {this.state.podcastHtml}
+            {podcasts}
           </CardColumns>
           </div>
           </>
