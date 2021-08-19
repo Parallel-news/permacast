@@ -13,18 +13,16 @@ const arweave = Arweave.init({
 });
 
 // -8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8
-
+////    { name: "Protocol", values: "permacast-testnet-v0"}
 
 const queryObject = {
   query: 
     `query {
 transactions(
 tags: [
+    { name: "Contract-Src", values: "3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0"},
+    { name: "Protocol", values: "permacast-testnet-v2"}
 
-    { name: "Contract-Src", values: "-8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8"},
-    { name: "Action", values: "launchCreator"},
-    { name: "Protocol", values: "permacast-testnet-v0"}
-  
     ]
 first: 1000000
 ) {
@@ -58,6 +56,7 @@ class Index extends Component {
     });
 
     const json = await response.json();
+    console.log(json)
     const data_arr = [];
 
     const res_arr = json["data"]["transactions"]["edges"];
@@ -69,78 +68,45 @@ class Index extends Component {
   }
 
   loadPodcasts = async () => {
-    let tx
     let podcastList = []
-    let swcIds = await this.fetchAllSwcIds()
-    tx = await this.getStates(swcIds)
+    let tx = await this.fetchAllSwcIds()
     console.log(tx)
     for (let i in tx) {
       console.log('about to break:')
-      console.log(tx[i])
-      let thisPodcast = await readContract(arweave, tx[i].pid)
+      try {
+      let thisPodcast = await readContract(arweave, tx[i])
+      
       console.log(thisPodcast)
       podcastList.push(thisPodcast.podcasts)
+      } catch {
+        console.log('podcast does not exist, or is just not mined yet')
+      }
     }
     console.log(podcastList)
     return podcastList
   }
 
-    linkValues = (podcast) => {
-      let p = podcast
-      const keys = Object.keys(p)
-      const values =  Object.values(p)
-      const resultArr = []
-    
-      for ( let i = 0 ; i < keys.length ; i++) {
-        const currentValues = values[i]
-        const currentKey = keys[i]
-        currentValues["pid"] = currentKey
-        resultArr.push(currentValues)
-    
-      }
-      return resultArr
-    }
-   
-    
-    getStates = async (ids) => {
-      const data = []
-      for (let swc of ids) {
-        const tx = await readContract(arweave, swc) 
-        const txObj = (Object.values(tx)[0])
-        const state = Object.values(txObj)
-        state[0]["pid"] = swc
-    
-        data.push(state[0])
-      }
-      return data
-    }
-
-    podcasts = async () => {
+  podcasts = async () => {
         let podcast = this.state.podcasts.filter(
           obj => !(obj && Object.keys(obj).length === 0)
         )
 
         console.log(podcast)
 
-        //this.linkValues(this.state.podcasts)
         const podcasts = []
-        const ids = Object.values(podcast['0'])
-        for (let i in ids) {
-          let p = Object.values(podcast[i]);
-          console.log(p)
-          for (let i in p) {
-            console.log(p[i].podcastName)
+        for (let i in podcast) {
+          console.log(podcast[i])
+          let p = podcast[i]
           podcasts.push(
             <>
             <PodcastHtml
             name={p[i].podcastName}
-            //link={p[i].pid}
-            //description={p[i].description}
-            //image={`https://arweave.net/${p[i].cover}`}
+            link={p[i].pid}
+            description={p[i].description}
+            image={`https://arweave.net/${p[i].cover}`}
             />
             </>
           ) 
-          }
         }
         return podcasts
     }

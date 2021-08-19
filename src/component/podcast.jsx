@@ -13,7 +13,27 @@ const arweave = Arweave.init({
   logging: false,
 });
 
-let podcast
+
+const queryObject = {
+  query: 
+    `query {
+transactions(
+tags: [
+    
+    { name: "Contract-Src", values: "3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0"},
+  
+    ]
+first: 1000000
+) {
+edges {
+  node {
+    id
+  }
+}
+}
+}
+`
+}
 
 class Podcast extends Component {
 
@@ -25,20 +45,80 @@ class Podcast extends Component {
         }
     }
 
-    getPodcast = async () => {
+    fetchAllSwcIds = async () => {
+      const response = await fetch("https://arweave.net/graphql", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(queryObject),
+      });
+  
+      const json = await response.json();
+      console.log(json)
+      const data_arr = [];
+  
+      const res_arr = json["data"]["transactions"]["edges"];
+  
+      for (let element in Object.values(res_arr)) {
+        data_arr.push(res_arr[element]["node"]["id"])
+      }
+      return data_arr
+    }
+  
+    loadPodcasts = async (tx) => {
+      let podcastList = []
+      for (let i in tx) {
+        try {
+        let thisPodcast = await readContract(arweave, tx[i])
+        console.log(thisPodcast)
+        podcastList.push(thisPodcast.podcasts)
+        } catch {
+          console.log('podcast does not exist, or is just not mined yet')
+        }
+      }
+      console.log(podcastList)
+      return podcastList
+    }
+  
+
+    getPodcast = async (p) => {
+      let podcasts = p.filter(
+        obj => !(obj && Object.keys(obj).length === 0)
+      )
         let id = this.props.match.params.podcastId;
-        let podcasts = await this.loadPodcasts()
-        let podcastsWithId = this.linkValues(podcasts)
-        let podcast = this.findPodcastById(podcastsWithId, id)
+        let podcast = this.findPodcastById(podcasts, id)
+        console.log(podcast)
         return podcast
     }
 
-    findPodcastById = (podcasts, id) => {
-      for (var i=0, iLen=podcasts.length; i<iLen; i++) {
-        if (podcasts[i].id === id)
-        console.log(podcasts[i])
-          return podcasts[i];
+    findPodcastById = (podcastsList, id) => {
+      let match
+
+      let podcasts = podcastsList.filter(
+        obj => !(obj && Object.keys(obj).length === 0)
+      )
+
+      for (let i in podcasts) {
+        let p = podcasts[i]
+        console.log(p)
+          for (let j in p) {
+            console.log(p[j])
+            if (p[j].pid === id) {
+              match = p[j]
+            }
+          }
+          return match
+      }
+
+     // let p = podcasts.find(podcastId => Object.values(podcasts).pid === podcastId)
+     // console.log(p)
+      /*
+      let p = podcasts.podcasts
+      for (var i=0, iLen=p.length; i<iLen; i++) {
+        if (p[i].id === id)
+        console.log(p[i])
+          return p[i];
         }
+        */
     }
 
     linkValues = (podcast) => {
@@ -97,29 +177,36 @@ class Podcast extends Component {
       this.setState({showEpisodeForm: true})
 
     }
-
-    loadPodcasts = async () => {
-      const swcId = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
+/*
+    loadPodcasts = async (id) => {
+      const swcId = id
       let res = await readContract(arweave, swcId)
       return res
     }  
+*/
 
     async componentDidMount() {
-      let p = await this.loadPodcasts()
+      this.setState({loading: true})
+      let ids = await this.fetchAllSwcIds()
+      let p = await this.loadPodcasts(ids)
       this.setState({podcast: p})
-      this.setState({thePodcast: await this.getPodcast()})
+      this.setState({thePodcast: await this.getPodcast(p)})
+      console.log(this.state)
       let podcastHtml = this.loadPodcast(this.state.thePodcast)
+      
       this.setState({podcastHtml: podcastHtml})
       let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
       this.setState({podcastEpisodes: podcastEpisodes})
+      this.setState({loading: false})
 
     }
 
     render() {
         return(
           <div>
-            {/*this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null*/}
-            {/*this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null*/}
+            {this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null }
+            {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null }
+            {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
             {this.state.podcastHtml}
             {this.state.podcastEpisodes}
           </div>

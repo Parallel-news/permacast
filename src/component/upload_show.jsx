@@ -13,18 +13,18 @@ const arweave = Arweave.init({
 });
 
 const ardb = new ArDB(arweave)
-const masterContract = "vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4"
+const masterContract = "3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0"
 
 export default function UploadShow()  {
     let finalShowObj = {} 
     const [show, setShow] = useState(false);
 
     const deployContract = async () => {
-      const initialState = `{"podcasts": {}}`
+      const initialState = `{"podcasts": []}`
       const jwk = JSON.parse(sessionStorage.getItem('arweaveWallet'))
       const tx = await arweave.createTransaction({data: initialState}, jwk)
     
-      tx.addTag("Protocol", "permacast-testnet-v0")
+      tx.addTag("Protocol", "permacast-testnet-v2")
       tx.addTag("Action", "launchCreator")
       tx.addTag("App-Name", "SmartWeaveAction")
       tx.addTag("App-Version", "0.3.0")
@@ -67,13 +67,14 @@ export default function UploadShow()  {
       let contractId
       let tx
       const addr = sessionStorage.getItem("wallet_address");
+      console.log(addr)
       if (!addr) { return null } else {
       tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
       .tag('Action', 'launchCreator')
-      .tag('Protocol', 'permacast-testnet-v0')
-      .tag('Contract-Src', 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4')
+      .tag('Protocol', 'permacast-testnet-v2')
+      .tag('Contract-Src', '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0')
       .find()
       }
       console.log(tx)
@@ -81,6 +82,7 @@ export default function UploadShow()  {
         contractId = tx[0].node.id
       }
       if (!contractId) {
+        console.log('not contractId - deploying new contract')
         contractId = await deployContract()
       }
       let input = {
@@ -102,6 +104,8 @@ export default function UploadShow()  {
     }
 
     const uploadToArweave = async (data, fileType, showObj) => {
+      console.log('made it here, data is')
+      console.log(data)
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
@@ -113,6 +117,8 @@ export default function UploadShow()  {
                 finalShowObj = showObj;
                 console.log(finalShowObj)
                 uploadShow(finalShowObj)
+              } else {
+                console.log(response)
               }
             });
           });

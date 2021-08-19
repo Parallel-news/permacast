@@ -5,7 +5,7 @@ import Dropzone from 'react-dropzone'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 
-const masterContract = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
+const masterContract = '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0'
 
 const arweave = Arweave.init({
     host: "arweave.net",
@@ -85,8 +85,8 @@ export default class UploadEpisode extends Component {
         .from(addr)
         .tag('App-Name', 'SmartWeaveAction')
         .tag('Action', 'launchCreator')
-        .tag('Protocol', 'permacast-testnet-v0')
-        .tag('Contract-Src', 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4')
+        .tag('Protocol', 'permacast-testnet-v2')
+        .tag('Contract-Src', '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0')
         .find()
         }
       console.log(tx)
@@ -156,12 +156,12 @@ export default class UploadEpisode extends Component {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 
-                <Dropzone accept="audio/mp3" onDrop={acceptedFiles => this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})}>
+                <Dropzone accept="audio" onDrop={acceptedFiles => console.log(acceptedFiles) /*=> this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})*/}>
                     {({getRootProps, getInputProps, isDragReject, isDragAccept}) => (
                         <section>
                             <div {...getRootProps()}>
                              <input {...getInputProps()} />
-                             {(isDragReject && !isDragAccept) ? "⚠️ Only mp3 audio files accepted" :
+                             {/*(isDragReject && !isDragAccept) ? "⚠️ Only mp3 audio files accepted"*/ 
                              <Card className="dropzone-border p-2"><span className="text-gray">{ !this.state.dropped ? <p>⬆️ Drop your podcast's audio file here</p> : <p>✅ File added. Cost to upload to Arweave ~{0.00052 * (this.state.files[0].size / 1000000).toFixed(3)}</p>}</span></Card>
                                 }
                             </div>
