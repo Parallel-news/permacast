@@ -15,6 +15,8 @@ const arweave = Arweave.init({
 // -8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8
 ////    { name: "Protocol", values: "permacast-testnet-v0"}
 
+const podcasts = []
+
 const queryObject = {
   query: 
     `query {
@@ -35,8 +37,6 @@ edges {
 }
 `
 }
-
-let podcasts
 
 class Index extends Component {
 
@@ -70,6 +70,7 @@ class Index extends Component {
   loadPodcasts = async () => {
     let podcastList = []
     let tx = await this.fetchAllSwcIds()
+    //let tx = [ "qa8uYApESo8Jgx4jQvukfIrhAASNLXLefY6QIFivYpo" ]
     console.log(tx)
     for (let i in tx) {
       console.log('about to break:')
@@ -86,17 +87,17 @@ class Index extends Component {
     return podcastList
   }
 
-  podcasts = async () => {
+  renderPodcasts = async () => {
         let podcast = this.state.podcasts.filter(
           obj => !(obj && Object.keys(obj).length === 0)
         )
 
         console.log(podcast)
 
-        const podcasts = []
         for (let i in podcast) {
           console.log(podcast[i])
           let p = podcast[i]
+          try {
           podcasts.push(
             <>
             <PodcastHtml
@@ -107,6 +108,9 @@ class Index extends Component {
             />
             </>
           ) 
+          } catch {
+            console.log('blank podcast')
+          }
         }
         return podcasts
     }
@@ -114,10 +118,13 @@ class Index extends Component {
     async componentDidMount() {
       this.setState({loading: true})
       this.setState({noPodcasts: false})
-      let p = await this.loadPodcasts()
-      this.setState({podcasts: p})
-      podcasts = await this.podcasts(this.state.p)
-      this.setState({podcastHtml: podcasts})
+      let pArrays = await this.loadPodcasts()  
+      let p = pArrays.flat()
+      this.setState({podcasts: p}) 
+      podcasts.push(await this.renderPodcasts(this.state.p))
+      console.log(p)
+      this.setState({podcastHtml: podcasts}) 
+      console.log(this.state)
       if ( this.state.podcastHtml.length < 1 ) {
       //  this.setState({noPodcasts: true})
       }

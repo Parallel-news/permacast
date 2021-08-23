@@ -43,6 +43,7 @@ export default class UploadEpisode extends Component {
     processFile = async (file) => {
         try {
           let contentBuffer = await this.readFileAsync(file);
+          console.log(contentBuffer)
           return contentBuffer
         } catch(err) {
           console.log(err);
@@ -72,7 +73,7 @@ export default class UploadEpisode extends Component {
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
-       this.processFile(this.state.files[0]).then((file) => {
+       this.processFile(event.target.episodeMedia).then((file) => {
            this.uploadToArweave(file, fileType, epObj)
        })
        }
@@ -155,22 +156,8 @@ export default class UploadEpisode extends Component {
                     <Form.Control required as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
-                
-                <Dropzone accept="audio" onDrop={acceptedFiles => console.log(acceptedFiles) /*=> this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})*/}>
-                    {({getRootProps, getInputProps, isDragReject, isDragAccept}) => (
-                        <section>
-                            <div {...getRootProps()}>
-                             <input {...getInputProps()} />
-                             {/*(isDragReject && !isDragAccept) ? "⚠️ Only mp3 audio files accepted"*/ 
-                             <Card className="dropzone-border p-2"><span className="text-gray">{ !this.state.dropped ? <p>⬆️ Drop your podcast's audio file here</p> : <p>✅ File added. Cost to upload to Arweave ~{0.00052 * (this.state.files[0].size / 1000000).toFixed(3)}</p>}</span></Card>
-                                }
-                            </div>
-                        </section>
-                     )}
-                </Dropzone>
-
-               { /*    <Form.Label>Audio file</Form.Label>
-                    <Form.Control className="audio-input" required type="file" name="episodeMedia"/> */ }
+                <Form.Label>Audio file</Form.Label>
+                <Form.Control className="audio-input" required type="file" name="episodeMedia"/>
                 <br/><br/>
                 <Button
                   type="submit"
