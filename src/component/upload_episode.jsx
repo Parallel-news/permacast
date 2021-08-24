@@ -1,9 +1,9 @@
 import { React, Component } from 'react'
 import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import Arweave from 'arweave'
-import Dropzone from 'react-dropzone'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
+import swal from 'sweetalert'
 
 const masterContract = '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0'
 
@@ -50,7 +50,7 @@ export default class UploadEpisode extends Component {
         }
       }
 
-    uploadToArweave = async (data, fileType, epObj) => {
+    uploadToArweave = async (data, fileType, epObj, event) => {
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
@@ -59,22 +59,28 @@ export default class UploadEpisode extends Component {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
                   epObj.media = tx.id
-                  console.log(epObj)
+                  console.log(tx.id)
+                  event.target.reset()
+                  swal('Success', 'Episode uploaded permanently to Arweave', 'success')
               }
             });
           });
         });
+        console.log(epObj)
+        await this.uploadShow(epObj)
       }
     }
   
     handleEpisodeUpload = async (event) => {
-       const fileType = this.state.fileType
        let epObj = {}
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
-       this.processFile(event.target.episodeMedia).then((file) => {
-           this.uploadToArweave(file, fileType, epObj)
+        let episodeFile = event.target.episodeMedia.files[0]
+        let fileType = episodeFile.type
+        console.log(fileType)
+        this.processFile(episodeFile).then((file) => {
+           this.uploadToArweave(file, fileType, epObj, event)
        })
        }
 
@@ -90,31 +96,29 @@ export default class UploadEpisode extends Component {
         .tag('Contract-Src', '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0')
         .find()
         }
-      console.log(tx)
+        return tx[0]['node']['id']
       }
 
     uploadShow = async (show) => {
-        //let id
+        let theContractId
         const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
-        //id = !localStorage.getItem('swcId') && getSwcId()
-        //if (!id) {
-        //  id = createContractFromTx(arweave, wallet, masterContract, '')
-        //  localStorage.setItem('swcId', id)
-        //console.log(`swcId is ${id}`)
-        //}
+         theContractId = await this.getSwcId()
+         console.log(theContractId)
   
         let input = {
-          'function': 'createPodcast',
+          'function': 'addEpisode',
+          'pid': show.pid,
           'name': show.name,
           'desc': show.desc,
-          'cover': show.cover
+          'audio': show.media
         }
+
+        console.log(input)
   
         let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, wallet, masterContract, input, tags)
+        let test = await interactWrite(arweave, wallet, theContractId, input, tags)
         console.log(test)
       }
-  
     
       toFixed(x) {
         if (Math.abs(x) < 1.0) {
@@ -138,7 +142,7 @@ export default class UploadEpisode extends Component {
     render() {
         
         const podcast = this.props.podcast
-        const podcastName = podcast.name
+        const podcastName = podcast.podcastName
         
         return(
             <div>
