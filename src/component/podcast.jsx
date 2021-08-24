@@ -76,7 +76,12 @@ class Podcast extends Component {
         }
       }
       console.log(podcastList)
-      return podcastList
+
+      let podcasts = podcastList.filter(
+        obj => !(obj && Object.keys(obj).length === 0)
+      )
+
+      return podcasts
     }
   
 
@@ -93,12 +98,15 @@ class Podcast extends Component {
     findPodcastById = (podcastsList, id) => {
       let match
 
-      let podcasts = podcastsList.filter(
+      let pList = podcastsList.filter(
         obj => !(obj && Object.keys(obj).length === 0)
       )
 
-      for (let i in podcasts) {
-        let p = podcasts[i]
+      let podcasts = pList
+        console.log(podcasts)
+
+      for (let podcast of podcasts) {
+        let p = podcast.flat()
         console.log(p)
           for (let j in p) {
             console.log(p[j])

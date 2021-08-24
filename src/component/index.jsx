@@ -15,7 +15,7 @@ const arweave = Arweave.init({
 // -8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8
 ////    { name: "Protocol", values: "permacast-testnet-v0"}
 
-const podcasts = []
+//let podcasts = []
 
 const queryObject = {
   query: 
@@ -88,32 +88,26 @@ class Index extends Component {
     return podcastList
   }
 
-  renderPodcasts = async () => {
-        let podcast = this.state.podcasts.filter(
-          obj => !(obj && Object.keys(obj).length === 0)
-        )
+  renderPodcasts = async (podcasts) => {
+        let html = []
 
-        console.log(podcast)
-
-        for (let i in podcast) {
-          console.log(podcast[i])
-          let p = podcast[i]
-          try {
-          podcasts.push(
+        for (let podcast of podcasts) {
+          console.log(podcast)
+          let p = podcast
+          html.push(
             <>
             <PodcastHtml
-            name={p[i].podcastName}
-            link={p[i].pid}
-            description={p[i].description}
-            image={`https://arweave.net/${p[i].cover}`}
+            name={p.podcastName}
+            link={p.pid}
+            description={p.description}
+            image={`https://arweave.net/${p.cover}`}
             />
             </>
           ) 
-          } catch {
             console.log('blank podcast')
-          }
         }
-        return podcasts
+
+        return html
     }
 
     async componentDidMount() {
@@ -122,10 +116,8 @@ class Index extends Component {
       let pArrays = await this.loadPodcasts()  
       let p = pArrays.flat()
       this.setState({podcasts: p}) 
-      podcasts.push(await this.renderPodcasts(this.state.p))
-      console.log(p)
+      let podcasts = await this.renderPodcasts(this.state.podcasts)
       this.setState({podcastHtml: podcasts}) 
-      console.log(this.state)
       if ( this.state.podcastHtml.length < 1 ) {
       //  this.setState({noPodcasts: true})
       }
