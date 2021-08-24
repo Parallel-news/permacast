@@ -69,16 +69,17 @@ class Index extends Component {
 
   loadPodcasts = async () => {
     let podcastList = []
-    let tx = await this.fetchAllSwcIds()
-    //let tx = [ "qa8uYApESo8Jgx4jQvukfIrhAASNLXLefY6QIFivYpo" ]
-    console.log(tx)
-    for (let i in tx) {
-      console.log('about to break:')
+    let creatorsContracts = await this.fetchAllSwcIds()
+
+    for (let contract of creatorsContracts) {
+
       try {
-      let thisPodcast = await readContract(arweave, tx[i])
-      
-      console.log(thisPodcast)
-      podcastList.push(thisPodcast.podcasts)
+      let thisPodcast = await readContract(arweave, contract)
+
+      for (let podcastObject of thisPodcast.podcasts) {
+        podcastList.push(podcastObject)
+      }
+        
       } catch {
         console.log('podcast does not exist, or is just not mined yet')
       }
