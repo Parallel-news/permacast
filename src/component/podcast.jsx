@@ -116,7 +116,6 @@ class Podcast extends Component {
           return p[i];
         }
         */
-    }
 
     linkValues = (podcast) => {
       let p = podcast.podcasts
@@ -135,7 +134,7 @@ class Podcast extends Component {
     }
     
 
-    loadPodcast() {
+    loadPodcast = () => {
       const p = this.state.thePodcast 
       const podcastHtml = []
       podcastHtml.push(
@@ -151,7 +150,7 @@ class Podcast extends Component {
       return podcastHtml
     }
 
-    loadEpisodes(p) {
+    loadEpisodes = (p) => {
       console.log(p)
       let ep = p
       const episodeList = []
@@ -182,7 +181,7 @@ class Podcast extends Component {
     }  
 */
 
-    async componentDidMount() {
+    componentDidMount = async () => {
       this.setState({loading: true})
       let ids = await this.fetchAllSwcIds()
       let p = await this.loadPodcasts(ids)
@@ -198,7 +197,7 @@ class Podcast extends Component {
 
     }
 
-    render() {
+    render = () => {
         return(
           <div>
             {this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null }
@@ -210,6 +209,7 @@ class Podcast extends Component {
         )
     }
 
-}
+  }
+
 
 export default Podcast
