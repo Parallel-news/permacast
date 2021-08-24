@@ -64,25 +64,26 @@ class Podcast extends Component {
       return data_arr
     }
   
-    loadPodcasts = async (tx) => {
-      let podcastList = []
-      for (let i in tx) {
-        try {
-        let thisPodcast = await readContract(arweave, tx[i])
-        console.log(thisPodcast)
-        podcastList.push(thisPodcast.podcasts)
-        } catch {
-          console.log('podcast does not exist, or is just not mined yet')
-        }
+  loadPodcasts = async () => {
+    let podcastList = []
+    let creatorsContracts = await this.fetchAllSwcIds()
+
+    for (let contract of creatorsContracts) {
+
+      try {
+      let thisPodcast = await readContract(arweave, contract)
+
+      for (let podcastObject of thisPodcast.podcasts) {
+        podcastList.push(podcastObject)
       }
-      console.log(podcastList)
-
-      let podcasts = podcastList.filter(
-        obj => !(obj && Object.keys(obj).length === 0)
-      )
-
-      return podcasts
+        
+      } catch {
+        console.log('podcast does not exist, or is just not mined yet')
+      }
     }
+    console.log(podcastList)
+    return podcastList
+  }
   
 
     getPodcast = async (p) => {
@@ -90,32 +91,20 @@ class Podcast extends Component {
         obj => !(obj && Object.keys(obj).length === 0)
       )
         let id = this.props.match.params.podcastId;
-        let podcast = this.findPodcastById(podcasts, id)
+        let podcast = this._findPodcastById(podcasts, id)
         console.log(podcast)
         return podcast
     }
 
-    findPodcastById = (podcastsList, id) => {
-      let match
+    _findPodcastById = (podcastsList, id) => {
 
       let pList = podcastsList.filter(
         obj => !(obj && Object.keys(obj).length === 0)
       )
 
-      let podcasts = pList
-        console.log(podcasts)
-
-      for (let podcast of podcasts) {
-        let p = podcast.flat()
-        console.log(p)
-          for (let j in p) {
-            console.log(p[j])
-            if (p[j].pid === id) {
-              match = p[j]
-            }
-          }
-          return match
-      }
+      const match = pList.find(podcast => podcast.pid === id)
+      return match
+    }
 
      // let p = podcasts.find(podcastId => Object.values(podcasts).pid === podcastId)
      // console.log(p)
