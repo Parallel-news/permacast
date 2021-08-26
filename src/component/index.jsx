@@ -22,8 +22,8 @@ const queryObject = {
     `query {
 transactions(
 tags: [
-    { name: "Contract-Src", values: "3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0"},
-    { name: "Protocol", values: "permacast-testnet-v2"}
+    { name: "Contract-Src", values: "Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE"},
+    { name: "Protocol", values: "permacast-testnet-v3"}
 
     ]
 first: 1000000

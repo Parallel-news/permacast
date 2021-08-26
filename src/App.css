@@ -75,3 +75,17 @@ audio {
   /*border-color: gray !important;*/
   border-width: 2px !important;
 }
+
+.swal-modal {
+  font-family: monospace;
+}
+
+.swal-button--confirm {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.swal-button--confirm:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}

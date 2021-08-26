@@ -3,6 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import Arweave from 'arweave'
 import { readContract, interactWrite, interactWriteDryRun, createContractFromTx } from 'smartweave'
 import ArDB from 'ardb';
+import swal from 'sweetalert';
 
 const arweave = Arweave.init({
   host: "arweave.net",
@@ -13,7 +14,7 @@ const arweave = Arweave.init({
 });
 
 const ardb = new ArDB(arweave)
-const masterContract = "3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0"
+const masterContract = "3-mBKpDjBTzmRWiQ8U0rtW5oe6gKy6IQYFh7qDsOd4-0"
 
 export default function UploadShow()  {
     let finalShowObj = {} 
@@ -24,7 +25,7 @@ export default function UploadShow()  {
       const jwk = JSON.parse(sessionStorage.getItem('arweaveWallet'))
       const tx = await arweave.createTransaction({data: initialState}, jwk)
     
-      tx.addTag("Protocol", "permacast-testnet-v2")
+      tx.addTag("Protocol", "permacast-testnet-v3")
       tx.addTag("Action", "launchCreator")
       tx.addTag("App-Name", "SmartWeaveAction")
       tx.addTag("App-Version", "0.3.0")
@@ -73,8 +74,8 @@ export default function UploadShow()  {
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
       .tag('Action', 'launchCreator')
-      .tag('Protocol', 'permacast-testnet-v2')
-      .tag('Contract-Src', '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0')
+      .tag('Protocol', 'permacast-testnet-v3')
+      .tag('Contract-Src', 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE')
       .find()
       }
       console.log(tx)
@@ -117,8 +118,10 @@ export default function UploadShow()  {
                 finalShowObj = showObj;
                 console.log(finalShowObj)
                 uploadShow(finalShowObj)
+                setShow(false)
+                swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
               } else {
-                console.log(response)
+                swal('Unable to add show', 'Check your wallet balance and network connection', 'danger')
               }
             });
           });

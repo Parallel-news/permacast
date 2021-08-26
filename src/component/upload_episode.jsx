@@ -5,7 +5,7 @@ import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
 
-const masterContract = '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0'
+const masterContract = 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE'
 
 const arweave = Arweave.init({
     host: "arweave.net",
@@ -58,16 +58,19 @@ export default class UploadEpisode extends Component {
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
-                  epObj.media = tx.id
+                  epObj.audio = tx.id
                   console.log(tx.id)
+                  this.uploadShow(epObj)
                   event.target.reset()
-                  swal('Success', 'Episode uploaded permanently to Arweave', 'success')
+                  swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
+              } else {
+                  swal('Upload failed', 'Check your AR balance and network connection', 'danger')
               }
             });
           });
         });
         console.log(epObj)
-        await this.uploadShow(epObj)
+        //await this.uploadShow(epObj)
       }
     }
   
@@ -76,6 +79,7 @@ export default class UploadEpisode extends Component {
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
+        epObj.index = this.props.podcast.pid
         let episodeFile = event.target.episodeMedia.files[0]
         let fileType = episodeFile.type
         console.log(fileType)
@@ -92,8 +96,8 @@ export default class UploadEpisode extends Component {
         .from(addr)
         .tag('App-Name', 'SmartWeaveAction')
         .tag('Action', 'launchCreator')
-        .tag('Protocol', 'permacast-testnet-v2')
-        .tag('Contract-Src', '3-mBKpDjBTzmRWiQ8U0rtW5oe6Ky6IQYFh7qDsOd4-0')
+        .tag('Protocol', 'permacast-testnet-v3')
+        .tag('Contract-Src', 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE')
         .find()
         }
         return tx[0]['node']['id']
@@ -104,13 +108,14 @@ export default class UploadEpisode extends Component {
         const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
          theContractId = await this.getSwcId()
          console.log(theContractId)
-  
+        console.log(show)
         let input = {
           'function': 'addEpisode',
-          'pid': show.pid,
+          'podcast': this.props.podcast.pid,
+          'index': this.props.podcast.episodes.length,
           'name': show.name,
           'desc': show.desc,
-          'audio': show.media
+          'audio': show.audio
         }
 
         console.log(input)
@@ -138,6 +143,11 @@ export default class UploadEpisode extends Component {
         return x;
       }
       
+      calculateUploadFee = (file) => {
+        console.log('fee reached')
+        let fee  = 0.0124 * (file.size / 1024 / 1024).toFixed(4)
+        this.setState({showUploadFee: fee})
+      }
 
     render() {
         
@@ -161,7 +171,8 @@ export default class UploadEpisode extends Component {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 <Form.Label>Audio file</Form.Label>
-                <Form.Control className="audio-input" required type="file" name="episodeMedia"/>
+                <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
+                {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
                 <Button
                   type="submit"
