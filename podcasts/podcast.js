@@ -70,6 +70,7 @@ export async function handle(state, action) {
 
 		podcasts.push( {
 			"pid": pid,
+			"index": _getPodcastIndex(), // id equals the index of the podacast obj in the podcasts array
 			"podcastName": name,
 			"description": desc,
 			"cover": cover,
@@ -132,6 +133,7 @@ export async function handle(state, action) {
 
 		podcasts[index]["episodes"].push({
 			"eid": SmartWeave.transaction.id, // episode TXID
+			"childOf": index,
 			"episodeName": name,
 			"description": desc,
 			"audioTx": audio,
@@ -386,6 +388,16 @@ export async function handle(state, action) {
 
 		return { state }
 	}
+	
+	// HELPER FUNCTIONS:
+	function _getPodcastIndex() {
+		if (podcasts.length === 0) {
+			return 0
+		}
+
+		return (podcasts.length - 1 )
+	}
+
 
 	throw new ContractError(`unknow function supplied: '${input.function}'`)
 
