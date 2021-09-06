@@ -4,17 +4,6 @@ import './App.css';
 import Header from './component/navbar.jsx'
 import Podcast from './component/podcast.jsx'
 import Index from './component/index.jsx'
-import { readContract } from 'smartweave'
-import Arweave from 'arweave'
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
-
 
 export default class App extends Component {
 

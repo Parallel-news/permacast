@@ -2,41 +2,7 @@ import { React, Component } from 'react'
 import { CardColumns, Container } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import { readContract } from 'smartweave'
-import Arweave from 'arweave'
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
-
-// -8KJxT3RguaST3dtqdjANFWykPAPtER6uZE_LBDpOb8
-////    { name: "Protocol", values: "permacast-testnet-v0"}
-
-//let podcasts = []
-
-const queryObject = {
-  query: 
-    `query {
-transactions(
-tags: [
-    { name: "Contract-Src", values: "Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE"},
-    { name: "Protocol", values: "permacast-testnet-v3"}
-
-    ]
-first: 1000000
-) {
-edges {
-  node {
-    id
-  }
-}
-}
-}
-`
-}
+import { queryObject, arweave } from '../utils/arweave.js'
 
 class Index extends Component {
 
@@ -56,7 +22,6 @@ class Index extends Component {
     });
 
     const json = await response.json();
-    console.log(json)
     const data_arr = [];
 
     const res_arr = json["data"]["transactions"]["edges"];
@@ -104,7 +69,6 @@ class Index extends Component {
             />
             </>
           ) 
-            console.log('blank podcast')
         }
 
         return html
@@ -119,7 +83,7 @@ class Index extends Component {
       let podcasts = await this.renderPodcasts(this.state.podcasts)
       this.setState({podcastHtml: podcasts}) 
       if ( this.state.podcastHtml.length < 1 ) {
-      //  this.setState({noPodcasts: true})
+        this.setState({noPodcasts: true})
       }
       this.setState({loading: false})
     }

@@ -8,6 +8,7 @@
     "@testing-library/user-event": "^12.1.10",
     "ardb": "^1.0.8",
     "arweave": "^1.10.16",
+    "arweave-multihost": "^0.1.0",
     "bootstrap": "^4.6.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",

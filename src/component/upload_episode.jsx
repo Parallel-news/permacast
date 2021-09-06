@@ -1,19 +1,9 @@
 import { React, Component } from 'react'
 import { Col, Container, Button, Form, Card } from 'react-bootstrap'
-import Arweave from 'arweave'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
-
-const masterContract = 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE'
-
-const arweave = Arweave.init({
-    host: "arweave.net",
-    port: 443,
-    protocol: "https",
-    timeout: 100000,
-    logging: false,
-  });
+import { CONTRACT_SRC, arweave } from '../utils/arweave.js' 
 
 const ardb = new ArDB(arweave)
 
@@ -63,6 +53,7 @@ export default class UploadEpisode extends Component {
                   this.uploadShow(epObj)
                   event.target.reset()
                   swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
+                  this.setState({showUploadFee: null})
               } else {
                   swal('Upload failed', 'Check your AR balance and network connection', 'danger')
               }
@@ -79,7 +70,7 @@ export default class UploadEpisode extends Component {
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
-        epObj.index = this.props.podcast.pid
+        epObj.index = this.props.podcast.index
         let episodeFile = event.target.episodeMedia.files[0]
         let fileType = episodeFile.type
         console.log(fileType)
@@ -97,7 +88,7 @@ export default class UploadEpisode extends Component {
         .tag('App-Name', 'SmartWeaveAction')
         .tag('Action', 'launchCreator')
         .tag('Protocol', 'permacast-testnet-v3')
-        .tag('Contract-Src', 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE')
+        .tag('Contract-Src', CONTRACT_SRC)
         .find()
         }
         return tx[0]['node']['id']
@@ -111,8 +102,7 @@ export default class UploadEpisode extends Component {
         console.log(show)
         let input = {
           'function': 'addEpisode',
-          'podcast': this.props.podcast.pid,
-          'index': this.props.podcast.episodes.length,
+          'index': this.props.podcast.index,
           'name': show.name,
           'desc': show.desc,
           'audio': show.audio
@@ -120,7 +110,7 @@ export default class UploadEpisode extends Component {
 
         console.log(input)
   
-        let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+        let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
         let test = await interactWrite(arweave, wallet, theContractId, input, tags)
         console.log(test)
       }
@@ -133,7 +123,7 @@ export default class UploadEpisode extends Component {
               x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
           }
         } else {
-          var e = parseInt(x.toString().split('+')[1]);
+          e = parseInt(x.toString().split('+')[1]);
           if (e > 20) {
               e -= 20;
               x /= Math.pow(10,e);

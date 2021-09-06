@@ -1,39 +1,9 @@
 import { React, Component } from 'react'
-import { Button } from 'react-bootstrap'
+import { Container, Button } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import { readContract } from 'smartweave'
-import Arweave from 'arweave'
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
-
-
-const queryObject = {
-  query: 
-    `query {
-transactions(
-tags: [
-    
-    { name: "Contract-Src", values: "Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE"},
-  
-    ]
-first: 1000000
-) {
-edges {
-  node {
-    id
-  }
-}
-}
-}
-`
-}
+import { arweave, queryObject } from '../utils/arweave.js'
 
 class Podcast extends Component {
 
@@ -156,13 +126,16 @@ class Podcast extends Component {
       const episodeList = []
       for (let i in ep) {
         let e = ep[i]
+        console.log(e)
         episodeList.push(
           <div>
-            <p>{e.episodeName}</p>
+            <Container>
+            <h5>{e.episodeName}</h5>
             <p>{e.description}</p>
             <audio controls>
               <source src={`https://arweave.net/${e.audioTx}`} type="audio/mp3"/>
             </audio>
+            </Container>
           </div>
         )
       }

@@ -1,20 +1,11 @@
 import { React, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
-import Arweave from 'arweave'
-import { readContract, interactWrite, interactWriteDryRun, createContractFromTx } from 'smartweave'
+import { interactWrite } from 'smartweave'
 import ArDB from 'ardb';
 import swal from 'sweetalert';
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
+import { CONTRACT_SRC, arweave } from '../utils/arweave.js'
 
 const ardb = new ArDB(arweave)
-const masterContract = "3-mBKpDjBTzmRWiQ8U0rtW5oe6gKy6IQYFh7qDsOd4-0"
 
 export default function UploadShow()  {
     let finalShowObj = {} 
@@ -29,7 +20,7 @@ export default function UploadShow()  {
       tx.addTag("Action", "launchCreator")
       tx.addTag("App-Name", "SmartWeaveAction")
       tx.addTag("App-Version", "0.3.0")
-      tx.addTag("Contract-Src", masterContract)
+      tx.addTag("Contract-Src", CONTRACT_SRC)
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
     
@@ -75,7 +66,7 @@ export default function UploadShow()  {
       .tag('App-Name', 'SmartWeaveAction')
       .tag('Action', 'launchCreator')
       .tag('Protocol', 'permacast-testnet-v3')
-      .tag('Contract-Src', 'Yi5WAFCNt8w8TS20K5qs1XItwcXzVJqD3pAE-cgnlRE')
+      .tag('Contract-Src', CONTRACT_SRC)
       .find()
       }
       console.log(tx)

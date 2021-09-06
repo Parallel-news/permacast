@@ -2550,6 +2550,14 @@
   "resolved" "https://registry.npmjs.org/articles/-/articles-0.2.2.tgz"
   "version" "0.2.2"
 
+"arweave-multihost@^0.1.0":
+  "integrity" "sha512-biIkzQ3oc4RLV1MORQnqWz51IazP++K/8SsYMjUokK0cUfBLqom4pufKFCjTkGQIZMWWanXxnZqL66hHPgTCgA=="
+  "resolved" "https://registry.npmjs.org/arweave-multihost/-/arweave-multihost-0.1.0.tgz"
+  "version" "0.1.0"
+  dependencies:
+    "arweave" "^1.10.15"
+    "axios" "^0.21.1"
+
 "arweave@^1.10.11", "arweave@^1.10.13", "arweave@^1.10.15", "arweave@^1.10.16":
   "integrity" "sha512-j2UM7C/2MHO7Mv7wbzhihgVs8uN2+QltA+3cYaM82dNNEBBJylIClJUHHMqsK/2ejCnziQm4FofiUFbsQDdQDg=="
   "resolved" "https://registry.npmjs.org/arweave/-/arweave-1.10.16.tgz"
