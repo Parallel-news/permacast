@@ -1,19 +1,9 @@
 import { React, Component } from 'react'
 import { Col, Container, Button, Form, Card } from 'react-bootstrap'
-import Arweave from 'arweave'
-import Dropzone from 'react-dropzone'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
-
-const masterContract = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
-
-const arweave = Arweave.init({
-    host: "arweave.net",
-    port: 443,
-    protocol: "https",
-    timeout: 100000,
-    logging: false,
-  });
+import swal from 'sweetalert'
+import { CONTRACT_SRC, arweave } from '../utils/arweave.js' 
 
 const ardb = new ArDB(arweave)
 
@@ -43,13 +33,14 @@ export default class UploadEpisode extends Component {
     processFile = async (file) => {
         try {
           let contentBuffer = await this.readFileAsync(file);
+          console.log(contentBuffer)
           return contentBuffer
         } catch(err) {
           console.log(err);
         }
       }
 
-    uploadToArweave = async (data, fileType, epObj) => {
+    uploadToArweave = async (data, fileType, epObj, event) => {
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
@@ -57,23 +48,34 @@ export default class UploadEpisode extends Component {
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
-                  epObj.media = tx.id
-                  console.log(epObj)
+                  epObj.audio = tx.id
+                  console.log(tx.id)
+                  this.uploadShow(epObj)
+                  event.target.reset()
+                  swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
+                  this.setState({showUploadFee: null})
+              } else {
+                  swal('Upload failed', 'Check your AR balance and network connection', 'danger')
               }
             });
           });
         });
+        console.log(epObj)
+        //await this.uploadShow(epObj)
       }
     }
   
     handleEpisodeUpload = async (event) => {
-       const fileType = this.state.fileType
        let epObj = {}
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
-       this.processFile(this.state.files[0]).then((file) => {
-           this.uploadToArweave(file, fileType, epObj)
+        epObj.index = this.props.podcast.index
+        let episodeFile = event.target.episodeMedia.files[0]
+        let fileType = episodeFile.type
+        console.log(fileType)
+        this.processFile(episodeFile).then((file) => {
+           this.uploadToArweave(file, fileType, epObj, event)
        })
        }
 
@@ -85,35 +87,33 @@ export default class UploadEpisode extends Component {
         .from(addr)
         .tag('App-Name', 'SmartWeaveAction')
         .tag('Action', 'launchCreator')
-        .tag('Protocol', 'permacast-testnet-v0')
-        .tag('Contract-Src', 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4')
+        .tag('Protocol', 'permacast-testnet-v3')
+        .tag('Contract-Src', CONTRACT_SRC)
         .find()
         }
-      console.log(tx)
+        return tx[0]['node']['id']
       }
 
     uploadShow = async (show) => {
-        //let id
+        let theContractId
         const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
-        //id = !localStorage.getItem('swcId') && getSwcId()
-        //if (!id) {
-        //  id = createContractFromTx(arweave, wallet, masterContract, '')
-        //  localStorage.setItem('swcId', id)
-        //console.log(`swcId is ${id}`)
-        //}
-  
+         theContractId = await this.getSwcId()
+         console.log(theContractId)
+        console.log(show)
         let input = {
-          'function': 'createPodcast',
+          'function': 'addEpisode',
+          'index': this.props.podcast.index,
           'name': show.name,
           'desc': show.desc,
-          'cover': show.cover
+          'audio': show.audio
         }
+
+        console.log(input)
   
-        let tags = { "Contract-Src": masterContract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, wallet, masterContract, input, tags)
+        let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+        let test = await interactWrite(arweave, wallet, theContractId, input, tags)
         console.log(test)
       }
-  
     
       toFixed(x) {
         if (Math.abs(x) < 1.0) {
@@ -123,7 +123,7 @@ export default class UploadEpisode extends Component {
               x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
           }
         } else {
-          var e = parseInt(x.toString().split('+')[1]);
+          e = parseInt(x.toString().split('+')[1]);
           if (e > 20) {
               e -= 20;
               x /= Math.pow(10,e);
@@ -133,11 +133,16 @@ export default class UploadEpisode extends Component {
         return x;
       }
       
+      calculateUploadFee = (file) => {
+        console.log('fee reached')
+        let fee  = 0.0124 * (file.size / 1024 / 1024).toFixed(4)
+        this.setState({showUploadFee: fee})
+      }
 
     render() {
         
         const podcast = this.props.podcast
-        const podcastName = podcast.name
+        const podcastName = podcast.podcastName
         
         return(
             <div>
@@ -155,22 +160,9 @@ export default class UploadEpisode extends Component {
                     <Form.Control required as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
-                
-                <Dropzone accept="audio/mp3" onDrop={acceptedFiles => this.setState({files: acceptedFiles, fileType: acceptedFiles[0].type, dropped: true})}>
-                    {({getRootProps, getInputProps, isDragReject, isDragAccept}) => (
-                        <section>
-                            <div {...getRootProps()}>
-                             <input {...getInputProps()} />
-                             {(isDragReject && !isDragAccept) ? "⚠️ Only mp3 audio files accepted" :
-                             <Card className="dropzone-border p-2"><span className="text-gray">{ !this.state.dropped ? <p>⬆️ Drop your podcast's audio file here</p> : <p>✅ File added. Cost to upload to Arweave ~{0.00052 * (this.state.files[0].size / 1000000).toFixed(3)}</p>}</span></Card>
-                                }
-                            </div>
-                        </section>
-                     )}
-                </Dropzone>
-
-               { /*    <Form.Label>Audio file</Form.Label>
-                    <Form.Control className="audio-input" required type="file" name="episodeMedia"/> */ }
+                <Form.Label>Audio file</Form.Label>
+                <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
+                {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
                 <Button
                   type="submit"

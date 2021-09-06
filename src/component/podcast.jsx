@@ -1,19 +1,9 @@
 import { React, Component } from 'react'
-import { Button } from 'react-bootstrap'
+import { Container, Button } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import { readContract } from 'smartweave'
-import Arweave from 'arweave'
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
-
-let podcast
+import { arweave, queryObject } from '../utils/arweave.js'
 
 class Podcast extends Component {
 
@@ -25,21 +15,77 @@ class Podcast extends Component {
         }
     }
 
-    getPodcast = async () => {
+    fetchAllSwcIds = async () => {
+      const response = await fetch("https://arweave.net/graphql", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(queryObject),
+      });
+  
+      const json = await response.json();
+      console.log(json)
+      const data_arr = [];
+  
+      const res_arr = json["data"]["transactions"]["edges"];
+  
+      for (let element in Object.values(res_arr)) {
+        data_arr.push(res_arr[element]["node"]["id"])
+      }
+      return data_arr
+    }
+  
+  loadPodcasts = async () => {
+    let podcastList = []
+    let creatorsContracts = await this.fetchAllSwcIds()
+
+    for (let contract of creatorsContracts) {
+
+      try {
+      let thisPodcast = await readContract(arweave, contract)
+
+      for (let podcastObject of thisPodcast.podcasts) {
+        podcastList.push(podcastObject)
+      }
+        
+      } catch {
+        console.log('podcast does not exist, or is just not mined yet')
+      }
+    }
+    console.log(podcastList)
+    return podcastList
+  }
+  
+
+    getPodcast = async (p) => {
+      let podcasts = p.filter(
+        obj => !(obj && Object.keys(obj).length === 0)
+      )
         let id = this.props.match.params.podcastId;
-        let podcasts = await this.loadPodcasts()
-        let podcastsWithId = this.linkValues(podcasts)
-        let podcast = this.findPodcastById(podcastsWithId, id)
+        let podcast = this._findPodcastById(podcasts, id)
+        console.log(podcast)
         return podcast
     }
 
-    findPodcastById = (podcasts, id) => {
-      for (var i=0, iLen=podcasts.length; i<iLen; i++) {
-        if (podcasts[i].id === id)
-        console.log(podcasts[i])
-          return podcasts[i];
-        }
+    _findPodcastById = (podcastsList, id) => {
+
+      let pList = podcastsList.filter(
+        obj => !(obj && Object.keys(obj).length === 0)
+      )
+
+      const match = pList.find(podcast => podcast.pid === id)
+      return match
     }
+
+     // let p = podcasts.find(podcastId => Object.values(podcasts).pid === podcastId)
+     // console.log(p)
+      /*
+      let p = podcasts.podcasts
+      for (var i=0, iLen=p.length; i<iLen; i++) {
+        if (p[i].id === id)
+        console.log(p[i])
+          return p[i];
+        }
+        */
 
     linkValues = (podcast) => {
       let p = podcast.podcasts
@@ -58,7 +104,7 @@ class Podcast extends Component {
     }
     
 
-    loadPodcast() {
+    loadPodcast = () => {
       const p = this.state.thePodcast 
       const podcastHtml = []
       podcastHtml.push(
@@ -74,19 +120,22 @@ class Podcast extends Component {
       return podcastHtml
     }
 
-    loadEpisodes(p) {
+    loadEpisodes = (p) => {
       console.log(p)
       let ep = p
       const episodeList = []
       for (let i in ep) {
         let e = ep[i]
+        console.log(e)
         episodeList.push(
           <div>
-            <p>{e.episodeName}</p>
+            <Container>
+            <h5>{e.episodeName}</h5>
             <p>{e.description}</p>
             <audio controls>
               <source src={`https://arweave.net/${e.audioTx}`} type="audio/mp3"/>
             </audio>
+            </Container>
           </div>
         )
       }
@@ -97,35 +146,43 @@ class Podcast extends Component {
       this.setState({showEpisodeForm: true})
 
     }
-
-    loadPodcasts = async () => {
-      const swcId = 'vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4'
+/*
+    loadPodcasts = async (id) => {
+      const swcId = id
       let res = await readContract(arweave, swcId)
       return res
     }  
+*/
 
-    async componentDidMount() {
-      let p = await this.loadPodcasts()
+    componentDidMount = async () => {
+      this.setState({loading: true})
+      let ids = await this.fetchAllSwcIds()
+      let p = await this.loadPodcasts(ids)
       this.setState({podcast: p})
-      this.setState({thePodcast: await this.getPodcast()})
+      this.setState({thePodcast: await this.getPodcast(p)})
+      console.log(this.state)
       let podcastHtml = this.loadPodcast(this.state.thePodcast)
+      
       this.setState({podcastHtml: podcastHtml})
       let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
       this.setState({podcastEpisodes: podcastEpisodes})
+      this.setState({loading: false})
 
     }
 
-    render() {
+    render = () => {
         return(
           <div>
-            {/*this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null*/}
-            {/*this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null*/}
+            {this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null }
+            {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null }
+            {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
             {this.state.podcastHtml}
             {this.state.podcastEpisodes}
           </div>
         )
     }
 
-}
+  }
+
 
 export default Podcast

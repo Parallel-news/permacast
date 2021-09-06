@@ -2,40 +2,7 @@ import { React, Component } from 'react'
 import { CardColumns, Container } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import { readContract } from 'smartweave'
-import Arweave from 'arweave'
-
-const arweave = Arweave.init({
-  host: "arweave.net",
-  port: 443,
-  protocol: "https",
-  timeout: 100000,
-  logging: false,
-});
-
-const queryObject = {
-  query: 
-    `query {
-transactions(
-tags: [
-
-    { name: "Contract-Src", values: "vR4pdVS3nSCHMbUMegz1Ll-O1n_4Gs-hZkd4mi0UZS4"},
-    { name: "Action", values: "launchCreator"},
-    { name: "Protocol", values: "permacast-testnet-v0"}
-  
-    ]
-first: 1000000
-) {
-edges {
-  node {
-    id
-  }
-}
-}
-}
-`
-}
-
-let podcasts
+import { queryObject, arweave } from '../utils/arweave.js'
 
 class Index extends Component {
 
@@ -66,90 +33,63 @@ class Index extends Component {
   }
 
   loadPodcasts = async () => {
-    let tx
     let podcastList = []
-    let swcIds = await this.fetchAllSwcIds()
-    tx = await this.getStates(swcIds)
-    console.log(tx)
-    for (let i in tx) {
-      console.log('about to break:')
-      console.log(tx[i])
-      let thisPodcast = await readContract(arweave, tx[i].pid)
-      console.log(thisPodcast)
-      podcastList.push(thisPodcast.podcasts)
+    let creatorsContracts = await this.fetchAllSwcIds()
+
+    for (let contract of creatorsContracts) {
+
+      try {
+      let thisPodcast = await readContract(arweave, contract)
+
+      for (let podcastObject of thisPodcast.podcasts) {
+        podcastList.push(podcastObject)
+      }
+        
+      } catch {
+        console.log('podcast does not exist, or is just not mined yet')
+      }
     }
+    console.log(podcastList)
     return podcastList
   }
 
-    linkValues = (podcast) => {
-      let p = podcast
-      const keys = Object.keys(p)
-      const values =  Object.values(p)
-      const resultArr = []
-    
-      for ( let i = 0 ; i < keys.length ; i++) {
-        const currentValues = values[i]
-        const currentKey = keys[i]
-        currentValues["pid"] = currentKey
-        resultArr.push(currentValues)
-    
-      }
-      return resultArr
-    }
-   
-    
-    getStates = async (ids) => {
-      const data = []
-      for (let swc of ids) {
-        const tx = await readContract(arweave, swc) // sm is just a browserified web bundle for smartweave-ja
-        console.log(tx)
-        const txObj = (Object.values(tx)[0])
-        const state = Object.values(txObj)
-        state[0]["pid"] = swc
-    
-        data.push(state[0])
-      }
-    
-      return data
-    }
+  renderPodcasts = async (podcasts) => {
+        let html = []
 
-    podcasts = async () => {
-        let podcast = this.state.podcasts.filter(
-          obj => !(obj && Object.keys(obj).length === 0)
-        )
-        //this.linkValues(this.state.podcasts)
-        const podcasts = []
-        for (let i in podcast) {
-          let p = podcast[i];
-          podcasts.push(
+        for (let podcast of podcasts) {
+          console.log(podcast)
+          let p = podcast
+          html.push(
             <>
             <PodcastHtml
             name={p.podcastName}
             link={p.pid}
             description={p.description}
             image={`https://arweave.net/${p.cover}`}
-            media={p.media}
             />
             </>
           ) 
         }
-        return podcasts
+
+        return html
     }
 
     async componentDidMount() {
       this.setState({loading: true})
       this.setState({noPodcasts: false})
-      let p = await this.loadPodcasts()
-      this.setState({podcasts: p})
-      podcasts = await this.podcasts(this.state.p)
-      this.setState({podcastHtml: podcasts})
+      let pArrays = await this.loadPodcasts()  
+      let p = pArrays.flat()
+      this.setState({podcasts: p}) 
+      let podcasts = await this.renderPodcasts(this.state.podcasts)
+      this.setState({podcastHtml: podcasts}) 
       if ( this.state.podcastHtml.length < 1 ) {
-      //  this.setState({noPodcasts: true})
+        this.setState({noPodcasts: true})
       }
       this.setState({loading: false})
     }
 
     render() {
+      const podcasts = this.state.podcastHtml
         return( 
           <>
           <Container className="mt-5">
@@ -160,7 +100,7 @@ class Index extends Component {
           </Container>
           <div>
           <CardColumns>
-            {this.state.podcastHtml}
+            {podcasts}
           </CardColumns>
           </div>
           </>
