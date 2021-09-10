@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom'
 import UploadShow from './upload_show.jsx'
 import WalletLoader from './wallet_loader.jsx'
 import Swal from 'sweetalert2'
+import ArConnectLoader from './arconnect_loader'
 
 export default function Header() {
 
@@ -37,7 +38,7 @@ export default function Header() {
                 <Row className="flex-row">
                   <Button onClick={() => loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-4">What's coming 🔮</Button>
                  { sessionStorage.getItem("arweaveWallet") ? <UploadShow/> : null }
-                  <WalletLoader/>
+                  <ArConnectLoader/>
                 </Row>
             </Navbar.Text>
             </div>
