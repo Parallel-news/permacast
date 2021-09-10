@@ -102,6 +102,7 @@ export default function UploadShow()  {
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
           tx.addTag("Content-Type", fileType);
+          tx.reward = tx.reward * 2;
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {

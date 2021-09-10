@@ -1,8 +1,12 @@
 import { React, Component } from 'react'
-import { Container, Button } from 'react-bootstrap'
+import { Container, Button, Row, Col } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import { readContract } from 'smartweave'
+import 'shikwasa/dist/shikwasa.min.css'
+import swal from 'sweetalert'
+import Shikwasa from 'shikwasa'
+import { FaPlay } from 'react-icons/fa';
 import { arweave, queryObject } from '../utils/arweave.js'
 
 class Podcast extends Component {
@@ -112,6 +116,7 @@ class Podcast extends Component {
             <PodcastHtml
             link={p.pid}
             name={p.podcastName}
+            titleClass={'h2'}
             description={p.description}
             image={`https://arweave.net/${p.cover}`}
             />
@@ -129,13 +134,15 @@ class Podcast extends Component {
         console.log(e)
         episodeList.push(
           <div>
-            <Container>
-            <h5>{e.episodeName}</h5>
-            <p>{e.description}</p>
-            <audio controls>
-              <source src={`https://arweave.net/${e.audioTx}`} type="audio/mp3"/>
-            </audio>
-            </Container>
+              <Row className="p-1 m-2 align-items-center episode-row">
+                <Col md="auto">
+                  <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <FaPlay/> </Button>
+                </Col>
+                <Col md="auto">
+                  <div>{e.episodeName}</div>
+                </Col>
+                <Col>{this.truncatedDesc(e.description, 52)}</Col>
+              </Row>
           </div>
         )
       }
@@ -153,6 +160,37 @@ class Podcast extends Component {
       return res
     }  
 */
+    truncatedDesc = (desc, maxLength) => {
+      if (desc.length < maxLength) {
+        return <>{desc}</>
+      } else {
+        return <>{desc.substring(0, maxLength)}... <Button variant="link" onClick={() => this.showDesc(desc)}>[read more]</Button></>
+      }
+    }
+
+    showDesc = (desc) => {
+      swal({
+        text: desc,
+        button: 'close'
+      })
+    }
+
+    showPlayer = (e) => {
+      let name = this.state.thePodcast.podcastName
+      let cover = this.state.thePodcast.cover
+      const player = new Shikwasa({
+        container: () => document.querySelector('.podcast-player'),
+        themeColor: 'black',
+        autoplay: true,
+        audio: {
+          title: e.episodeName,
+          artist: name,
+          cover: `https://arweave.net/${cover}`,
+          src: `https://arweave.net/${e.audioTx}`,
+        },
+      })
+      window.scrollTo(0,document.body.scrollHeight)
+    }
 
     componentDidMount = async () => {
       this.setState({loading: true})
@@ -162,12 +200,10 @@ class Podcast extends Component {
       this.setState({thePodcast: await this.getPodcast(p)})
       console.log(this.state)
       let podcastHtml = this.loadPodcast(this.state.thePodcast)
-      
       this.setState({podcastHtml: podcastHtml})
       let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
       this.setState({podcastEpisodes: podcastEpisodes})
       this.setState({loading: false})
-
     }
 
     render = () => {
@@ -177,7 +213,8 @@ class Podcast extends Component {
             {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null }
             {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
             {this.state.podcastHtml}
-            {this.state.podcastEpisodes}
+            <Container className="episodes-container">{this.state.podcastEpisodes}</Container>
+            <div className="podcast-player"/>
           </div>
         )
     }

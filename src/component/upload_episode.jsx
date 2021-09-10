@@ -45,6 +45,7 @@ export default class UploadEpisode extends Component {
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
           tx.addTag("Content-Type", fileType);
+          tx.reward = tx.reward * 2;
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
@@ -55,7 +56,7 @@ export default class UploadEpisode extends Component {
                   swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
                   this.setState({showUploadFee: null})
               } else {
-                  swal('Upload failed', 'Check your AR balance and network connection', 'danger')
+                  swal('Upload failed', 'Check your AR balance and network connection', 'error')
               }
             });
           });

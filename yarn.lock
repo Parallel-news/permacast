@@ -9662,6 +9662,11 @@
   "resolved" "https://registry.npmjs.org/react-error-overlay/-/react-error-overlay-6.0.9.tgz"
   "version" "6.0.9"
 
+"react-icons@^4.2.0":
+  "integrity" "sha512-rmzEDFt+AVXRzD7zDE21gcxyBizD/3NqjbX6cmViAgdqfJ2UiLer8927/QhhrXQV7dEj/1EGuOTPp7JnLYVJKQ=="
+  "resolved" "https://registry.npmjs.org/react-icons/-/react-icons-4.2.0.tgz"
+  "version" "4.2.0"
+
 "react-is@^16.3.2", "react-is@^16.6.0", "react-is@^16.7.0", "react-is@^16.8.1":
   "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
@@ -10612,6 +10617,11 @@
   "resolved" "https://registry.npmjs.org/shellwords/-/shellwords-0.1.1.tgz"
   "version" "0.1.1"
 
+"shikwasa@^2.1.2":
+  "integrity" "sha512-w3fGIw6Z/+DDVNNzqNK2p2V3OQiDiqzX+XG3Bj+2HIWolC3HY7khsoGSAkxrXpEafhorxOPNbb7wx727Wjwbuw=="
+  "resolved" "https://registry.npmjs.org/shikwasa/-/shikwasa-2.1.2.tgz"
+  "version" "2.1.2"
+
 "side-channel@^1.0.4":
   "integrity" "sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw=="
   "resolved" "https://registry.npmjs.org/side-channel/-/side-channel-1.0.4.tgz"
@@ -11200,6 +11210,11 @@
   dependencies:
     "es6-object-assign" "^1.1.0"
     "promise-polyfill" "^6.0.2"
+
+"sweetalert2@^11.1.5":
+  "integrity" "sha512-5cfqUK9lLbvxtjzsvORKWj+d3tcgYlzsL60FoJFXE/+mtMa5EJ3tDax9p9MBjVnZ60gQd+WGrqDIrxoNenhUjA=="
+  "resolved" "https://registry.npmjs.org/sweetalert2/-/sweetalert2-11.1.5.tgz"
+  "version" "11.1.5"
 
 "sylvester@>= 0.0.12", "sylvester@>= 0.0.8":
   "integrity" "sha1-KYexzivS84sNzio0OIiEv6RADqc="

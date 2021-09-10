@@ -57,8 +57,20 @@ audio {
 }
 
 .swal-modal {
-  font-family: monospace;
+  font-family: 'monospace';
 }
+
+.swal2-modal {
+  font-family: 'monospace' !important;
+  text-align: left !important;
+  font-size: 1.6ch !important;
+}
+
+.swal2-html-container {
+  text-align: left !important;
+  line-height: 1.5em !important;
+}
+
 
 .swal-button--confirm {
   background-color: #007bff;
@@ -68,4 +80,45 @@ audio {
 .swal-button--confirm:hover {
   background-color: #007bff;
   border-color: #007bff;
+}
+
+.swal2-button--confirm {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.swal2-button--confirm:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+
+.btn:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.play-button {
+  color: black !important;
+}
+
+.episode-row {
+  padding: 1em !important;
+  border-color: black !important;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.episodes-container {
+  align-items: center !important;
+  margin-bottom: 3em !important;
+}
+
+.podcast-player {
+  
+}
+
+.header-icon {
+  width:20px;
+  z-index: 15px !important;
 }

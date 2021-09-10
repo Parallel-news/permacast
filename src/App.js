@@ -4,6 +4,7 @@ import './App.css';
 import Header from './component/navbar.jsx'
 import Podcast from './component/podcast.jsx'
 import Index from './component/index.jsx'
+import PodcastRss from './component/podcast_rss.jsx'
 
 export default class App extends Component {
 
@@ -21,6 +22,7 @@ export default class App extends Component {
           <div className="topBar"><Header/></div>
           <Route exact path="/podcasts/:podcastId" render={({match}) => <Podcast match={match}/> } />
           <Route exact path="/" render={() => <Index/> }/> 
+          <Route exact path="/podcasts/:podcastId/rss" render={({match}) => <PodcastRss match={match}/> }/> 
         </Router>
       </div>
     </div>
