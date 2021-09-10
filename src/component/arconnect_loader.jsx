@@ -1,5 +1,7 @@
 import { React, Component } from 'react'
-import { Navbar, Button, NavLink } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
+import UploadShow from './upload_show.jsx'
+
 import Swal from 'sweetalert2'
 
 export default class Header extends Component {
@@ -20,10 +22,22 @@ export default class Header extends Component {
     })
   }
 
-  arconnectConnect = () => {
+  getAddr = async () => {
+    let addr = await window.arweaveWallet.getActiveAddress()
+    console.log(addr)
+    return addr
+  }
+
+  arconnectConnect = async () => {
+    console.log('clicked connect')
     if (window.arweaveWallet) {
       window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGNATURE', 'SIGN_TRANSACTION'])
       this.setState({walletConnected: true})
+    
+      this.setState({addr: await this.getAddr()})
+      console.log(this.state)
+      localStorage.setItem('walletAddr', JSON.stringify(await this.getAddr()))
+      console.log(localStorage.getItem('walletAddr').length)
     } else {
       this.installArConnectAlert()
     }
@@ -31,14 +45,15 @@ export default class Header extends Component {
 
   arconnectDisconnect = () => {
     window.arweaveWallet.disconnect()
-    this.setState({walletConnected: false}) 
+    this.setState({walletConnected: false})
+    localStorage.setItem('walletAddr', JSON.stringify(null))
   }
 
   render() {
     return (
       <div>
       {this.state.walletConnected ? 
-                 <Button variant="outline-danger" onClick={ () => this.arconnectDisconnect() }>Logout</Button> :
+                 <><UploadShow/> <Button variant="outline-danger" onClick={ () => this.arconnectDisconnect() }>Logout</Button></> :
                  <Button variant="success" onClick={ () => this.arconnectConnect() }>🦔 ArConnect login</Button>
               }
       </div>

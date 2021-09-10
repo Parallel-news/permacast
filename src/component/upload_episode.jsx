@@ -41,16 +41,16 @@ export default class UploadEpisode extends Component {
       }
 
     uploadToArweave = async (data, fileType, epObj, event) => {
-      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"));
+      const wallet = await window.arweaveWallet.getActiveAddress()
       if (!wallet) { return null } else {
-        arweave.createTransaction({ data: data }, wallet).then((tx) => {
+        arweave.createTransaction({ data: data }).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = tx.reward * 2;
-          arweave.transactions.sign(tx, wallet).then(() => {
-            arweave.transactions.post(tx, wallet).then((response) => {
+          tx.reward = (+tx.reward * 2).toString();
+          arweave.transactions.sign(tx).then(() => {
+            arweave.transactions.post(tx).then((response) => {
+              console.log(response)
               if (response.statusText === "OK") {
                   epObj.audio = tx.id
-                  console.log(tx.id)
                   this.uploadShow(epObj)
                   event.target.reset()
                   swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
@@ -61,8 +61,6 @@ export default class UploadEpisode extends Component {
             });
           });
         });
-        console.log(epObj)
-        //await this.uploadShow(epObj)
       }
     }
   
@@ -82,7 +80,7 @@ export default class UploadEpisode extends Component {
 
       getSwcId = async () => {
         let tx
-        const addr = sessionStorage.getItem("wallet_address");
+        const addr = await window.arweaveWallet.getActiveAddress()
         if (!addr) { return null } else {
         tx = await ardb.search('transactions')
         .from(addr)
@@ -97,7 +95,6 @@ export default class UploadEpisode extends Component {
 
     uploadShow = async (show) => {
         let theContractId
-        const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
          theContractId = await this.getSwcId()
          console.log(theContractId)
         console.log(show)
@@ -112,7 +109,7 @@ export default class UploadEpisode extends Component {
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, wallet, theContractId, input, tags)
+        let test = await interactWrite(arweave, 'use_wallet', theContractId, input, tags)
         console.log(test)
       }
     

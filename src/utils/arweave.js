@@ -2,8 +2,8 @@ import ArweaveMultihost from 'arweave-multihost'
 
 export const arweave = ArweaveMultihost.initWithDefaultHosts({
   timeout: 10000,         // Network request timeouts in milliseconds
-  logging: true,          // Enable network request logging
-  logger: console.log,    // Logger function
+  logging: false,          // Enable network request logging
+  logger: null,    // Logger function
   onError: console.error, // On request error callback
 });
 
