@@ -109,7 +109,7 @@ export default class UploadEpisode extends Component {
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, 'use_wallet', theContractId, input, tags)
+        let test = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
         console.log(test)
       }
     

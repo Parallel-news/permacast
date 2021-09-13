@@ -13,8 +13,7 @@ export default function UploadShow()  {
 
     const deployContract = async () => {
       const initialState = `{"podcasts": []}`
-      const jwk = JSON.parse(sessionStorage.getItem('arweaveWallet'))
-      const tx = await arweave.createTransaction({data: initialState}, jwk)
+      const tx = await arweave.createTransaction({data: initialState})
     
       tx.addTag("Protocol", "permacast-testnet-v3")
       tx.addTag("Action", "launchCreator")
@@ -24,7 +23,7 @@ export default function UploadShow()  {
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
     
-      await arweave.transactions.sign(tx, jwk)
+      await arweave.transactions.sign(tx)
       await arweave.transactions.post(tx)
       console.log(tx)
       return tx.id
@@ -55,7 +54,6 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
-      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
       let contractId
       let tx
       const addr = await window.arweaveWallet.getActiveAddress()
@@ -85,10 +83,8 @@ export default function UploadShow()  {
       }
 
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
-      let uploadTxId = await interactWrite(arweave, wallet, contractId, input, tags)
+      let uploadTxId = await interactWrite(arweave, "use_wallet", contractId, input, tags)
       if (uploadTxId) {
-        //window.location(`/${uploadTxId}`)
-        // load the page that their podcast is on, or index
         console.log(uploadTxId)
       } else {
         alert('An error occured.')
