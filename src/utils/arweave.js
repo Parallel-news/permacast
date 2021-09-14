@@ -7,7 +7,10 @@ export const arweave = ArweaveMultihost.initWithDefaultHosts({
   onError: console.error, // On request error callback
 });
 
-export const CONTRACT_SRC = "BBehhFXakigwzVtCe1zQyVJDYCycLVBFrNpQDp1Z1eE"
+//export const CONTRACT_SRC = "BBehhFXakigwzVtCe1zQyVJDYCycLVBFrNpQDp1Z1eE"
+//export const CONTRACT_SRC = "kLQgNvb-4foFzBjzmhfaJKAA2g5tC2_4_7jZLmQiOPE"
+//export const CONTRACT_SRC = "NBNP557Xb91eOYUF1Rljb8uPK5OezZKemzysJptbEaQ"
+export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
 
 export const queryObject = {
   query: 

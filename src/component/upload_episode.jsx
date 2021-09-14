@@ -45,7 +45,7 @@ export default class UploadEpisode extends Component {
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = tx.reward * 2;
+          tx.reward = (+tx.reward * 1).toString();
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
@@ -67,6 +67,8 @@ export default class UploadEpisode extends Component {
     }
   
     handleEpisodeUpload = async (event) => {
+      this.setState({episodeUploading: true})
+      swal('Upload underway...', "We'll let you know when it's done. Go grab a ☕ or 🍺")
        let epObj = {}
        event.preventDefault()
         epObj.name = event.target.episodeName.value
@@ -78,6 +80,7 @@ export default class UploadEpisode extends Component {
         this.processFile(episodeFile).then((file) => {
            this.uploadToArweave(file, fileType, epObj, event)
        })
+       this.setState({episodeUploading: false})
        }
 
       getSwcId = async () => {
@@ -165,6 +168,7 @@ export default class UploadEpisode extends Component {
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
+                {!this.state.episodeUploading ? 
                 <Button
                   type="submit"
                   variant="success"
@@ -173,6 +177,17 @@ export default class UploadEpisode extends Component {
                 >
                   Upload
                 </Button>
+                :
+                <Button
+                  disabled
+                  type="submit"
+                  variant="success"
+                  color="default"
+                  component="span"
+                >
+                  Uploading, please wait...
+                </Button>
+                }
                 </Form>
             </Card>
             </Col>

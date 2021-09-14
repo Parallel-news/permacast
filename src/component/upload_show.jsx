@@ -99,10 +99,11 @@ export default function UploadShow()  {
       console.log('made it here, data is')
       console.log(data)
       const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
+      console.log(wallet)
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }, wallet).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = tx.reward * 2;
+          tx.reward = (+tx.reward * 2).toString();
           arweave.transactions.sign(tx, wallet).then(() => {
             arweave.transactions.post(tx, wallet).then((response) => {
               if (response.statusText === "OK") {
