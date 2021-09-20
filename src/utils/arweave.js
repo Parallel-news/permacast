@@ -2,14 +2,12 @@ import ArweaveMultihost from 'arweave-multihost'
 
 export const arweave = ArweaveMultihost.initWithDefaultHosts({
   timeout: 10000,         // Network request timeouts in milliseconds
-  logging: true,          // Enable network request logging
-  logger: console.log,    // Logger function
+  logging: false,          // Enable network request logging
+  logger: null,    // Logger function
   onError: console.error, // On request error callback
 });
 
 //export const CONTRACT_SRC = "BBehhFXakigwzVtCe1zQyVJDYCycLVBFrNpQDp1Z1eE"
-//export const CONTRACT_SRC = "kLQgNvb-4foFzBjzmhfaJKAA2g5tC2_4_7jZLmQiOPE"
-//export const CONTRACT_SRC = "NBNP557Xb91eOYUF1Rljb8uPK5OezZKemzysJptbEaQ"
 export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
 
 export const queryObject = {

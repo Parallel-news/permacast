@@ -29,6 +29,7 @@ class Index extends Component {
     for (let element in Object.values(res_arr)) {
       data_arr.push(res_arr[element]["node"]["id"])
     }
+    console.log(data_arr)
     return data_arr
   }
 
@@ -59,18 +60,19 @@ class Index extends Component {
         for (let podcast of podcasts) {
           console.log(podcast)
           let p = podcast
-          html.push(
-            <>
-            <PodcastHtml
-            name={p.podcastName}
-            link={p.pid}
-            description={p.description}
-            image={`https://arweave.net/${p.cover}`}
-            />
-            </>
-          ) 
+          if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
+            html.push(
+              <>
+              <PodcastHtml
+              name={p.podcastName}
+              link={p.pid}
+              description={p.description}
+              image={`https://arweave.net/${p.cover}`}
+              />
+              </>
+            ) 
+          }
         }
-
         return html
     }
 

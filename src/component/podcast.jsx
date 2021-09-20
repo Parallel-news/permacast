@@ -19,6 +19,7 @@ class Podcast extends Component {
         }
     }
 
+
     fetchAllSwcIds = async () => {
       const response = await fetch("https://arweave.net/graphql", {
         method: 'POST',
@@ -126,7 +127,6 @@ class Podcast extends Component {
     }
 
     loadEpisodes = (p) => {
-      console.log(p)
       let ep = p
       const episodeList = []
       for (let i in ep) {
@@ -146,14 +146,18 @@ class Podcast extends Component {
               </Row>
           </div>
         )
-        }
-      }
+
+      }}
       return episodeList
     }
 
-    showEpisodeForm = () => {
+    showEpisodeForm = async () => {
+      let addr = await window.arweaveWallet.getActiveAddress()
+      if (addr === this.state.thePodcast.owner) {
       this.setState({showEpisodeForm: true})
-
+      } else {
+        alert('Not the owner of this podcast')
+      }
     }
 /*
     loadPodcasts = async (id) => {
@@ -206,12 +210,14 @@ class Podcast extends Component {
       let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
       this.setState({podcastEpisodes: podcastEpisodes})
       this.setState({loading: false})
+      let addr = await window.arweaveWallet.getActiveAddress()
+      this.setState({addr: addr})
     }
 
-    render = () => {
+    render = () => { 
         return(
           <div>
-            {this.state.thePodcast.owner === sessionStorage.getItem('wallet_address') ? <Button variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button> : null }
+            {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <Button size= "sm" variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button>}
             {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast}/> : null }
             {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
             {this.state.podcastHtml}

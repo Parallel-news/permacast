@@ -13,8 +13,7 @@ export default function UploadShow()  {
 
     const deployContract = async () => {
       const initialState = `{"podcasts": []}`
-      const jwk = JSON.parse(sessionStorage.getItem('arweaveWallet'))
-      const tx = await arweave.createTransaction({data: initialState}, jwk)
+      const tx = await arweave.createTransaction({data: initialState})
     
       tx.addTag("Protocol", "permacast-testnet-v3")
       tx.addTag("Action", "launchCreator")
@@ -24,7 +23,7 @@ export default function UploadShow()  {
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
     
-      await arweave.transactions.sign(tx, jwk)
+      await arweave.transactions.sign(tx)
       await arweave.transactions.post(tx)
       console.log(tx)
       return tx.id
@@ -55,10 +54,9 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
-      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
       let contractId
       let tx
-      const addr = sessionStorage.getItem("wallet_address");
+      const addr = await window.arweaveWallet.getActiveAddress()
       console.log(addr)
       if (!addr) { return null } else {
       tx = await ardb.search('transactions')
@@ -85,10 +83,8 @@ export default function UploadShow()  {
       }
 
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
-      let uploadTxId = await interactWrite(arweave, wallet, contractId, input, tags)
+      let uploadTxId = await interactWrite(arweave, "use_wallet", contractId, input, tags)
       if (uploadTxId) {
-        //window.location(`/${uploadTxId}`)
-        // load the page that their podcast is on, or index
         console.log(uploadTxId)
       } else {
         alert('An error occured.')
@@ -98,14 +94,14 @@ export default function UploadShow()  {
     const uploadToArweave = async (data, fileType, showObj) => {
       console.log('made it here, data is')
       console.log(data)
-      const wallet = JSON.parse(sessionStorage.getItem("arweaveWallet"))
-      console.log(wallet)
-      if (!wallet) { return null } else {
-        arweave.createTransaction({ data: data }, wallet).then((tx) => {
+        arweave.createTransaction({ data: data } ).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = (+tx.reward * 2).toString();
-          arweave.transactions.sign(tx, wallet).then(() => {
-            arweave.transactions.post(tx, wallet).then((response) => {
+          tx.reward = (+tx.reward * 1).toString();
+          console.log('created')
+          arweave.transactions.sign(tx).then(() => {
+            console.log('signed')
+            arweave.transactions.post(tx).then((response) => {
+              console.log(response)
               if (response.statusText === "OK") {
                 showObj.cover = tx.id
                 finalShowObj = showObj;
@@ -120,7 +116,6 @@ export default function UploadShow()  {
           });
         });
       }
-    }
 
     const handleShowUpload = async (event) => {
       const showObj = {}
@@ -141,8 +136,8 @@ export default function UploadShow()  {
 
     return(  
         <>  
-        <span className="mr-2 ml-2">
-            <Button onClick={() => handleUploadClick()}>Upload</Button>
+        <span className="">
+            <Button variant="outline-primary" onClick={() => handleUploadClick()}>Upload</Button>
         </span> 
         <Modal
         show={show}
