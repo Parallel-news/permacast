@@ -118,6 +118,13 @@ audio {
   
 }
 
+@media screen and (max-width: 600px) {
+  .mobile-hide {
+    visibility: hidden !important;
+    display: none !important;
+  }
+}
+
 .header-icon {
   width:20px;
   z-index: 15px !important;

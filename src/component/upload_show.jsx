@@ -136,7 +136,7 @@ export default function UploadShow()  {
 
     return(  
         <>  
-        <span className="mr-2 ml-2">
+        <span className="">
             <Button variant="outline-primary" onClick={() => handleUploadClick()}>Upload</Button>
         </span> 
         <Modal

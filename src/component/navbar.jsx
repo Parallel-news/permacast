@@ -61,7 +61,7 @@ export default class Header extends Component {
           <div className="d-flex">
             <Navbar.Text>
                 <Row className="flex-row">
-                  <Button onClick={() => this.loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-4">Soon 🔮</Button>
+                  <Button onClick={() => this.loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-2 mobile-hide">🔮 Soon</Button>
                   <ArConnectLoader />
                 </Row>
             </Navbar.Text>
