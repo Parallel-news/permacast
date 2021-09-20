@@ -132,6 +132,7 @@ class Podcast extends Component {
       for (let i in ep) {
         let e = ep[i]
         console.log(e)
+        if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
           <div>
               <Row className="p-1 m-2 align-items-center episode-row">
@@ -145,7 +146,7 @@ class Podcast extends Component {
               </Row>
           </div>
         )
-      }
+      }}
       return episodeList
     }
 
