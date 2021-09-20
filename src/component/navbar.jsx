@@ -18,6 +18,7 @@ export default class Header extends Component {
       {
         title: 'Coming in permacast V2 ✨',
         html: '<ul>' +
+        '<li>Log in with ArConnect</li>' + 
         '<li>Tip your favorite podcasts with $NEWS</li>' +
         '<li>Stake $NEWS on your favorite podcasts and get rewarded when the podcast is tipped</li>' +
         '<li>Generate an RSS feed for any podcast</li>' +

@@ -96,7 +96,7 @@ export default function UploadShow()  {
       console.log(data)
         arweave.createTransaction({ data: data } ).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = (+tx.reward * 2).toString();
+          tx.reward = (+tx.reward * 1).toString();
           console.log('created')
           arweave.transactions.sign(tx).then(() => {
             console.log('signed')

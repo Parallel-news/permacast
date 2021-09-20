@@ -9,6 +9,7 @@ export const arweave = ArweaveMultihost.initWithDefaultHosts({
 
 //export const CONTRACT_SRC = "BBehhFXakigwzVtCe1zQyVJDYCycLVBFrNpQDp1Z1eE"
 export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
+
 export const queryObject = {
   query: 
     `query {

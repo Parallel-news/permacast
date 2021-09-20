@@ -146,6 +146,7 @@ class Podcast extends Component {
               </Row>
           </div>
         )
+
       }}
       return episodeList
     }
@@ -221,7 +222,7 @@ class Podcast extends Component {
             {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
             {this.state.podcastHtml}
             <Container className="episodes-container">{this.state.podcastEpisodes}</Container>
-            <div className="podcast-player"/>
+            <div className="podcast-player position-sticky fixed-bottom"/>
           </div>
         )
     }

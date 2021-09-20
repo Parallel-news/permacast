@@ -1,5 +1,6 @@
 html {
   font-family: monospace;
+  font-size: 2ch;
 }
 
 .App {
@@ -115,6 +116,7 @@ audio {
 }
 
 .podcast-player {
+
   
 }
 
