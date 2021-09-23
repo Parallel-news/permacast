@@ -127,7 +127,8 @@ export default function UploadShow()  {
       const podcastAuthor = event.target.podcastAuthor.value
       const podcastEmail = event.target.podcastEmail.value
       const podcastCategory = event.target.podcastCategory.value
-      const podcastExplicit = event.target.podcastExplicit.value
+      const podcastExplicit = event.target.podcastExplicit.value // ? "yes" : "no"
+      console.log(podcastExplicit)
       const podcastLanguage = event.target.podcastLanguage.value
       const coverFileType = podcastCover.type
       // add attrs to input for SWC
@@ -136,7 +137,7 @@ export default function UploadShow()  {
       showObj.author = podcastAuthor
       showObj.email = podcastEmail
       showObj.category = podcastCategory
-      showObj.explicit = podcastExplicit
+      showObj.isExplicit = podcastExplicit
       showObj.language = podcastLanguage
       // upload cover, send all to Arweave
       let cover = await processFile(podcastCover)

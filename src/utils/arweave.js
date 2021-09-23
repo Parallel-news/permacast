@@ -8,17 +8,19 @@ export const arweave = ArweaveMultihost.initWithDefaultHosts({
 });
 
 // TEST CONTRACT:
-export const CONTRACT_SRC = "vW1ywJlW9Ur1qURce3kpboi_2eUEj58RVEwWlvtvLwk"
+export const CONTRACT_SRC = "4uc2tYgjq75xb3Bc5vMZej-7INXxhaTA70NPL23Om4A"
+
 // PROD CONTRACT:
 //export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
 
+
+// + tag { name: "Protocol", values: "permacast-testnet-v3"}
 export const queryObject = {
   query: 
     `query {
       transactions(
         tags: [
           { name: "Contract-Src", values: "${CONTRACT_SRC}"},
-          { name: "Protocol", values: "permacast-testnet-v3"}
         ]
       first: 1000000
       ) {
