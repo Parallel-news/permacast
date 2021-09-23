@@ -3,8 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { interactWrite } from 'smartweave'
 import ArDB from 'ardb';
 import swal from 'sweetalert';
-import { CONTRACT_SRC, arweave } from '../utils/arweave.js'
-
+import { CONTRACT_SRC, arweave, languages, categories } from '../utils/arweave.js'
 const ardb = new ArDB(arweave)
 
 export default function UploadShow()  {
@@ -47,6 +46,7 @@ export default function UploadShow()  {
     async function processFile(file) {
       try {
         let contentBuffer = await readFileAsync(file);
+
         return contentBuffer
       } catch(err) {
         console.log(err);
@@ -117,21 +117,55 @@ export default function UploadShow()  {
         });
       }
 
-    const handleShowUpload = async (event) => {
-      const showObj = {}
+      const handleShowUpload = async (event) => {
       event.preventDefault()
+      // extract attrs from form
+      const showObj = {}
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
+      const podcastAuthor = event.target.podcastAuthor.value
+      const podcastEmail = event.target.podcastEmail.value
+      const podcastCategory = event.target.podcastCategory.value
+      const podcastExplicit = event.target.podcastExplicit.value
+      const podcastLanguage = event.target.podcastLanguage.value
       const coverFileType = podcastCover.type
+      // add attrs to input for SWC
       showObj.name = podcastName
       showObj.desc = podcastDescription
+      showObj.author = podcastAuthor
+      showObj.email = podcastEmail
+      showObj.category = podcastCategory
+      showObj.explicit = podcastExplicit
+      showObj.language = podcastLanguage
+      // upload cover, send all to Arweave
       let cover = await processFile(podcastCover)
       await uploadToArweave(cover, coverFileType, showObj)
    }
 
     const handleClose = () => {
         setShow(false);
+    }
+
+   const languageOptions = () => {
+      const langsArray = Object.entries(languages);
+      let optionsArr = []
+      for (let lang of langsArray) {
+        optionsArr.push(
+          <option value={lang[0]}>{lang[1]}</option>
+        )
+      }
+      return optionsArr
+    }
+
+    const categoryOptions = () => {
+      let optionsArr = []
+      for (let i in categories) {
+        optionsArr.push(
+          <option value={categories[i]}>{categories[i]}</option>
+        )
+      }
+      return optionsArr
     }
 
     return(  
@@ -161,9 +195,33 @@ export default function UploadShow()  {
               <Form.Label>Show description</Form.Label>
               <Form.Control required as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="podcastCover" />
+            <Form.Group className="mb-3" controlId="podcastCover">
               <Form.Label>Cover image</Form.Label>
               <Form.Control required type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastAuthor">
+              <Form.Label>Author</Form.Label> {/* add tooltip */}
+              <Form.Control required type="text" name="podcastAuthor" placeholder="Sam Williams"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastEmail">
+              <Form.Label>Email</Form.Label> {/* add tooltip */}
+              <Form.Control type="email" name="podcastEmail" placeholder="your@email.net"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastLanguage">
+              <Form.Label>Podcast language</Form.Label><br/>
+              <select className="custom-select" id="podcastLanguage" name="language">
+                {languageOptions()}
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastCategory">
+              <Form.Label>Category</Form.Label><br/>
+              <select className="custom-select" id="podcastCategory" name="category">
+                {categoryOptions()}
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastExplicit">
+              <Form.Check label="Contains explicit content" id="podcastExplicit"/>
+            </Form.Group>
         <br/><br/>
         <Modal.Footer className="m-2">
         <Button variant="danger" onClick={handleClose} color="danger">

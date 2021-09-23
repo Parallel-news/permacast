@@ -51,6 +51,8 @@ export default class UploadEpisode extends Component {
               console.log(response)
               if (response.statusText === "OK") {
                   epObj.audio = tx.id
+                  epObj.type = fileType
+                  epObj.audioTxByteSize = data.size
                   this.uploadShow(epObj)
                   event.target.reset()
                   swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
@@ -106,7 +108,9 @@ export default class UploadEpisode extends Component {
           'index': this.props.podcast.index,
           'name': show.name,
           'desc': show.desc,
-          'audio': show.audio
+          'audio': show.audio,
+          'audioTxByteSize': show.audioTxByteSize,
+          'type': show.type
         }
 
         console.log(input)
