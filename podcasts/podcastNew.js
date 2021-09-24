@@ -53,7 +53,6 @@ export async function handle(state, action) {
     _validateStringTypeLen(categories, 3, 150);
     _validateStringTypeLen(cover, 43, 43);
     _validateStringTypeLen(lang, 2, 2);
-    _validateLanguageCode(lang);
 
 
     await _validateDataTransaction(cover, "image/");
@@ -66,6 +65,7 @@ export async function handle(state, action) {
     podcasts.push({
       pid: pid,
       index: _getPodcastIndex(), // id equals the index of the podacast obj in the podcasts array
+      childOd: SmartWeave.contract.id,
       owner: caller,
       podcastName: name,
       author: author,
@@ -364,15 +364,6 @@ export async function handle(state, action) {
 
   };
 
-  function _validateLanguageCode(code) {
-
-    const supportedCodes = ["en", "fr", "ar", "es", "hi", "it", "de", "ko", "ja", "zh"];
-
-    if (! supportedCodes.includes(code) ) {
-      throw new ContractError(ERROR_UNSUPPORTED_LANG)
-    }
-
-  };
 
   function _validateEpisodeExistence(index, id) {
 
