@@ -8,11 +8,10 @@ export const arweave = ArweaveMultihost.initWithDefaultHosts({
 });
 
 // TEST CONTRACT:
-export const CONTRACT_SRC = "4uc2tYgjq75xb3Bc5vMZej-7INXxhaTA70NPL23Om4A"
-
+//export const CONTRACT_SRC = "4uc2tYgjq75xb3Bc5vMZej-7INXxhaTA70NPL23Om4A"
+export const CONTRACT_SRC = "agSUFSa_1xvUuQ8ay9sLKNOI9BzEtJyPJL4CsyW250E"
 // PROD CONTRACT:
 //export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
-
 
 // + tag { name: "Protocol", values: "permacast-testnet-v3"}
 export const queryObject = {

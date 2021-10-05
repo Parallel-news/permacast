@@ -79,12 +79,18 @@ export default function UploadShow()  {
         'function': 'createPodcast',
         'name': show.name,
         'desc': show.desc,
-        'cover': show.cover
+        'cover': show.cover,
+        'lang': show.lang,
+        'isExplicit': show.isExplicit,
+        'author': show.author,
+        'categories': show.category,
+        'email': show.email
       }
 
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
       let uploadTxId = await interactWrite(arweave, "use_wallet", contractId, input, tags)
       if (uploadTxId) {
+        swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
         console.log(uploadTxId)
       } else {
         alert('An error occured.')
@@ -108,7 +114,6 @@ export default function UploadShow()  {
                 console.log(finalShowObj)
                 uploadShow(finalShowObj)
                 setShow(false)
-                swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
               } else {
                 swal('Unable to add show', 'Check your wallet balance and network connection', 'danger')
               }
@@ -127,8 +132,7 @@ export default function UploadShow()  {
       const podcastAuthor = event.target.podcastAuthor.value
       const podcastEmail = event.target.podcastEmail.value
       const podcastCategory = event.target.podcastCategory.value
-      const podcastExplicit = event.target.podcastExplicit.value // ? "yes" : "no"
-      console.log(podcastExplicit)
+      const podcastExplicit = event.target.podcastExplicit.value ? "yes" : "no"
       const podcastLanguage = event.target.podcastLanguage.value
       const coverFileType = podcastCover.type
       // add attrs to input for SWC
@@ -138,7 +142,7 @@ export default function UploadShow()  {
       showObj.email = podcastEmail
       showObj.category = podcastCategory
       showObj.isExplicit = podcastExplicit
-      showObj.language = podcastLanguage
+      showObj.lang = podcastLanguage
       // upload cover, send all to Arweave
       let cover = await processFile(podcastCover)
       await uploadToArweave(cover, coverFileType, showObj)
