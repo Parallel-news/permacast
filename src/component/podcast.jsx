@@ -216,7 +216,6 @@ class Podcast extends Component {
   render = () => {
     return (
       <div>
-
         {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast} /> : null}
         {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
         {this.state.podcastHtml}
