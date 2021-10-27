@@ -1,0 +1,11 @@
+{
+  "issuer": "ADDY", 
+  "owner": "ADDY",
+  "name": "Permacast Episode",
+  "ticker": "POD",
+  "description": "episode #001",
+  "balances": {
+    "ADDY": 1
+  }
+}
+
