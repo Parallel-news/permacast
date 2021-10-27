@@ -10,14 +10,37 @@ export default class PodcastHtml extends Component {
     }
 
     tipButton = () => {
-        return <Button variant="outline-secondary" onClick={() => this.showComingSoonAlert()} size="sm"><FaRegGem/> Tip</Button>
+        return <Button variant="outline-secondary" onClick={() => this.tipPrompt()} size="sm"><FaRegGem/> Tip</Button>
     }
 
-    showComingSoonAlert = () => {
-        Swal.fire(
-            'Tips are coming soon, watch this space 👀'
-        )
+    tipPrompt = async () => {
+        const podcastId = this.props.id;
+        const name = this.props.name;
+        const recipient = this.props.owner;
+        const { value: tipAmount } = await Swal.fire({
+            title: `Tip ${name} 🙏`,
+            input: 'text',
+            inputPlaceholder: 'Amount to tip ($NEWS)'
+        });
+
+        if (tipAmount) {
+
+            let n = parseInt(tipAmount);
+            if (Number.isInteger(n) && n > 0) {
+
+            Swal.fire({
+                title: 'You just supported a great podcast 😻',
+                text: `${name} just got ${tipAmount} $NEWS.`
+            })
+
+        } else {
+            Swal.fire({
+                title: 'Enter a whole number of $NEWS to tip.'
+            })
+        }
+        }
     }
+
     
     
 

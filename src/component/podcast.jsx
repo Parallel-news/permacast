@@ -111,6 +111,8 @@ class Podcast extends Component {
       <div>
         <PodcastHtml
           rss={`${p.childOf}/${p.pid}`}
+          owner={p.owner}
+          id={p.pid}
           link={p.pid}
           name={p.podcastName}
           titleClass={'h2'}

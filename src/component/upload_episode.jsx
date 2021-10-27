@@ -42,13 +42,13 @@ export default class UploadEpisode extends Component {
 
     uploadToArweave = async (data, fileType, epObj, event) => {
       const wallet = await window.arweaveWallet.getActiveAddress()
+      console.log(wallet)
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }).then((tx) => {
           tx.addTag("Content-Type", fileType);
-          tx.reward = (+tx.reward * 1).toString();
+          //tx.reward = (+tx.reward * 1).toString();
           arweave.transactions.sign(tx).then(() => {
             arweave.transactions.post(tx).then((response) => {
-              console.log(response)
               if (response.statusText === "OK") {
                   epObj.audio = tx.id
                   epObj.type = fileType
