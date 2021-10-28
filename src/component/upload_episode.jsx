@@ -3,7 +3,7 @@ import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
-import { CONTRACT_SRC, arweave } from '../utils/arweave.js' 
+import { CONTRACT_SRC, NFT_SRC, arweave } from '../utils/arweave.js' 
 
 const ardb = new ArDB(arweave)
 
@@ -45,7 +45,18 @@ export default class UploadEpisode extends Component {
       console.log(wallet)
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }).then((tx) => {
+          const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "Permacast aNFT","balances": {"${wallet}": 1}}`
+          
           tx.addTag("Content-Type", fileType);
+          tx.addTag("App-Name", "SmartWeaveContract");
+          tx.addTag("App-Version", "0.3.0");
+          tx.addTag("Contract-Src", NFT_SRC);
+          tx.addTag("Init-State", initState)
+          // Verto aNFT listing
+          tx.addTag("Exchange", "Verto");
+          tx.addTag("Action", "marketplace/create")
+          
+           
           //tx.reward = (+tx.reward * 1).toString();
           arweave.transactions.sign(tx).then(() => {
             arweave.transactions.post(tx).then((response) => {
