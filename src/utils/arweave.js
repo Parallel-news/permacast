@@ -13,7 +13,7 @@ export const arweave = ArweaveMultihost.initWithDefaultHosts({
 export const CONTRACT_SRC = "j1d4jwWRso3lH04--3rZ1Top_DaoGZWwwPKA8rT180M"
 // PROD CONTRACT:
 //export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
-
+export const NEWS_CONTRACT = "HJFEnaWHLMp2ryrR0nzDKb0DSW7aBplDjcs3vQoVbhw"
 // + tag { name: "Protocol", values: "permacast-testnet-v3"}
 export const queryObject = {
   query: 
