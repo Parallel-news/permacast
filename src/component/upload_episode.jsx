@@ -45,7 +45,7 @@ export default class UploadEpisode extends Component {
       console.log(wallet)
       if (!wallet) { return null } else {
         arweave.createTransaction({ data: data }).then((tx) => {
-          const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "Permacast aNFT","balances": {"${wallet}": 1}}`
+          const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": ${epObj.desc},"balances": {"${wallet}": 1}}`
           
           tx.addTag("Content-Type", fileType);
           tx.addTag("App-Name", "SmartWeaveContract");

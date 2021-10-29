@@ -27,7 +27,7 @@ export default class PodcastHtml extends Component {
     }
 
     transferNews = async (recipient, tipAmount) => {
-       const input = {"function": "transfer",  "target": recipient, "qty": tipAmount};
+       const input = {"function": "transfer",  "target": recipient, "qty": parseInt(tipAmount)};
        const tx = await interactWrite(arweave, "use_wallet", NEWS_CONTRACT, input);
        console.log(tx);
     }
