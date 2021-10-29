@@ -169,11 +169,11 @@ export default class UploadEpisode extends Component {
                 <Form className="p-4" hasValidation onSubmit={this.handleEpisodeUpload}>
                 <Form.Group className="mb-3" controlId="podcastName">
                     <Form.Label>Episode name</Form.Label>
-                    <Form.Control required type="text" name="episodeName" placeholder="EP1: Introduction" />
+                    <Form.Control required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeShowNotes">
                     <Form.Label>Episode description</Form.Label>
-                    <Form.Control required as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
+                    <Form.Control required maxlength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 <Form.Label>Audio file</Form.Label>
