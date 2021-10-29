@@ -15,6 +15,12 @@ export default class UploadEpisode extends Component {
         }
     }
 
+    listEpisodeOnVerto = (episodeId) => {
+      const vertoContractId =  't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
+      const input = `{"function":"list","id":${episodeId},"type":"art"}`;
+      interactWrite(arweave, "use_wallet", vertoContractId, input);
+    }
+
     readFileAsync = (file) => {
         return new Promise((resolve, reject) => {
             let reader = new FileReader();
@@ -85,6 +91,7 @@ export default class UploadEpisode extends Component {
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
         epObj.index = this.props.podcast.index
+        epObj.verto = event.target.verto.value
         let episodeFile = event.target.episodeMedia.files[0]
         let fileType = episodeFile.type
         console.log(fileType)
@@ -127,8 +134,11 @@ export default class UploadEpisode extends Component {
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
-        console.log(test)
+        let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
+        console.log(txId)
+        if (show.verto) {
+          this.listEpisodeOnVerto(txId)
+        }
       }
     
       toFixed(x) {
@@ -178,6 +188,9 @@ export default class UploadEpisode extends Component {
                 <Form.Group className="mb-3" controlId="episodeMedia" />
                 <Form.Label>Audio file</Form.Label>
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
+                <Form.Group className="mb-3" controlId="podcastExplicit">
+                  <Form.Check label="List as an Atomic NFT on Verto?" id="verto"/>
+                </Form.Group>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
                 {!this.state.episodeUploading ? 
