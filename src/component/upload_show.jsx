@@ -194,11 +194,11 @@ export default function UploadShow()  {
           <Form hasValidation onSubmit={handleShowUpload}>
             <Form.Group className="mb-3" controlId="podcastName">
               <Form.Label>Show name</Form.Label>
-              <Form.Control required type="text" name="podcastName" placeholder="The Arweave Show" />
+              <Form.Control required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastDescription">
               <Form.Label>Show description</Form.Label>
-              <Form.Control required as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
+              <Form.Control required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastCover">
               <Form.Label>Cover image</Form.Label>
@@ -206,7 +206,7 @@ export default function UploadShow()  {
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastAuthor">
               <Form.Label>Author</Form.Label> {/* add tooltip */}
-              <Form.Control required type="text" name="podcastAuthor" placeholder="Sam Williams"/>
+              <Form.Control required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams"/>
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastEmail">
               <Form.Label>Email</Form.Label> {/* add tooltip */}

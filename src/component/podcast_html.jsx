@@ -8,6 +8,7 @@ import Swal from 'sweetalert2';
 export default class PodcastHtml extends Component {
 
     loadRss = () => {
+        console.log(this.props.rss)
         window.open(`https://permacast.herokuapp.com/rss/${this.props.rss}`, '_blank')
     }
 
@@ -41,7 +42,8 @@ export default class PodcastHtml extends Component {
         const { value: tipAmount } = await Swal.fire({
             title: `Tip ${name} 🙏`,
             input: 'text',
-            inputPlaceholder: 'Amount to tip ($NEWS)'
+            inputPlaceholder: 'Amount to tip ($NEWS)',
+            confirmButtonText: 'Tip'
         });
 
         if (tipAmount && this.checkNewsBalance(addr, tipAmount)) {
