@@ -64,9 +64,17 @@ export default class UploadEpisode extends Component {
           
            
           //tx.reward = (+tx.reward * 1).toString();
-          arweave.transactions.sign(tx).then(() => {
-            arweave.transactions.post(tx).then((response) => {
-              if (response.statusText === "OK") {
+          await arweave.transactions.sign(tx)
+          let uploader = await arweave.transactions.getUploader(tx);
+
+          while (!uploader.isComplete) {
+            await uploader.uploadChunk();
+            console.log(`${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`);
+          }
+             console.log("uploader")
+             console.log(uploader)
+
+              if (uploader.statusText === "OK") {
                   epObj.audio = tx.id
                   epObj.type = fileType
                   epObj.audioTxByteSize = data.size
@@ -77,7 +85,6 @@ export default class UploadEpisode extends Component {
               } else {
                   swal('Upload failed', 'Check your AR balance and network connection', 'error')
               }
-            });
           });
         });
       }
