@@ -185,10 +185,11 @@ export default class UploadEpisode extends Component {
                     <Form.Label>Episode description</Form.Label>
                     <Form.Control required maxlength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="episodeMedia" />
+                <Form.Group className="mb-5" controlId="episodeMedia">
                 <Form.Label>Audio file</Form.Label>
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
-                <Form.Group className="mb-3" controlId="podcastExplicit">
+                </Form.Group>
+                <Form.Group className="mt-5 mb-3" controlId="verto">
                   <Form.Check label="List as an Atomic NFT on Verto?" id="verto"/>
                 </Form.Group>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
