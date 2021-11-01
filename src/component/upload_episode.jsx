@@ -46,42 +46,55 @@ export default class UploadEpisode extends Component {
         }
       }
 
-    uploadToArweave = async (data, fileType, epObj, event) => {
-      const wallet = await window.arweaveWallet.getActiveAddress()
-      console.log(wallet)
-      if (!wallet) { return null } else {
-        arweave.createTransaction({ data: data }).then((tx) => {
-          const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": ${epObj.desc},"balances": {"${wallet}": 1}}`
-          
-          tx.addTag("Content-Type", fileType);
-          tx.addTag("App-Name", "SmartWeaveContract");
-          tx.addTag("App-Version", "0.3.0");
-          tx.addTag("Contract-Src", NFT_SRC);
-          tx.addTag("Init-State", initState)
-          // Verto aNFT listing
-          tx.addTag("Exchange", "Verto");
-          tx.addTag("Action", "marketplace/create")
-          
-           
-          //tx.reward = (+tx.reward * 1).toString();
-          arweave.transactions.sign(tx).then(() => {
-            arweave.transactions.post(tx).then((response) => {
-              if (response.statusText === "OK") {
-                  epObj.audio = tx.id
-                  epObj.type = fileType
-                  epObj.audioTxByteSize = data.size
-                  this.uploadShow(epObj)
-                  event.target.reset()
-                  swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
-                  this.setState({showUploadFee: null})
-              } else {
-                  swal('Upload failed', 'Check your AR balance and network connection', 'error')
-              }
-            });
-          });
-        });
+  uploadToArweave = async (data, fileType, epObj, event) => {
+    const wallet = await window.arweaveWallet.getActiveAddress();
+    console.log(wallet);
+    if (!wallet) {
+      return null;
+    } else {
+      const tx = await arweave.createTransaction({ data: data });
+      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": ${epObj.desc},"balances": {"${wallet}": 1}}`;
+
+      tx.addTag("Content-Type", fileType);
+      tx.addTag("App-Name", "SmartWeaveContract");
+      tx.addTag("App-Version", "0.3.0");
+      tx.addTag("Contract-Src", NFT_SRC);
+      tx.addTag("Init-State", initState);
+      // Verto aNFT listing
+      tx.addTag("Exchange", "Verto");
+      tx.addTag("Action", "marketplace/create");
+
+      //tx.reward = (+tx.reward * 1).toString();
+      await arweave.transactions.sign(tx);
+      const uploader = await arweave.transactions.getUploader(tx);
+
+      while (!uploader.isComplete) {
+        await uploader.uploadChunk();
+        console.log(
+          `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
+        );
+      }
+      if (uploader.txPosted) {
+        epObj.audio = tx.id;
+        epObj.type = fileType;
+        epObj.audioTxByteSize = data.size;
+        this.uploadShow(epObj);
+        event.target.reset();
+        swal(
+          "Upload complete",
+          "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.",
+          "success"
+        );
+        this.setState({ showUploadFee: null });
+      } else {
+        swal(
+          "Upload failed",
+          "Check your AR balance and network connection",
+          "error"
+        );
       }
     }
+  };
   
     handleEpisodeUpload = async (event) => {
       this.setState({episodeUploading: true})
