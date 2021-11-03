@@ -18,11 +18,9 @@ export default class Header extends Component {
       {
         title: 'Coming in permacast V2 ✨',
         html: '<ul>' +
-        '<li>Log in with ArConnect</li>' + 
+        '<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li>' +
         '<li>Tip your favorite podcasts with $NEWS</li>' +
-        '<li>Stake $NEWS on your favorite podcasts and get rewarded when the podcast is tipped</li>' +
-        '<li>Generate an RSS feed for any podcast</li>' +
-        '<li>Automatic RSS3 feed generation by crawling the podcast SmartWeave contracts</li>' +
+        '<li>RSS3 integration</li>' +
         '</ul>'
       }
     )

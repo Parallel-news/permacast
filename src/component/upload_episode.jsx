@@ -11,13 +11,18 @@ export default class UploadEpisode extends Component {
      constructor(props) {
         super(props);
         this.state = {
-            test: true,
+          episodeUploading: false
         }
     }
 
     listEpisodeOnVerto = (episodeId) => {
-      const vertoContractId =  't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
-      const input = `{"function":"list","id":${episodeId},"type":"art"}`;
+      const vertoContractId = 't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
+      const input = {
+        "function":"list",
+        "id": episodeId,
+        "type":"art"
+      };
+
       interactWrite(arweave, "use_wallet", vertoContractId, input);
     }
 
@@ -64,12 +69,17 @@ export default class UploadEpisode extends Component {
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
 
-      //tx.reward = (+tx.reward * 1).toString();
+      tx.reward = (+tx.reward * 1.2).toString();
       await arweave.transactions.sign(tx);
+      console.log(tx);
       const uploader = await arweave.transactions.getUploader(tx);
 
       while (!uploader.isComplete) {
         await uploader.uploadChunk();
+
+        this.setState({uploadProgress: true})
+        this.setState({uploadPercentComplete: uploader.pctComplete})
+
         console.log(
           `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
         );
@@ -78,6 +88,8 @@ export default class UploadEpisode extends Component {
         epObj.audio = tx.id;
         epObj.type = fileType;
         epObj.audioTxByteSize = data.size;
+        console.log('txPosted:')
+        console.log(epObj)
         this.uploadShow(epObj);
         event.target.reset();
         swal(
@@ -98,7 +110,11 @@ export default class UploadEpisode extends Component {
   
     handleEpisodeUpload = async (event) => {
       this.setState({episodeUploading: true})
-      swal('Upload underway...', "We'll let you know when it's done. Go grab a ☕ or 🍺")
+      swal({
+        title:`Upload underway!`,
+        text: "We'll let you know when it's done. Go grab a ☕ or 🍺",
+        timer: 3000
+      })
        let epObj = {}
        event.preventDefault()
         epObj.name = event.target.episodeName.value
@@ -202,7 +218,7 @@ export default class UploadEpisode extends Component {
                 <Form.Label>Audio file</Form.Label>
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
                 </Form.Group>
-                <Form.Group className="mt-5 mb-3" controlId="verto">
+                <Form.Group className="mt-5" controlId="verto">
                   <Form.Check label="List as an Atomic NFT on Verto?" id="verto"/>
                 </Form.Group>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
@@ -227,6 +243,7 @@ export default class UploadEpisode extends Component {
                   Uploading, please wait...
                 </Button>
                 }
+                <>{ this.state.uploadProgress && <div className="mt-3">Uploaded {this.state.uploadPercentComplete}%</div> }</>
                 </Form>
             </Card>
             </Col>

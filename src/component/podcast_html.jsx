@@ -18,7 +18,6 @@ export default class PodcastHtml extends Component {
 
     checkNewsBalance = async (addr, tipAmount) => {
         const state = await readContract(arweave, NEWS_CONTRACT);
-        console.log(state);
         if (state.balances.hasOwnProperty(addr) && state.balances.addr >= tipAmount) {
             return true
         } else {
@@ -68,7 +67,6 @@ export default class PodcastHtml extends Component {
     }
 
     render() {
-        console.log('rss')
         console.log(this.props.rss)
         return(    
             <Card className="text-center p-3 border-0">
