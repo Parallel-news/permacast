@@ -119,7 +119,7 @@ export default class UploadEpisode extends Component {
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
         epObj.index = this.props.podcast.index
-        epObj.verto = event.target.verto.value
+        epObj.verto = event.target.verto.checked
         let episodeFile = event.target.episodeMedia.files[0]
         let fileType = episodeFile.type
         console.log(fileType)
