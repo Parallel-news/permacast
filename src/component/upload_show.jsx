@@ -132,7 +132,7 @@ export default function UploadShow()  {
       const podcastAuthor = event.target.podcastAuthor.value
       const podcastEmail = event.target.podcastEmail.value
       const podcastCategory = event.target.podcastCategory.value
-      const podcastExplicit = event.target.podcastExplicit.value ? "yes" : "no"
+      const podcastExplicit = event.target.podcastExplicit.checked ? "yes" : "no"
       const podcastLanguage = event.target.podcastLanguage.value
       const coverFileType = podcastCover.type
       // add attrs to input for SWC
