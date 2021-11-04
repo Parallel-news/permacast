@@ -3,6 +3,7 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { interactWrite } from 'smartweave'
 import ArDB from 'ardb';
 import swal from 'sweetalert';
+import { FaPlus } from 'react-icons/fa';
 import { CONTRACT_SRC, arweave, languages, categories } from '../utils/arweave.js'
 const ardb = new ArDB(arweave)
 
@@ -176,7 +177,7 @@ export default function UploadShow()  {
     return(  
         <>  
         <span className="">
-            <Button variant="outline-primary" onClick={() => handleUploadClick()}>Upload</Button>
+            <Button variant="outline-primary" onClick={() => handleUploadClick()}>+ Add a podcast</Button>
         </span> 
         <Modal
         show={show}

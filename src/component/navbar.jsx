@@ -16,11 +16,11 @@ export default class Header extends Component {
   loadWhatsNew = () => {
     Swal.fire(
       {
-        title: 'Coming in permacast V2 ✨',
+        title: 'New in permacast V2 ✨',
         html: '<ul>' +
         '<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li>' +
         '<li>Tip your favorite podcasts with $NEWS</li>' +
-        '<li>RSS3 integration</li>' +
+        '<li>Episodes are atomic NFTs, listable on Verto!</li>' +
         '</ul>'
       }
     )
@@ -60,7 +60,7 @@ export default class Header extends Component {
           <div className="d-flex">
             <Navbar.Text>
                 <Row className="flex-row">
-                  <Button onClick={() => this.loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-2 mobile-hide">🔮 Soon</Button>
+                  <Button onClick={() => this.loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-2 mobile-hide">✨ What's new</Button>
                   <ArConnectLoader />
                 </Row>
             </Navbar.Text>
