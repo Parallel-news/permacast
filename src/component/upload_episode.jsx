@@ -69,7 +69,7 @@ export default class UploadEpisode extends Component {
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
 
-      tx.reward = (+tx.reward * 1.2).toString();
+      //tx.reward = (+tx.reward * 1.2).toString();
       await arweave.transactions.sign(tx);
       console.log(tx);
       const uploader = await arweave.transactions.getUploader(tx);
@@ -81,7 +81,7 @@ export default class UploadEpisode extends Component {
         this.setState({uploadPercentComplete: uploader.pctComplete})
 
         console.log(
-          `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
+        //  `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
         );
       }
       if (uploader.txPosted) {
@@ -113,7 +113,6 @@ export default class UploadEpisode extends Component {
       swal({
         title:`Upload underway!`,
         text: "We'll let you know when it's done. Go grab a ☕ or 🍺",
-        timer: 3000
       })
        let epObj = {}
        event.preventDefault()
@@ -166,7 +165,10 @@ export default class UploadEpisode extends Component {
         let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
         console.log(txId)
         if (show.verto) {
+          console.log('pushing to Verto')
           this.listEpisodeOnVerto(txId)
+        } else {
+          console.log('skipping Verto')
         }
       }
     
@@ -219,7 +221,7 @@ export default class UploadEpisode extends Component {
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
                 </Form.Group>
                 <Form.Group className="mt-5" controlId="verto">
-                  <Form.Check label="List as an Atomic NFT on Verto?" id="verto"/>
+                  <Form.Check type="checkbox" label="List as an Atomic NFT on Verto?" id="verto"/>
                 </Form.Group>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
