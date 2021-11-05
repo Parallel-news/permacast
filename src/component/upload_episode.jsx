@@ -15,7 +15,7 @@ export default class UploadEpisode extends Component {
         }
     }
 
-    listEpisodeOnVerto = (episodeId) => {
+    listEpisodeOnVerto = async (episodeId) => {
       const vertoContractId = 't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
       const input = {
         "function":"list",
@@ -23,7 +23,7 @@ export default class UploadEpisode extends Component {
         "type":"art"
       };
 
-      interactWrite(arweave, "use_wallet", vertoContractId, input);
+      await interactWrite(arweave, "use_wallet", vertoContractId, input);
     }
 
     readFileAsync = (file) => {
@@ -162,11 +162,12 @@ export default class UploadEpisode extends Component {
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
+        let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags);
+        console.log('addEpisode txid:')
         console.log(txId)
         if (show.verto) {
           console.log('pushing to Verto')
-          this.listEpisodeOnVerto(txId)
+          await this.listEpisodeOnVerto(txId)
         } else {
           console.log('skipping Verto')
         }
@@ -192,7 +193,7 @@ export default class UploadEpisode extends Component {
       
       calculateUploadFee = (file) => {
         console.log('fee reached')
-        let fee  = 0.0124 * (file.size / 1024 / 1024).toFixed(4)
+        let fee  = 0.0124 * ((file.size / 1024 / 1024) * 3).toFixed(4)
         this.setState({showUploadFee: fee})
       }
 

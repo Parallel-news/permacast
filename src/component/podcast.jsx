@@ -141,7 +141,7 @@ class Podcast extends Component {
                 <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`https://www.arweave.net/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
               </Col>
               <Col md="auto">
-                <div>{e.episodeName}</div>
+                <div className="font-weight-bold">{e.episodeName}</div>
               </Col>
               <Col md="auto">
                 {this.truncatedDesc(e.description, 52)}
