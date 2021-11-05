@@ -5,6 +5,7 @@ import ArDB from 'ardb';
 import swal from 'sweetalert';
 import { FaPlus } from 'react-icons/fa';
 import { CONTRACT_SRC, arweave, languages, categories } from '../utils/arweave.js'
+import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow()  {
@@ -55,6 +56,10 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
+      Swal.fire({
+        title: 'Uploading, please wait a few seconds...',
+        timer: 2000
+      })
       let contractId
       let tx
       const addr = await window.arweaveWallet.getActiveAddress()

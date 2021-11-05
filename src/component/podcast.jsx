@@ -7,6 +7,8 @@ import 'shikwasa/dist/shikwasa.min.css'
 import swal from 'sweetalert'
 import Shikwasa from 'shikwasa'
 import { FaPlay } from 'react-icons/fa';
+import { IoIosArrowRoundDown } from 'react-icons/io'
+import { IoPlaySharp } from 'react-icons/io5'
 import { arweave, queryObject } from '../utils/arweave.js'
 
 class Podcast extends Component {
@@ -135,12 +137,15 @@ class Podcast extends Component {
           <div>
             <Row className="p-1 m-2 align-items-center episode-row">
               <Col md="auto">
-                <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <FaPlay /> </Button>
+                <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <IoPlaySharp /> </Button>
+                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`https://www.arweave.net/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
               </Col>
               <Col md="auto">
                 <div>{e.episodeName}</div>
               </Col>
-              <Col>{this.truncatedDesc(e.description, 52)}</Col>
+              <Col md="auto">
+                {this.truncatedDesc(e.description, 52)}
+              </Col>
             </Row>
           </div>
         )

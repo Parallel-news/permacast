@@ -103,6 +103,10 @@ audio {
   color: black !important;
 }
 
+.download-button {
+  color: black !important;
+}
+
 .episode-row {
   padding: 1em !important;
   border-color: black !important;
@@ -113,11 +117,6 @@ audio {
 .episodes-container {
   align-items: center !important;
   margin-bottom: 3em !important;
-}
-
-.podcast-player {
-
-  
 }
 
 @media screen and (max-width: 600px) {
