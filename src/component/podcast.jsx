@@ -143,7 +143,7 @@ class Podcast extends Component {
               <Col md="auto">
                 <div className="font-weight-bold">{e.episodeName}</div>
               </Col>
-              <Col md="auto">
+              <Col>
                 {this.truncatedDesc(e.description, 52)}
               </Col>
             </Row>

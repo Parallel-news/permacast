@@ -9,7 +9,7 @@ export default class PodcastHtml extends Component {
 
     loadRss = () => {
         console.log(this.props.rss)
-        window.open(`https://permacast.herokuapp.com/rss/${this.props.rss}`, '_blank')
+        window.open(`https://permacast-api.herokuapp.com/rss/${this.props.rss}`, '_blank')
     }
 
     tipButton = () => {
@@ -32,6 +32,13 @@ export default class PodcastHtml extends Component {
     }
 
     tipPrompt = async () => {
+
+        Swal.fire({
+            title: 'Coming soon',
+            text: 'Tip your favorite podcasts with $NEWS to show support'
+        })
+
+        return false
 
         const addr = await window.arweaveWallet.getActiveAddress();
 

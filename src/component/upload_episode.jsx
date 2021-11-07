@@ -68,8 +68,8 @@ export default class UploadEpisode extends Component {
       // Verto aNFT listing
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
+      tx.addTag("Thumbnail", this.props.podcast.cover);
 
-      //tx.reward = (+tx.reward * 1.2).toString();
       await arweave.transactions.sign(tx);
       console.log(tx);
       const uploader = await arweave.transactions.getUploader(tx);
