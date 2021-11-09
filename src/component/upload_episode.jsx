@@ -3,7 +3,8 @@ import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
-import { CONTRACT_SRC, arweave } from '../utils/arweave.js' 
+import { CONTRACT_SRC, NFT_SRC, arweave } from '../utils/arweave.js' 
+import { FaWindowMinimize } from 'react-icons/fa'
 
 const ardb = new ArDB(arweave)
 
@@ -28,7 +29,7 @@ export default class UploadEpisode extends Component {
             reader.readAsArrayBuffer(file);
         })
     }
-
+  
 
     processFile = async (file) => {
         try {
@@ -40,27 +41,59 @@ export default class UploadEpisode extends Component {
         }
       }
 
-    uploadToArweave = async (data, fileType, epObj, event) => {
-      const wallet = await window.arweaveWallet.getActiveAddress()
-      if (!wallet) { return null } else {
-        arweave.createTransaction({ data: data }).then((tx) => {
-          tx.addTag("Content-Type", fileType);
-          tx.reward = (+tx.reward * 1).toString();
-          arweave.transactions.sign(tx).then(() => {
-            arweave.transactions.post(tx).then((response) => {
-              console.log(response)
-              if (response.statusText === "OK") {
-                  epObj.audio = tx.id
-                  this.uploadShow(epObj)
-                  event.target.reset()
-                  swal('Upload complete', 'Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
-                  this.setState({showUploadFee: null})
-              } else {
-                  swal('Upload failed', 'Check your AR balance and network connection', 'error')
-              }
-            });
-          });
-        });
+  uploadToArweave = async (data, fileType, epObj, event) => {
+    const wallet = await window.arweaveWallet.getActiveAddress();
+    console.log(wallet);
+    if (!wallet) {
+      return null;
+    } else {
+      const tx = await arweave.createTransaction({ data: data });
+      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","thumbnail": "${this.props.podcast.cover},"balances": {"${wallet}": 1}}`;
+
+      tx.addTag("Content-Type", fileType);
+      tx.addTag("App-Name", "SmartWeaveContract");
+      tx.addTag("App-Version", "0.3.0");
+      tx.addTag("Contract-Src", NFT_SRC);
+      tx.addTag("Init-State", initState);
+      // Verto aNFT listing
+      tx.addTag("Exchange", "Verto");
+      tx.addTag("Action", "marketplace/create");
+      tx.addTag("Thumbnail", this.props.podcast.cover);
+
+      await arweave.transactions.sign(tx);
+      console.log(tx);
+      const uploader = await arweave.transactions.getUploader(tx);
+
+      while (!uploader.isComplete) {
+        await uploader.uploadChunk();
+
+        this.setState({uploadProgress: true})
+        this.setState({uploadPercentComplete: uploader.pctComplete})
+
+        console.log(
+        //  `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
+        );
+      }
+      if (uploader.txPosted) {
+        epObj.audio = tx.id;
+        epObj.type = fileType;
+        epObj.audioTxByteSize = data.size;
+        console.log('txPosted:')
+        console.log(epObj)
+        this.uploadShow(epObj);
+        event.target.reset();
+        swal(
+          "Upload complete",
+          "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.",
+          "success"
+        );
+        this.setState({ showUploadFee: null });
+      } else {
+        swal(
+          "Upload failed",
+          "Check your AR balance and network connection",
+          "error"
+        );
       }
     }
   
@@ -79,11 +112,24 @@ export default class UploadEpisode extends Component {
            this.uploadToArweave(file, fileType, epObj, event)
        })
        this.setState({episodeUploading: false})
-       }
+       } 
+
+      
+      getAddrRetry = async () => {
+        await window.arweaveWallet.connect(['ACCESS_ADDRESS'])
+        let addr = window.arweaveWallet.getActiveAddress();
+        while (!addr) {
+          if (addr) {
+            return addr;
+          } else {
+            //
+         }
+        }
+      }
 
       getSwcId = async () => {
         let tx
-        const addr = await window.arweaveWallet.getActiveAddress()
+        const addr = await this.getAddrRetry() //
         if (!addr) { return null } else {
         tx = await ardb.search('transactions')
         .from(addr)
@@ -116,7 +162,7 @@ export default class UploadEpisode extends Component {
         console.log(test)
       }
     
-      toFixed(x) {
+      toFixed = (x) => {
         if (Math.abs(x) < 1.0) {
           var e = parseInt(x.toString().split('e-')[1]);
           if (e) {
