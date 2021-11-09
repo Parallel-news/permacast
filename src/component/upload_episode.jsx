@@ -4,7 +4,10 @@ import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
 import { CONTRACT_SRC, NFT_SRC, arweave } from '../utils/arweave.js' 
+<<<<<<< HEAD
 import { FaWindowMinimize } from 'react-icons/fa'
+=======
+>>>>>>> 545dc26844e12087f9ed81968b476c5103f94c29
 
 const ardb = new ArDB(arweave)
 
@@ -12,8 +15,19 @@ export default class UploadEpisode extends Component {
      constructor(props) {
         super(props);
         this.state = {
-            test: true,
+          episodeUploading: false
         }
+    }
+
+    listEpisodeOnVerto = async (episodeId) => {
+      const vertoContractId = 't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
+      const input = {
+        "function":"list",
+        "id": episodeId,
+        "type":"art"
+      };
+
+      await interactWrite(arweave, "use_wallet", vertoContractId, input);
     }
 
     readFileAsync = (file) => {
@@ -48,7 +62,11 @@ export default class UploadEpisode extends Component {
       return null;
     } else {
       const tx = await arweave.createTransaction({ data: data });
+<<<<<<< HEAD
       const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","thumbnail": "${this.props.podcast.cover},"balances": {"${wallet}": 1}}`;
+=======
+      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","balances": {"${wallet}": 1}}`;
+>>>>>>> 545dc26844e12087f9ed81968b476c5103f94c29
 
       tx.addTag("Content-Type", fileType);
       tx.addTag("App-Name", "SmartWeaveContract");
@@ -96,15 +114,20 @@ export default class UploadEpisode extends Component {
         );
       }
     }
+  };
   
     handleEpisodeUpload = async (event) => {
       this.setState({episodeUploading: true})
-      swal('Upload underway...', "We'll let you know when it's done. Go grab a ☕ or 🍺")
+      swal({
+        title:`Upload underway!`,
+        text: "We'll let you know when it's done. Go grab a ☕ or 🍺",
+      })
        let epObj = {}
        event.preventDefault()
         epObj.name = event.target.episodeName.value
         epObj.desc = event.target.episodeShowNotes.value
         epObj.index = this.props.podcast.index
+        epObj.verto = event.target.verto.checked
         let episodeFile = event.target.episodeMedia.files[0]
         let fileType = episodeFile.type
         console.log(fileType)
@@ -152,14 +175,23 @@ export default class UploadEpisode extends Component {
           'index': this.props.podcast.index,
           'name': show.name,
           'desc': show.desc,
-          'audio': show.audio
+          'audio': show.audio,
+          'audioTxByteSize': show.audioTxByteSize,
+          'type': show.type
         }
 
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let test = await interactWrite(arweave, "use_wallet", theContractId, input, tags)
-        console.log(test)
+        let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags);
+        console.log('addEpisode txid:')
+        console.log(txId)
+        if (show.verto) {
+          console.log('pushing to Verto')
+          await this.listEpisodeOnVerto(txId)
+        } else {
+          console.log('skipping Verto')
+        }
       }
     
       toFixed = (x) => {
@@ -182,7 +214,7 @@ export default class UploadEpisode extends Component {
       
       calculateUploadFee = (file) => {
         console.log('fee reached')
-        let fee  = 0.0124 * (file.size / 1024 / 1024).toFixed(4)
+        let fee  = 0.0124 * ((file.size / 1024 / 1024) * 3).toFixed(4)
         this.setState({showUploadFee: fee})
       }
 
@@ -200,15 +232,19 @@ export default class UploadEpisode extends Component {
                 <Form className="p-4" hasValidation onSubmit={this.handleEpisodeUpload}>
                 <Form.Group className="mb-3" controlId="podcastName">
                     <Form.Label>Episode name</Form.Label>
-                    <Form.Control required type="text" name="episodeName" placeholder="EP1: Introduction" />
+                    <Form.Control required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="episodeShowNotes">
                     <Form.Label>Episode description</Form.Label>
-                    <Form.Control required as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
+                    <Form.Control required maxlength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
                 </Form.Group>
-                <Form.Group className="mb-3" controlId="episodeMedia" />
+                <Form.Group className="mb-5" controlId="episodeMedia">
                 <Form.Label>Audio file</Form.Label>
                 <Form.Control className="audio-input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia"/>
+                </Form.Group>
+                <Form.Group className="mt-5" controlId="verto">
+                  <Form.Check type="checkbox" label="List as an Atomic NFT on Verto?" id="verto"/>
+                </Form.Group>
                 {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null }
                 <br/><br/>
                 {!this.state.episodeUploading ? 
@@ -231,6 +267,7 @@ export default class UploadEpisode extends Component {
                   Uploading, please wait...
                 </Button>
                 }
+                <>{ this.state.uploadProgress && <div className="mt-3">Uploaded {this.state.uploadPercentComplete}%</div> }</>
                 </Form>
             </Card>
             </Col>

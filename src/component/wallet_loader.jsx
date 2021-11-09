@@ -5,7 +5,6 @@ import {
 } from "react-bootstrap";
 
 import swal from 'sweetalert';
-//import Arweave from "arweave";
 import { arweave } from "../utils/arweave.js"
 
 export default function WalletLoader() {

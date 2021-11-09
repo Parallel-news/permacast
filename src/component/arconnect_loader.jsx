@@ -31,7 +31,7 @@ export default class Header extends Component {
   arconnectConnect = async () => {
     console.log('clicked connect')
     if (window.arweaveWallet) {
-      window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGNATURE', 'SIGN_TRANSACTION'])
+      await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGNATURE', 'SIGN_TRANSACTION'])
       this.setState({walletConnected: true})
       this.setState({addr: await this.getAddr()})
       console.log(this.state)

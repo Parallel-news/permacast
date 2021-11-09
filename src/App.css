@@ -103,6 +103,10 @@ audio {
   color: black !important;
 }
 
+.download-button {
+  color: black !important;
+}
+
 .episode-row {
   padding: 1em !important;
   border-color: black !important;
@@ -115,11 +119,6 @@ audio {
   margin-bottom: 3em !important;
 }
 
-.podcast-player {
-
-  
-}
-
 @media screen and (max-width: 600px) {
   .mobile-hide {
     visibility: hidden !important;
@@ -130,4 +129,14 @@ audio {
 .header-icon {
   width:20px;
   z-index: 15px !important;
+}
+
+.rss-button {
+  background-color: #f6b26b !important;
+  border-color: #f6b26b !important;
+  padding: .25rem .4rem !important;
+  font-size: .65rem !important;
+  /*line-height: .5 !important;*/
+  border-radius: 0rem !important;
+
 }

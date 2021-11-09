@@ -3,8 +3,9 @@ import { Button, Modal, Form } from 'react-bootstrap';
 import { interactWrite } from 'smartweave'
 import ArDB from 'ardb';
 import swal from 'sweetalert';
-import { CONTRACT_SRC, arweave } from '../utils/arweave.js'
-
+import { FaPlus } from 'react-icons/fa';
+import { CONTRACT_SRC, arweave, languages, categories } from '../utils/arweave.js'
+import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow()  {
@@ -47,6 +48,7 @@ export default function UploadShow()  {
     async function processFile(file) {
       try {
         let contentBuffer = await readFileAsync(file);
+
         return contentBuffer
       } catch(err) {
         console.log(err);
@@ -54,6 +56,10 @@ export default function UploadShow()  {
     }
 
     const uploadShow = async (show) => {
+      Swal.fire({
+        title: 'Uploading, please wait a few seconds...',
+        timer: 2000
+      })
       let contractId
       let tx
       const addr = await window.arweaveWallet.getActiveAddress()
@@ -79,12 +85,18 @@ export default function UploadShow()  {
         'function': 'createPodcast',
         'name': show.name,
         'desc': show.desc,
-        'cover': show.cover
+        'cover': show.cover,
+        'lang': show.lang,
+        'isExplicit': show.isExplicit,
+        'author': show.author,
+        'categories': show.category,
+        'email': show.email
       }
 
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
       let uploadTxId = await interactWrite(arweave, "use_wallet", contractId, input, tags)
       if (uploadTxId) {
+        swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
         console.log(uploadTxId)
       } else {
         alert('An error occured.')
@@ -108,7 +120,6 @@ export default function UploadShow()  {
                 console.log(finalShowObj)
                 uploadShow(finalShowObj)
                 setShow(false)
-                swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
               } else {
                 swal('Unable to add show', 'Check your wallet balance and network connection', 'danger')
               }
@@ -117,15 +128,28 @@ export default function UploadShow()  {
         });
       }
 
-    const handleShowUpload = async (event) => {
-      const showObj = {}
+      const handleShowUpload = async (event) => {
       event.preventDefault()
+      // extract attrs from form
+      const showObj = {}
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
+      const podcastAuthor = event.target.podcastAuthor.value
+      const podcastEmail = event.target.podcastEmail.value
+      const podcastCategory = event.target.podcastCategory.value
+      const podcastExplicit = event.target.podcastExplicit.checked ? "yes" : "no"
+      const podcastLanguage = event.target.podcastLanguage.value
       const coverFileType = podcastCover.type
+      // add attrs to input for SWC
       showObj.name = podcastName
       showObj.desc = podcastDescription
+      showObj.author = podcastAuthor
+      showObj.email = podcastEmail
+      showObj.category = podcastCategory
+      showObj.isExplicit = podcastExplicit
+      showObj.lang = podcastLanguage
+      // upload cover, send all to Arweave
       let cover = await processFile(podcastCover)
       await uploadToArweave(cover, coverFileType, showObj)
    }
@@ -134,10 +158,31 @@ export default function UploadShow()  {
         setShow(false);
     }
 
+   const languageOptions = () => {
+      const langsArray = Object.entries(languages);
+      let optionsArr = []
+      for (let lang of langsArray) {
+        optionsArr.push(
+          <option value={lang[0]}>{lang[1]}</option>
+        )
+      }
+      return optionsArr
+    }
+
+    const categoryOptions = () => {
+      let optionsArr = []
+      for (let i in categories) {
+        optionsArr.push(
+          <option value={categories[i]}>{categories[i]}</option>
+        )
+      }
+      return optionsArr
+    }
+
     return(  
         <>  
         <span className="">
-            <Button variant="outline-primary" onClick={() => handleUploadClick()}>Upload</Button>
+            <Button variant="outline-primary" onClick={() => handleUploadClick()}>+ Add a podcast</Button>
         </span> 
         <Modal
         show={show}
@@ -155,15 +200,39 @@ export default function UploadShow()  {
           <Form hasValidation onSubmit={handleShowUpload}>
             <Form.Group className="mb-3" controlId="podcastName">
               <Form.Label>Show name</Form.Label>
-              <Form.Control required type="text" name="podcastName" placeholder="The Arweave Show" />
+              <Form.Control required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastDescription">
               <Form.Label>Show description</Form.Label>
-              <Form.Control required as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
+              <Form.Control required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="podcastCover" />
+            <Form.Group className="mb-3" controlId="podcastCover">
               <Form.Label>Cover image</Form.Label>
               <Form.Control required type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastAuthor">
+              <Form.Label>Author</Form.Label> {/* add tooltip */}
+              <Form.Control required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastEmail">
+              <Form.Label>Email</Form.Label> {/* add tooltip */}
+              <Form.Control type="email" name="podcastEmail" placeholder="your@email.net"/>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastLanguage">
+              <Form.Label>Podcast language</Form.Label><br/>
+              <select className="custom-select" id="podcastLanguage" name="language">
+                {languageOptions()}
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastCategory">
+              <Form.Label>Category</Form.Label><br/>
+              <select className="custom-select" id="podcastCategory" name="category">
+                {categoryOptions()}
+              </select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="podcastExplicit">
+              <Form.Check label="Contains explicit content" id="podcastExplicit"/>
+            </Form.Group>
         <br/><br/>
         <Modal.Footer className="m-2">
         <Button variant="danger" onClick={handleClose} color="danger">
