@@ -4,10 +4,7 @@ import ArDB from 'ardb'
 import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
 import { CONTRACT_SRC, NFT_SRC, arweave } from '../utils/arweave.js' 
-<<<<<<< HEAD
 import { FaWindowMinimize } from 'react-icons/fa'
-=======
->>>>>>> 545dc26844e12087f9ed81968b476c5103f94c29
 
 const ardb = new ArDB(arweave)
 
@@ -62,12 +59,7 @@ export default class UploadEpisode extends Component {
       return null;
     } else {
       const tx = await arweave.createTransaction({ data: data });
-<<<<<<< HEAD
-      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","thumbnail": "${this.props.podcast.cover},"balances": {"${wallet}": 1}}`;
-=======
-      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","balances": {"${wallet}": 1}}`;
->>>>>>> 545dc26844e12087f9ed81968b476c5103f94c29
-
+      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","thumbnail": "${this.props.podcast.cover}","balances": {"${wallet}": 1}}`;
       tx.addTag("Content-Type", fileType);
       tx.addTag("App-Name", "SmartWeaveContract");
       tx.addTag("App-Version", "0.3.0");
