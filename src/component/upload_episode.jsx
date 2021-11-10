@@ -143,6 +143,7 @@ export default class UploadEpisode extends Component {
       }
 
       getSwcId = async () => {
+        await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"])
         let tx
         let addr = await window.arweaveWallet.getActiveAddress() //await this.getAddrRetry() //
         if (!addr) {
