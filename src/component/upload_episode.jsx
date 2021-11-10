@@ -144,7 +144,7 @@ export default class UploadEpisode extends Component {
 
       getSwcId = async () => {
         let tx
-        const addr = await this.getAddrRetry() //
+        const addr = await window.arweaveWallet.getActiveAddress() //await this.getAddrRetry() //
         if (!addr) { return null } else {
         tx = await ardb.search('transactions')
         .from(addr)
@@ -154,7 +154,11 @@ export default class UploadEpisode extends Component {
         .tag('Contract-Src', CONTRACT_SRC)
         .find()
         }
-        return tx[0]['node']['id']
+        if (!tx) {
+          swal('Something went wrong :( please retry the upload');
+        } else {
+          return tx[0]['node']['id']
+        }
       }
 
     uploadShow = async (show) => {
