@@ -144,8 +144,11 @@ export default class UploadEpisode extends Component {
 
       getSwcId = async () => {
         let tx
-        const addr = await window.arweaveWallet.getActiveAddress() //await this.getAddrRetry() //
-        if (!addr) { return null } else {
+        let addr = await window.arweaveWallet.getActiveAddress() //await this.getAddrRetry() //
+        if (!addr) {
+             await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
+             addr = await window.arweaveWallet.getActiveAddress()
+        }
         tx = await ardb.search('transactions')
         .from(addr)
         .tag('App-Name', 'SmartWeaveAction')
@@ -153,7 +156,7 @@ export default class UploadEpisode extends Component {
         .tag('Protocol', 'permacast-testnet-v3')
         .tag('Contract-Src', CONTRACT_SRC)
         .find()
-        }
+    
         if (!tx) {
           swal('Something went wrong :( please retry the upload');
         } else {
