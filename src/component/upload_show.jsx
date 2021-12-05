@@ -62,13 +62,15 @@ export default function UploadShow()  {
       })
       let contractId
       let tx
-      let addr = await window.arweaveWallet.getActiveAddress()
-      console.log(addr)
-      if (!addr) {
-          await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"])
-          addr = await window.arweaveWallet.getActiveAddress()
-      }
 
+      await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "SIGNATURE"])
+      let addr = await window.arweaveWallet.getActiveAddress()
+
+      if (!addr) {
+             await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
+             addr = await window.arweaveWallet.getActiveAddress()
+      }
+        
       tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
