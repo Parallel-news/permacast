@@ -62,17 +62,21 @@ export default function UploadShow()  {
       })
       let contractId
       let tx
-      const addr = await window.arweaveWallet.getActiveAddress()
+      let addr = await window.arweaveWallet.getActiveAddress()
       console.log(addr)
-      if (!addr) { return null } else {
+      if (!addr) {
+          await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"])
+          addr = await window.arweaveWallet.getActiveAddress()
+      }
+
       tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
       .tag('Action', 'launchCreator')
       .tag('Protocol', 'permacast-testnet-v3')
       .tag('Contract-Src', CONTRACT_SRC)
-      .find()
-      }
+      .find();
+        
       console.log(tx)
       if (tx.length !==0) {
         contractId = tx[0].node.id
