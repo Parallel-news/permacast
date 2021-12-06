@@ -1,10 +1,18 @@
 import ArweaveMultihost from 'arweave-multihost'
-
+import Arweave from 'arweave'
+/*
 export const arweave = ArweaveMultihost.initWithDefaultHosts({
   timeout: 10000,         // Network request timeouts in milliseconds
   logging: false,          // Enable network request logging
   logger: null,    // Logger function
   onError: console.error, // On request error callback
+});
+*/
+
+export const arweave = Arweave.init({
+  host: "arweave.net",
+  port: 443,
+  protocol: "https",
 });
 
 // TEST CONTRACT:

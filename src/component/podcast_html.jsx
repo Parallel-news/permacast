@@ -87,7 +87,7 @@ export default class PodcastHtml extends Component {
             <Card className="text-center p-3 border-0">
                 <div className="image-item">
                     <a href={`/#/podcasts/${this.props.link}`}>
-                    {!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>}
+                    {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
                         <Image className="podcast-grid-cover" alt={`${this.props.name} cover`} src={this.props.image} />
                     </a>
                 </div>

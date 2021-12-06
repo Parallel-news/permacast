@@ -126,10 +126,10 @@ class Podcast extends Component {
     return podcastHtml
   }
 
-  loadEpisodes = (p) => {
+  loadEpisodes = async (p) => {
     let ep = p
     const episodeList = []
-    const addr = await arweaveWallet.getActiveAddress();
+    const addr = await window.arweaveWallet.getActiveAddress();
     for (let i in ep) {
       let e = ep[i]
       console.log(e)
@@ -217,7 +217,7 @@ class Podcast extends Component {
     console.log(this.state)
     let podcastHtml = this.loadPodcast(this.state.thePodcast)
     this.setState({ podcastHtml: podcastHtml })
-    let podcastEpisodes = this.loadEpisodes(this.state.thePodcast.episodes)
+    let podcastEpisodes = await this.loadEpisodes(this.state.thePodcast.episodes)
     this.setState({ podcastEpisodes: podcastEpisodes })
     this.setState({ loading: false })
     let addr = await window.arweaveWallet.getActiveAddress()
