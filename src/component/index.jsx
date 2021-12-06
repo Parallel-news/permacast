@@ -65,6 +65,7 @@ class Index extends Component {
               <>
               <PodcastHtml
               name={p.podcastName}
+              episodes={p.episodes.length}
               link={p.pid}
               description={p.description}
               image={`https://arweave.net/${p.cover}`}

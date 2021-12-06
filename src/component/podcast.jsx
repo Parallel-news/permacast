@@ -129,6 +129,7 @@ class Podcast extends Component {
   loadEpisodes = (p) => {
     let ep = p
     const episodeList = []
+    const addr = await arweaveWallet.getActiveAddress();
     for (let i in ep) {
       let e = ep[i]
       console.log(e)
@@ -146,6 +147,10 @@ class Podcast extends Component {
               <Col>
                 {this.truncatedDesc(e.description, 52)}
               </Col>
+              { this.state.thePodcast.owner === addr &&
+              <Col>
+                edit
+              </Col> }
             </Row>
           </div>
         )
@@ -216,6 +221,7 @@ class Podcast extends Component {
     this.setState({ podcastEpisodes: podcastEpisodes })
     this.setState({ loading: false })
     let addr = await window.arweaveWallet.getActiveAddress()
+    console.log(addr)
     this.setState({ addr: addr })
     console.log(this.state.thePodcast)
   }

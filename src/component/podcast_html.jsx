@@ -1,5 +1,5 @@
 import { React, Component } from 'react';
-import { Button, Card, Image } from 'react-bootstrap';
+import { Badge, Button, Card, Image } from 'react-bootstrap';
 import { FaRss, FaRegGem } from 'react-icons/fa';
 import { readContract, interactWrite } from 'smartweave';
 import { arweave, NEWS_CONTRACT } from '../utils/arweave.js'
@@ -73,11 +73,24 @@ export default class PodcastHtml extends Component {
         }
     }
 
+    episodeCount = (count) => {
+        if (count == 1) {
+            return `${count} episode`
+        } else {
+            return `${count} episodes`
+        }
+    }
+
     render() {
         console.log(this.props.rss)
         return(    
             <Card className="text-center p-3 border-0">
-                <a href={`/#/podcasts/${this.props.link}`}><Image className="podcast-grid-cover" alt={`${this.props.name} cover`} src={this.props.image} /></a>
+                <div className="image-item">
+                    <a href={`/#/podcasts/${this.props.link}`}>
+                    {!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>}
+                        <Image className="podcast-grid-cover" alt={`${this.props.name} cover`} src={this.props.image} />
+                    </a>
+                </div>
                 <div className={this.props.titleClass || 'h3'}>{this.props.name} { this.props.rss ? <span><Button size="sm" className="rss-button" onClick={() => this.loadRss()}><FaRss/></Button>  {this.tipButton()}  </span> : null } </div>
                 <p>{this.props.description}</p>
             </Card>
