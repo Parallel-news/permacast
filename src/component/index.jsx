@@ -63,13 +63,14 @@ class Index extends Component {
           if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
             html.push(
               <>
-              <PodcastHtml
-              name={p.podcastName}
-              episodes={p.episodes.length}
-              link={p.pid}
-              description={p.description}
-              image={`https://arweave.net/${p.cover}`}
-              />
+                <PodcastHtml
+                  name={p.podcastName}
+                  episodes={p.episodes.length}
+                  link={p.pid}
+                  description={p.description}
+                  image={`https://arweave.net/${p.cover}`}
+                  key={p.pid}
+                />
               </>
             ) 
           }

@@ -169,7 +169,7 @@ export default function UploadShow()  {
       let optionsArr = []
       for (let lang of langsArray) {
         optionsArr.push(
-          <option value={lang[0]}>{lang[1]}</option>
+          <option value={lang[0]} key={lang[1]}>{lang[1]}</option>
         )
       }
       return optionsArr
@@ -179,7 +179,7 @@ export default function UploadShow()  {
       let optionsArr = []
       for (let i in categories) {
         optionsArr.push(
-          <option value={categories[i]}>{categories[i]}</option>
+          <option value={categories[i]} key={i}>{categories[i]}</option>
         )
       }
       return optionsArr
@@ -188,7 +188,7 @@ export default function UploadShow()  {
     return(  
         <>  
         <span className="">
-            <Button variant="outline-primary" onClick={() => handleUploadClick()}>+ Add a podcast</Button>
+            <Button variant="outline-primary" onClick={() => handleUploadClick()} style={{ marginRight: "1em" }}>+ Add a podcast</Button>
         </span> 
         <Modal
         show={show}

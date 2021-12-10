@@ -4,13 +4,57 @@ import UploadShow from './upload_show.jsx'
 
 import Swal from 'sweetalert2'
 
+const requiredPermissions = ['ACCESS_ADDRESS', 'ACCESS_ALL_ADDRESSES', 'SIGNATURE', 'SIGN_TRANSACTION']
+
 export default class Header extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      walletConnected: false
+      walletConnected: false,
+      address: undefined
     };
+  }
+
+  // add ArConnect event listeners
+  componentDidMount = () => {
+    window.addEventListener('arweaveWalletLoaded', this.walletLoadedEvent)
+    window.addEventListener('walletSwitch', this.walletSwitchEvent)
+  }
+
+  // remove ArConnect event listeners
+  componentWillUnmount = () => {
+    window.removeEventListener('arweaveWalletLoaded', this.walletLoadedEvent)
+    window.removeEventListener('walletSwitch', this.walletSwitchEvent)
+  }
+
+  // wallet address change event
+  // when the user switches wallets
+  walletSwitchEvent = (e) => {
+    this.setState({
+      address: e.detail.address
+    })
+  }
+
+  // ArConnect script injected event
+  walletLoadedEvent = async () => {
+    try {
+      // connected, set address
+      // (the user can still be connected, but
+      // for this actions the "ACCESS_ADDRESS"
+      // permission is required. if the user doesn't
+      // have that, we still need to ask them to connect)
+      this.setState({
+        address: await this.getAddr(),
+        walletConnected: true
+      })
+    } catch {
+      // not connected
+      this.setState({
+        address: undefined,
+        walletConnected: false
+      })
+    }
   }
 
   installArConnectAlert = () => {
@@ -22,38 +66,55 @@ export default class Header extends Component {
     })
   }
 
-  getAddr = async () => {
-    let addr = await window.arweaveWallet.getActiveAddress()
-    console.log(addr)
-    return addr
-  }
+  getAddr = () => window.arweaveWallet.getActiveAddress()
 
   arconnectConnect = async () => {
-    console.log('clicked connect')
     if (window.arweaveWallet) {
-      await window.arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGNATURE', 'SIGN_TRANSACTION'])
-      this.setState({walletConnected: true})
-      this.setState({addr: await this.getAddr()})
-      console.log(this.state)
-      localStorage.setItem('walletAddr', JSON.stringify(await this.getAddr()))
+      try {
+        await window.arweaveWallet.connect(requiredPermissions)
+        const address = await this.getAddr()
+
+        this.setState({
+          walletConnected: true,
+          address
+        })
+      } catch {}
     } else {
       this.installArConnectAlert()
     }
   }
 
-  arconnectDisconnect = () => {
-    window.arweaveWallet.disconnect()
-    this.setState({walletConnected: false})
-    localStorage.setItem('walletAddr', JSON.stringify(null))
+  arconnectDisconnect = async () => {
+    await window.arweaveWallet.disconnect()
+    this.setState({
+      walletConnected: false,
+      address: undefined
+    })
   }
 
   render() {
     return (
       <div>
-      {localStorage.getItem('walletAddr') !== "null"  ? 
-                 <><UploadShow/> <Button className="mobile-hide" variant="outline-danger" onClick={ () => this.arconnectDisconnect() }>Logout</Button></> :
-                 <Button variant="success" onClick={ () => this.arconnectConnect() }>🦔 ArConnect login</Button>
-              }
+        {/** if the wallet is connected, display the logout btn, else display login */}
+        {(this.state.walletConnected && (
+          <>
+            <UploadShow/>
+            <Button
+              className="mobile-hide"
+              variant="outline-danger"
+              onClick={this.arconnectDisconnect}
+            >
+              Logout
+            </Button>
+          </>
+        )) || (
+          <Button
+            variant="success"
+            onClick={this.arconnectConnect}
+          >
+            🦔 ArConnect login
+          </Button>
+        )}
       </div>
     )
   }
