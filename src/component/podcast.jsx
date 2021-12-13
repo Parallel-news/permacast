@@ -22,41 +22,32 @@ class Podcast extends Component {
   }
 
   fetchAllSwcIds = async () => {
-    const response = await fetch("https://arweave.net/graphql", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(queryObject),
+    const response = await fetch("https://permacast-cache.herokuapp.com/feeds/podcasts", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', }
     });
 
-    const json = await response.json();
-    console.log(json)
-    const data_arr = [];
-
-    const res_arr = json["data"]["transactions"]["edges"];
-
-    for (let element in Object.values(res_arr)) {
-      data_arr.push(res_arr[element]["node"]["id"])
-    }
-    return data_arr
+    return (await response.json());
   }
 
   loadPodcasts = async () => {
-    let podcastList = []
+    // let podcastList = []
     let creatorsContracts = await this.fetchAllSwcIds()
+    const podcastList = creatorsContracts.res
 
-    for (let contract of creatorsContracts) {
+    return podcastList;
+  }
+  
+  getPodcastEpisodes = async() => {
+    const pid = this.props.match.params.podcastId;
 
-      try {
-        let thisPodcast = await readContract(arweave, contract)
-        for (let podcastObject of thisPodcast.podcasts) {
-          podcastList.push(podcastObject)
-        }
-      } catch {
-        console.log('podcast does not exist, or is just not mined yet')
-      }
-    }
-    console.log(podcastList)
-    return podcastList
+    const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', }
+    });
+
+    const episodes = (await response.json())["episodes"];
+    return episodes;
   }
 
   getPodcast = async (p) => {
@@ -217,7 +208,8 @@ class Podcast extends Component {
     console.log(this.state)
     let podcastHtml = this.loadPodcast(this.state.thePodcast)
     this.setState({ podcastHtml: podcastHtml })
-    let podcastEpisodes = await this.loadEpisodes(this.state.thePodcast.episodes)
+    const eps = await this.getPodcastEpisodes()
+    let podcastEpisodes = await this.loadEpisodes(eps)
     this.setState({ podcastEpisodes: podcastEpisodes })
     this.setState({ loading: false })
     let addr = await window.arweaveWallet.getActiveAddress()
