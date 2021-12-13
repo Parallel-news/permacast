@@ -197,7 +197,7 @@ class Podcast extends Component {
     let cover = this.state.thePodcast.cover
     const player = new Shikwasa({
       container: () => document.querySelector('.podcast-player'),
-      themeColor: 'black',
+      themeColor: 'gray',
       autoplay: true,
       audio: {
         title: e.episodeName,
