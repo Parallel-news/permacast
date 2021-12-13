@@ -2558,14 +2558,14 @@
     "arweave" "^1.10.15"
     "axios" "^0.21.1"
 
-"arweave@^1.10.11", "arweave@^1.10.13", "arweave@^1.10.15", "arweave@^1.10.16":
-  "integrity" "sha512-j2UM7C/2MHO7Mv7wbzhihgVs8uN2+QltA+3cYaM82dNNEBBJylIClJUHHMqsK/2ejCnziQm4FofiUFbsQDdQDg=="
-  "resolved" "https://registry.npmjs.org/arweave/-/arweave-1.10.16.tgz"
-  "version" "1.10.16"
+"arweave@^1.10.11", "arweave@^1.10.13", "arweave@^1.10.15", "arweave@^1.10.16", "arweave@^1.10.18":
+  "integrity" "sha512-i3pKBkLtU1Jl9RtJ9A6zgz8QqF5FZy7YA+qGQ9i2Zug171p29FTDZhN+KlRcVBg8sEgd1DKyecCCYJZ3K6Jdfg=="
+  "resolved" "https://registry.npmjs.org/arweave/-/arweave-1.10.18.tgz"
+  "version" "1.10.18"
   dependencies:
     "arconnect" "^0.2.8"
     "asn1.js" "^5.4.1"
-    "axios" "^0.21.1"
+    "axios" "^0.22.0"
     "base64-js" "^1.3.1"
     "bignumber.js" "^9.0.1"
 
@@ -2690,6 +2690,20 @@
   "version" "0.21.1"
   dependencies:
     "follow-redirects" "^1.10.0"
+
+"axios@^0.22.0":
+  "integrity" "sha512-Z0U3uhqQeg1oNcihswf4ZD57O3NrR1+ZXhxaROaWpDmsDTx7T2HNBV2ulBtie2hwJptu8UvgnJoK+BIqdzh/1w=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.22.0.tgz"
+  "version" "0.22.0"
+  dependencies:
+    "follow-redirects" "^1.14.4"
+
+"axios@^0.24.0":
+  "integrity" "sha512-Q6cWsys88HoPgAaFAVUb0WpPk0O8iTeisR9IMqy9G8AbO4NlpVknrnQS03zzF9PGAWgO3cgletO3VjV/P7VztA=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-0.24.0.tgz"
+  "version" "0.24.0"
+  dependencies:
+    "follow-redirects" "^1.14.4"
 
 "axobject-query@^2.2.0":
   "integrity" "sha512-Td525n+iPOOyUQIeBfcASuG6uJsDOITl7Mds5gFyerkWiX7qhUTdYUBlSgNMyVqtSJqwpt1kXGLdUt6SykLMRA=="
@@ -2896,6 +2910,11 @@
   "integrity" "sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA=="
   "resolved" "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
   "version" "1.5.1"
+
+"base64url@^3.0.1":
+  "integrity" "sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A=="
+  "resolved" "https://registry.npmjs.org/base64url/-/base64url-3.0.1.tgz"
+  "version" "3.0.1"
 
 "batch@0.6.1":
   "integrity" "sha1-3DQxT05nkxgJP8dgJyUl+UvyXBY="
@@ -5440,10 +5459,10 @@
     "inherits" "^2.0.3"
     "readable-stream" "^2.3.6"
 
-"follow-redirects@^1.0.0", "follow-redirects@^1.10.0":
-  "integrity" "sha512-6mPTgLxYm3r6Bkkg0vNM0HTjfGrOEtsfbhagQvbxDEsEkpNhw582upBaoRZylzen6krEmxXJgt9Ju6HiI4O7BA=="
-  "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.13.2.tgz"
-  "version" "1.13.2"
+"follow-redirects@^1.0.0", "follow-redirects@^1.10.0", "follow-redirects@^1.14.4":
+  "integrity" "sha512-fhUl5EwSJbbl8AR+uYL2KQDxLkdSjZGR36xy46AO7cOMTrCMON6Sa28FmAnC2tRTDbd/Uuzz3aJBv7EBN7JH8A=="
+  "resolved" "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.14.6.tgz"
+  "version" "1.14.6"
 
 "for-in@^1.0.2":
   "integrity" "sha1-gQaNKVqBQuwKxybG4iAMMPttXoA="
@@ -11922,6 +11941,15 @@
   "version" "1.7.3"
   dependencies:
     "minimalistic-assert" "^1.0.0"
+
+"weave-aggregator@^0.0.9":
+  "integrity" "sha512-xLwWN894petMJkniv5X8D6OHgWXNatNONaK44PheWIIqVNJm3+UZGxm1XgcJean/bbXG9Y2bwgZvcpCY0laapw=="
+  "resolved" "https://registry.npmjs.org/weave-aggregator/-/weave-aggregator-0.0.9.tgz"
+  "version" "0.0.9"
+  dependencies:
+    "arweave" "^1.10.18"
+    "axios" "^0.24.0"
+    "base64url" "^3.0.1"
 
 "web-vitals@^1.0.1":
   "integrity" "sha512-PFMKIY+bRSXlMxVAQ+m2aw9c/ioUYfDgrYot0YUa+/xa0sakubWhSDyxAKwzymvXVdF4CZI71g06W+mqhzu6ig=="

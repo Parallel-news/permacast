@@ -119,7 +119,7 @@ audio {
   margin-bottom: 3em !important;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 900px) {
   .mobile-hide {
     visibility: hidden !important;
     display: none !important;

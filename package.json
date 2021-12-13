@@ -22,6 +22,7 @@
     "smartweave": "^0.4.41",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.1.5",
+    "weave-aggregator": "^0.0.9",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
