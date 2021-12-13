@@ -148,10 +148,10 @@ class Podcast extends Component {
               <Col>
                 {this.truncatedDesc(e.description, 52)}
               </Col>
-              { this.state.thePodcast.owner === addr &&
+              { /* this.state.thePodcast.owner === addr &&
               <Col>
                 edit
-              </Col> }
+              </Col> */ }
             </Row>
           </div>
         )
