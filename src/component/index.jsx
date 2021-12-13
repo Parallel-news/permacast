@@ -15,45 +15,21 @@ class Index extends Component {
     }
 
   fetchAllSwcIds = async () => {
-    const response = await fetch("https://arweave.net/graphql", {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(queryObject),
+    const response = await fetch("https://permacast-cache.herokuapp.com/feeds/podcasts", {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', }
     });
 
-    const json = await response.json();
-    const data_arr = [];
-
-    const res_arr = json["data"]["transactions"]["edges"];
-
-    for (let element in Object.values(res_arr)) {
-      data_arr.push(res_arr[element]["node"]["id"])
-    }
-    console.log(data_arr)
-    return data_arr
+    return (await response.json());
   }
 
   loadPodcasts = async () => {
-    let podcastList = []
+    // let podcastList = []
     let creatorsContracts = await this.fetchAllSwcIds()
+    const podcastList = creatorsContracts.res
 
-    for (let contract of creatorsContracts) {
-
-      try {
-      let thisPodcast = await readContract(arweave, contract)
-
-      for (let podcastObject of thisPodcast.podcasts) {
-        podcastList.push(podcastObject)
-      }
-        
-      } catch {
-        console.log('podcast does not exist, or is just not mined yet')
-      }
-    }
-    console.log(podcastList)
-    return podcastList
+    return podcastList;
   }
-
   renderPodcasts = async (podcasts) => {
         let html = []
 
