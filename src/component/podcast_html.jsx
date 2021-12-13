@@ -9,7 +9,7 @@ export default class PodcastHtml extends Component {
 
     loadRss = () => {
         console.log(this.props.rss)
-        window.open(`https://permacast-api.herokuapp.com/rss/${this.props.rss}`, '_blank')
+        window.open(`https://permacast-cache.herokuapp.com/feeds/${this.props.rss}`, '_blank')
     }
 
     tipButton = () => {
