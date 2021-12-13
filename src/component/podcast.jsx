@@ -103,7 +103,7 @@ class Podcast extends Component {
     podcastHtml.push(
       <div>
         <PodcastHtml
-          rss={`${p.childOf}/${p.pid}`}
+          rss={`rss/${p.pid}`}
           owner={p.owner}
           id={p.pid}
           link={p.pid}
@@ -116,11 +116,21 @@ class Podcast extends Component {
     )
     return podcastHtml
   }
-
+  tryAddressConnecting = async () => {
+    let addr;
+    try {
+      addr = await window.arweaveWallet.getActiveAddress();
+      return addr;
+    } catch (error) {
+      console.log("🦔Displaying feed for non-ArConnect installed users🦔");
+      addr = "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0";
+      return addr;
+    }
+  };
   loadEpisodes = async (p) => {
     let ep = p
     const episodeList = []
-    const addr = await window.arweaveWallet.getActiveAddress();
+    const addr = await this.tryAddressConnecting();
     for (let i in ep) {
       let e = ep[i]
       console.log(e)
@@ -212,7 +222,7 @@ class Podcast extends Component {
     let podcastEpisodes = await this.loadEpisodes(eps)
     this.setState({ podcastEpisodes: podcastEpisodes })
     this.setState({ loading: false })
-    let addr = await window.arweaveWallet.getActiveAddress()
+    const addr = await this.tryAddressConnecting();
     console.log(addr)
     this.setState({ addr: addr })
     console.log(this.state.thePodcast)
