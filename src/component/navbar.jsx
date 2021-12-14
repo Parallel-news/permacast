@@ -29,7 +29,7 @@ export default class Header extends Component {
   }
 
   loadEmail = () => {
-    window.open('mailto:xylophonezygote@gmail.com');
+    window.open('https://t.me/permacast');
   }
 
   componentDidMount = async () => {
