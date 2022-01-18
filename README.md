@@ -15,6 +15,7 @@ Each content-creator needs an <a href="https://faucet.arweave.net/">Arweave wall
 # tech-stack 
 - Frontend: React
 - backend: SmartWeave contracts
+- gateway: [Meson Network](https://meson.network/)
 
 # License
 
