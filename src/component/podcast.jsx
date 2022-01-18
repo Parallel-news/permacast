@@ -110,7 +110,7 @@ class Podcast extends Component {
           name={p.podcastName}
           titleClass={'h2'}
           description={p.description}
-          image={`https://arweave.net/${p.cover}`}
+          image={`${MESON_ENPOINT}/${p.cover}`}
         />
       </div>
     )
@@ -140,7 +140,7 @@ class Podcast extends Component {
             <Row className="p-1 m-2 align-items-center episode-row">
               <Col md="auto">
                 <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <IoPlaySharp /> </Button>
-                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`https://www.arweave.net/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
+                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`{${MESON_ENPOINT}/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
               </Col>
               <Col md="auto">
                 <div className="font-weight-bold">{e.episodeName}</div>
