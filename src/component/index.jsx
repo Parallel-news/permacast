@@ -2,7 +2,7 @@ import { React, Component } from 'react'
 import { CardColumns, Container } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import { readContract } from 'smartweave'
-import { queryObject, arweave } from '../utils/arweave.js'
+import { queryObject, arweave, MESON_ENPOINT } from '../utils/arweave.js'
 
 class Index extends Component {
 
@@ -44,7 +44,7 @@ class Index extends Component {
                   episodes={p.episodes.length}
                   link={p.pid}
                   description={p.description}
-                  image={`https://arweave.net/${p.cover}`}
+                  image={`${MESON_ENPOINT}/${p.cover}`}
                   key={p.pid}
                 />
               </>
