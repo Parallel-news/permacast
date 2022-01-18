@@ -9,7 +9,7 @@ import Shikwasa from 'shikwasa'
 import { FaPlay } from 'react-icons/fa';
 import { IoIosArrowRoundDown } from 'react-icons/io'
 import { IoPlaySharp } from 'react-icons/io5'
-import { arweave, queryObject } from '../utils/arweave.js'
+import { arweave, queryObject, MESON_ENPOINT } from '../utils/arweave.js'
 
 class Podcast extends Component {
 
@@ -202,8 +202,8 @@ class Podcast extends Component {
       audio: {
         title: e.episodeName,
         artist: name,
-        cover: `https://arweave.net/${cover}`,
-        src: `https://arweave.net/${e.audioTx}`,
+        cover: `${MESON_ENPOINT}/${cover}`,
+        src: `${MESON_ENPOINT}/${e.audioTx}`,
       },
     })
     window.scrollTo(0, document.body.scrollHeight)
