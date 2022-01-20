@@ -9,7 +9,7 @@ import Shikwasa from 'shikwasa'
 import { FaPlay } from 'react-icons/fa';
 import { IoIosArrowRoundDown } from 'react-icons/io'
 import { IoPlaySharp } from 'react-icons/io5'
-import { arweave, queryObject, MESON_ENPOINT } from '../utils/arweave.js'
+import { arweave, queryObject, MESON_ENDPOINT } from '../utils/arweave.js'
 
 class Podcast extends Component {
 
@@ -110,7 +110,7 @@ class Podcast extends Component {
           name={p.podcastName}
           titleClass={'h2'}
           description={p.description}
-          image={`${MESON_ENPOINT}/${p.cover}`}
+          image={`${MESON_ENDPOINT}/${p.cover}`}
         />
       </div>
     )
@@ -140,7 +140,7 @@ class Podcast extends Component {
             <Row className="p-1 m-2 align-items-center episode-row">
               <Col md="auto">
                 <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <IoPlaySharp /> </Button>
-                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`{${MESON_ENPOINT}/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
+                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
               </Col>
               <Col md="auto">
                 <div className="font-weight-bold">{e.episodeName}</div>
@@ -202,8 +202,8 @@ class Podcast extends Component {
       audio: {
         title: e.episodeName,
         artist: name,
-        cover: `${MESON_ENPOINT}/${cover}`,
-        src: `${MESON_ENPOINT}/${e.audioTx}`,
+        cover: `${MESON_ENDPOINT}/${cover}`,
+        src: `${MESON_ENDPOINT}/${e.audioTx}`,
       },
     })
     window.scrollTo(0, document.body.scrollHeight)
