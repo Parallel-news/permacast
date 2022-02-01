@@ -32,18 +32,6 @@ export default class Header extends Component {
     window.open('https://t.me/permacast');
   }
 
-  componentDidMount = async () => {
-    let size = await getWeaveAggregator('permacast-size');
-    let sizeInGb = size
-    console.log(size)
-    this.setState(
-      {
-        addr: await this.getAddr(),
-        totalSize: sizeInGb
-      }
-    )
-  }
-
   getAddr = async () => {
     if (await this.loggedIn()) {
     let addr = window.arweaveWallet && await window.arweaveWallet.getActiveAddress()
@@ -74,7 +62,6 @@ export default class Header extends Component {
           <div className="d-flex">
             <Navbar.Text>
                 <Row className="flex-row">
-                  {/*<span>{this.state.totalSize}</span>*/}
                   <Button onClick={() => this.loadEmail()} variant="link" className="navbar-item text-decoration-none mr-2 mobile-hide">📨 Get help</Button>
                   <Button onClick={() => this.loadWhatsNew()} variant="link" className="navbar-item text-decoration-none mr-2 mobile-hide">✨ What's new</Button>
                   <ArConnectLoader />
