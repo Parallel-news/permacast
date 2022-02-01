@@ -1,9 +1,8 @@
 import { React, Component } from 'react'
 import { Col, Container, Button, Form, Card } from 'react-bootstrap'
 import ArDB from 'ardb'
-import { interactWrite } from 'smartweave'
 import swal from 'sweetalert'
-import { CONTRACT_SRC, NFT_SRC, arweave } from '../utils/arweave.js' 
+import { CONTRACT_SRC, NFT_SRC, arweave, smartweave } from '../utils/arweave.js' 
 import { FaWindowMinimize } from 'react-icons/fa'
 
 const ardb = new ArDB(arweave)
@@ -23,8 +22,8 @@ export default class UploadEpisode extends Component {
         "id": episodeId,
         "type":"art"
       };
-
-      await interactWrite(arweave, "use_wallet", vertoContractId, input);
+      const contract = smartweave.contract(vertoContractId).connect('use_wallet');
+      await contract.writeInteraction(input);
     }
 
     readFileAsync = (file) => {
@@ -183,8 +182,9 @@ export default class UploadEpisode extends Component {
         console.log(input)
   
         let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let txId = await interactWrite(arweave, "use_wallet", theContractId, input, tags);
-        console.log('addEpisode txid:')
+        let contract = smartweave.contract(theContractId).connect("use_wallet");
+        let txId = await contract.writeInteraction(input, tags);
+        console.log('addEpisode txid:');
         console.log(txId)
         if (show.verto) {
           console.log('pushing to Verto')

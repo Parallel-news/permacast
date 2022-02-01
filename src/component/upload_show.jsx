@@ -1,10 +1,9 @@
 import { React, useState } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
-import { interactWrite } from 'smartweave'
 import ArDB from 'ardb';
 import swal from 'sweetalert';
 import { FaPlus } from 'react-icons/fa';
-import { CONTRACT_SRC, arweave, languages, categories } from '../utils/arweave.js'
+import { CONTRACT_SRC, arweave, languages, categories, smartweave } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
 
@@ -100,7 +99,8 @@ export default function UploadShow()  {
       }
 
       let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
-      let uploadTxId = await interactWrite(arweave, "use_wallet", contractId, input, tags)
+      let contract = smartweave.contract(contractId).connect("use_wallet");
+      let uploadTxId = await contract.writeInteraction(input, tags);
       if (uploadTxId) {
         swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
         console.log(uploadTxId)

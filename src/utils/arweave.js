@@ -1,5 +1,7 @@
 import ArweaveMultihost from 'arweave-multihost'
 import Arweave from 'arweave'
+import { SmartWeaveWebFactory } from 'redstone-smartweave';
+
 /*
 export const arweave = ArweaveMultihost.initWithDefaultHosts({
   timeout: 10000,         // Network request timeouts in milliseconds
@@ -14,6 +16,8 @@ export const arweave = Arweave.init({
   port: 443,
   protocol: "https",
 });
+
+export const smartweave = SmartWeaveWebFactory.memCached(arweave);
 
 // TEST CONTRACT:
 //export const CONTRACT_SRC = "4uc2tYgjq75xb3Bc5vMZej-7INXxhaTA70NPL23Om4A"

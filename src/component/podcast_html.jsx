@@ -1,8 +1,8 @@
 import { React, Component } from 'react';
-import { Badge, Button, Card, Image } from 'react-bootstrap';
+import { Button, Card, Image } from 'react-bootstrap';
 import { FaRss, FaRegGem } from 'react-icons/fa';
-import { readContract, interactWrite } from 'smartweave';
-import { arweave, NEWS_CONTRACT } from '../utils/arweave.js'
+import { contract } from 'redstone-smartweave';
+import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 
 export default class PodcastHtml extends Component {
@@ -17,7 +17,8 @@ export default class PodcastHtml extends Component {
     }
 
     checkNewsBalance = async (addr, tipAmount) => {
-        const state = await readContract(arweave, NEWS_CONTRACT);
+        const contract = contract(NEWS_CONTRACT)
+        const state = await contract.readState();
         if (state.balances.hasOwnProperty(addr) && state.balances.addr >= tipAmount) {
             return true
         } else {
@@ -27,7 +28,8 @@ export default class PodcastHtml extends Component {
 
     transferNews = async (recipient, tipAmount) => {
        const input = {"function": "transfer",  "target": recipient, "qty": parseInt(tipAmount)};
-       const tx = await interactWrite(arweave, "use_wallet", NEWS_CONTRACT, input);
+       const contract = contract(NEWS_CONTRACT);
+       const tx = await contract.writeInteraction(arweave, "use_wallet", NEWS_CONTRACT, input);
        console.log(tx);
     }
 

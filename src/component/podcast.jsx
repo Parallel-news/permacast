@@ -2,7 +2,7 @@ import { React, Component } from 'react'
 import { Container, Button, Row, Col } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
-import { readContract } from 'smartweave'
+import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
 import swal from 'sweetalert'
 import Shikwasa from 'shikwasa'

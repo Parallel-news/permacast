@@ -1,8 +1,7 @@
 import { React, Component } from 'react'
 import { CardColumns, Container } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
-import { readContract } from 'smartweave'
-import { queryObject, arweave, MESON_ENDPOINT } from '../utils/arweave.js'
+import { MESON_ENDPOINT } from '../utils/arweave.js'
 
 class Index extends Component {
 
@@ -24,7 +23,6 @@ class Index extends Component {
   }
 
   loadPodcasts = async () => {
-    // let podcastList = []
     let creatorsContracts = await this.fetchAllSwcIds()
     const podcastList = creatorsContracts.res
 
