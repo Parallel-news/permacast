@@ -85,16 +85,18 @@ export default class PodcastHtml extends Component {
 
     render() {
         console.log(this.props.rss)
-        return(    
-            <Card className="text-center p-3 border-0">
-                <div className="image-item">
+        return(
+            <Card className="text-center p-1 border-0" style={{height: '600px', display: 'flex'}}>
+                <div className="image-item" style={{ height: '300px'}}>
                     <a href={`/#/podcasts/${this.props.link}`}>
                     {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
                         <Image className="podcast-grid-cover" alt={`${this.props.name} cover`} src={this.props.image} />
                     </a>
                 </div>
-                <div className={this.props.titleClass || 'h3'}>{this.props.name} { this.props.rss ? <span><Button size="sm" className="rss-button" onClick={() => this.loadRss()}><FaRss/></Button>  {this.tipButton()}  </span> : null } </div>
-                <p>{this.props.description}</p>
+                <div>
+                    <div className={this.props.titleClass || 'h3'}>{this.props.name} { this.props.rss ? <span><Button size="sm" className="rss-button" onClick={() => this.loadRss()}><FaRss/></Button>  {this.tipButton()}  </span> : null } </div>
+                    <p>{this.props.description}</p>
+                </div>
             </Card>
         )
     }
