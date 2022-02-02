@@ -8,13 +8,13 @@ import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow()  {
-    let finalShowObj = {} 
+    let finalShowObj = {}
     const [show, setShow] = useState(false);
 
     const deployContract = async () => {
       const initialState = `{"podcasts": []}`
       const tx = await arweave.createTransaction({data: initialState})
-    
+
       tx.addTag("Protocol", "permacast-testnet-v3")
       tx.addTag("Action", "launchCreator")
       tx.addTag("App-Name", "SmartWeaveAction")
@@ -22,17 +22,17 @@ export default function UploadShow()  {
       tx.addTag("Contract-Src", CONTRACT_SRC)
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
-    
+
       await arweave.transactions.sign(tx)
       await arweave.transactions.post(tx)
       console.log(tx)
       return tx.id
     }
-    
+
     const handleUploadClick = () => {
         setShow(true);
       };
-    
+
   function readFileAsync(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
@@ -69,7 +69,7 @@ export default function UploadShow()  {
              await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
              addr = await window.arweaveWallet.getActiveAddress()
       }
-        
+
       tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
@@ -77,7 +77,7 @@ export default function UploadShow()  {
       .tag('Protocol', 'permacast-testnet-v3')
       .tag('Contract-Src', CONTRACT_SRC)
       .find();
-        
+
       console.log(tx)
       if (tx.length !==0) {
         contractId = tx[0].node.id
@@ -134,6 +134,22 @@ export default function UploadShow()  {
         });
       }
 
+      const isPodcastCoverSquared = (podcastCoverFile) => {
+        const podcastCoverFileReader = new FileReader()
+        podcastCoverFileReader.readAsDataURL(podcastCoverFile)
+        podcastCoverFileReader.onload = function (event) {
+          const podcastCoverBase64 = event.target.value
+          const podcastCoverImage = new Image()
+          podcastCoverImage.src = podcastCoverBase64
+          podcastCoverImage.onload = function () {
+            if (podcastCoverImage.width !== podcastCoverImage.height) {
+              return false
+            }
+          }
+        }
+        return true
+      }
+
       const handleShowUpload = async (event) => {
       event.preventDefault()
       // extract attrs from form
@@ -141,6 +157,10 @@ export default function UploadShow()  {
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
+      // check if cover image is in 1:1 aspect ratio
+      if (!isPodcastCoverSquared(podcastCover)) {
+        return Promise.reject(new Error("Cover image should be perfectly squared (1:1 aspect ratio)!"))
+      }
       const podcastAuthor = event.target.podcastAuthor.value
       const podcastEmail = event.target.podcastEmail.value
       const podcastCategory = event.target.podcastCategory.value
@@ -185,11 +205,11 @@ export default function UploadShow()  {
       return optionsArr
     }
 
-    return(  
-        <>  
+    return(
+        <>
         <span className="">
             <Button variant="outline-primary" onClick={() => handleUploadClick()} style={{ marginRight: "1em" }}>+ Add a podcast</Button>
-        </span> 
+        </span>
         <Modal
         show={show}
         onClose={handleClose}
