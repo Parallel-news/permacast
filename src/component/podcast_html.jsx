@@ -6,6 +6,28 @@ import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 
 export default class PodcastHtml extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            podcastHeight: null
+        }
+    }
+
+    componentDidMount() {
+        setTimeout(() => {
+            this.loadPodcastHeight()
+        })
+    }
+
+    loadPodcastHeight() {
+        // if we receive loadPodcastHeight from props.
+        if (this.props.loadPodcastHeight) {
+            this.setState({
+                podcastHeight: this.container.offsetHeight
+            })
+            this.props.loadPodcastHeight(this.state.podcastHeight)
+        }
+    }
 
     loadRss = () => {
         console.log(this.props.rss)
@@ -84,9 +106,10 @@ export default class PodcastHtml extends Component {
     }
 
     render() {
-        console.log(this.props.rss)
+        // console.log(this.props.rss)
+        const { podcastHeight } = this.state
         return(
-            <Card className="text-center p-1 border-0" style={{height: '600px', display: 'flex'}}>
+            <Card className="text-center p-1 border-0" ref={ e => {this.container = e}}>
                 <div className="image-item" style={{ height: '300px'}}>
                     <a href={`/#/podcasts/${this.props.link}`}>
                     {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}

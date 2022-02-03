@@ -37,7 +37,7 @@ class Podcast extends Component {
 
     return podcastList;
   }
-  
+
   getPodcastEpisodes = async() => {
     const pid = this.props.match.params.podcastId;
 
@@ -175,7 +175,7 @@ class Podcast extends Component {
         const swcId = id
         let res = await readContract(arweave, swcId)
         return res
-      }  
+      }
   */
   truncatedDesc = (desc, maxLength) => {
     if (desc.length < maxLength) {
