@@ -145,11 +145,13 @@ export default function UploadShow()  {
       }
 
       const isPodcastCoverSquared = (event) => {
-        const podcastCoverImage = new Image()
-        podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
-        podcastCoverImage.onload = () => {
-          if (podcastCoverImage.width !== podcastCoverImage.height) {
-            resetPodcastCover()
+        if (event.target.files.length !== 0) {
+          const podcastCoverImage = new Image()
+          podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
+          podcastCoverImage.onload = () => {
+            if (podcastCoverImage.width !== podcastCoverImage.height) {
+              resetPodcastCover()
+            }
           }
         }
       }
