@@ -4,14 +4,25 @@ import PodcastHtml from './podcast_html.jsx'
 import { MESON_ENDPOINT } from '../utils/arweave.js'
 /* make arbitrary change */
 class Index extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             test: true,
-            podcasts: {}
+            podcasts: {},
+            // stores height passed by each podcast child
+            podcastsHeights: [],
+            // if loaded, change container visibility to true
+            isHeightsLoaded: false
         }
     }
+
+  // load height passed by each podcast child
+  loadPodcastHeight = (currentPodcastHeight) => {
+    this.setState({
+      podcastsHeights: [...this.state.podcastsHeights, currentPodcastHeight]
+    })
+    // console.log(this.state.podcastsHeights)
+  }
 
   fetchAllSwcIds = async () => {
     const response = await fetch("https://permacast-cache.herokuapp.com/feeds/podcasts", {
@@ -28,16 +39,21 @@ class Index extends Component {
 
     return podcastList;
   }
-  renderPodcasts = async (podcasts) => {
+
+  // First, render podcasts with auto height and hidden visibility.
+  // Then, calculate the max height.
+  // Then, render podcasts with max height and change visibility to visible.
+  renderPodcasts = async (podcasts, height = 'auto') => {
         let html = []
 
         for (let podcast of podcasts) {
-          console.log(podcast)
+          // console.log(podcast)
           let p = podcast
           if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
             html.push(
-              <>
+              <div style={{height: height}}>
                 <PodcastHtml
+                  loadPodcastHeight={this.loadPodcastHeight}
                   name={p.podcastName}
                   episodes={p.episodes.length}
                   link={p.pid}
@@ -45,8 +61,8 @@ class Index extends Component {
                   image={`${MESON_ENDPOINT}/${p.cover}`}
                   key={p.pid}
                 />
-              </>
-            ) 
+              </div>
+            )
           }
         }
         return html
@@ -55,20 +71,32 @@ class Index extends Component {
     async componentDidMount() {
       this.setState({loading: true})
       this.setState({noPodcasts: false})
-      let pArrays = await this.loadPodcasts()  
+      let pArrays = await this.loadPodcasts()
       let p = pArrays.flat()
-      this.setState({podcasts: p}) 
+      this.setState({podcasts: p})
       let podcasts = await this.renderPodcasts(this.state.podcasts)
-      this.setState({podcastHtml: podcasts}) 
+      this.setState({podcastHtml: podcasts})
       if ( this.state.podcastHtml.length < 1 ) {
         this.setState({noPodcasts: true})
       }
       this.setState({loading: false})
     }
 
+    async componentDidUpdate(prevProps, prevState) {
+      // if for the last change of state, we get the final list of
+      // podcastsHeights, rerender with max height for podcast, not auto height
+      if (prevState.podcastsHeights.length + 1 === prevState.podcasts.length) {
+        let podcasts = await this.renderPodcasts(this.state.podcasts, Math.max(...this.state.podcastsHeights))
+        this.setState({
+          podcastHtml: podcasts,
+          isHeightsLoaded: true,
+        })
+      }
+    }
+
     render() {
       const podcasts = this.state.podcastHtml
-        return( 
+        return(
           <>
           <Container className="mt-5">
           <div className="">
@@ -77,7 +105,11 @@ class Index extends Component {
           </div>
           </Container>
           <div>
-          <CardColumns>
+          {/*
+            hide container if load with podcasts of auto height
+            show container if load with podcasts of max height
+          */}
+          <CardColumns style={{ visibility: this.state.isHeightsLoaded ? 'visible' : 'hidden' }}>
             {podcasts}
           </CardColumns>
           </div>
