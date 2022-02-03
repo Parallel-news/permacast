@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useRef } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import ArDB from 'ardb';
 import swal from 'sweetalert';
@@ -10,6 +10,7 @@ const ardb = new ArDB(arweave)
 export default function UploadShow()  {
     let finalShowObj = {}
     const [show, setShow] = useState(false);
+    const podcastCoverRef = useRef()
 
     const deployContract = async () => {
       const initialState = `{"podcasts": []}`
@@ -134,20 +135,23 @@ export default function UploadShow()  {
         });
       }
 
-      const isPodcastCoverSquared = (podcastCoverFile) => {
-        const podcastCoverFileReader = new FileReader()
-        podcastCoverFileReader.readAsDataURL(podcastCoverFile)
-        podcastCoverFileReader.onload = function (event) {
-          const podcastCoverBase64 = event.target.value
-          const podcastCoverImage = new Image()
-          podcastCoverImage.src = podcastCoverBase64
-          podcastCoverImage.onload = function () {
-            if (podcastCoverImage.width !== podcastCoverImage.height) {
-              return false
-            }
+      const resetPodcastCover = () => {
+        podcastCoverRef.current.value = ""
+        Swal.fire({
+          text: 'Podcast cover image is not squared (1:1 aspect ratio)!',
+          icon: 'warning',
+          confirmButtonText: 'Continue'
+        })
+      }
+
+      const isPodcastCoverSquared = (event) => {
+        const podcastCoverImage = new Image()
+        podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
+        podcastCoverImage.onload = () => {
+          if (podcastCoverImage.width !== podcastCoverImage.height) {
+            resetPodcastCover()
           }
         }
-        return true
       }
 
       const handleShowUpload = async (event) => {
@@ -157,10 +161,6 @@ export default function UploadShow()  {
       const podcastName = event.target.podcastName.value
       const podcastDescription = event.target.podcastDescription.value
       const podcastCover = event.target.podcastCover.files[0]
-      // check if cover image is in 1:1 aspect ratio
-      if (!isPodcastCoverSquared(podcastCover)) {
-        return Promise.reject(new Error("Cover image should be perfectly squared (1:1 aspect ratio)!"))
-      }
       const podcastAuthor = event.target.podcastAuthor.value
       const podcastEmail = event.target.podcastEmail.value
       const podcastCategory = event.target.podcastCategory.value
@@ -234,7 +234,7 @@ export default function UploadShow()  {
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastCover">
               <Form.Label>Cover image</Form.Label>
-              <Form.Control required type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
+              <Form.Control required type="file" ref={podcastCoverRef} onChange={ e => isPodcastCoverSquared(e) } name="podcastCover"/>
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastAuthor">
               <Form.Label>Author</Form.Label> {/* add tooltip */}
