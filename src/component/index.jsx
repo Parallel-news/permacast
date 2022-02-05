@@ -1,7 +1,8 @@
 import { React, Component } from 'react'
-import { CardColumns, Container } from 'react-bootstrap'
+import { CardDeck, Container } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import { MESON_ENDPOINT } from '../utils/arweave.js'
+import '../App.css'
 /* make arbitrary change */
 class Index extends Component {
     constructor(props) {
@@ -44,28 +45,36 @@ class Index extends Component {
   // Then, calculate the max height.
   // Then, render podcasts with max height and change visibility to visible.
   renderPodcasts = async (podcasts, height = 'auto') => {
-        let html = []
+    let html = []
 
-        for (let podcast of podcasts) {
-          // console.log(podcast)
-          let p = podcast
-          if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
-            html.push(
-              <div style={{height: height}}>
-                <PodcastHtml
-                  loadPodcastHeight={this.loadPodcastHeight}
-                  name={p.podcastName}
-                  episodes={p.episodes.length}
-                  link={p.pid}
-                  description={p.description}
-                  image={`${MESON_ENDPOINT}/${p.cover}`}
-                  key={p.pid}
-                />
-              </div>
-            )
-          }
+    for (let podcast of podcasts) {
+      // console.log(podcast)
+      let p = podcast
+      if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
+        html.push(
+          <div style={{height: height}} className="podcast-card">
+            <PodcastHtml
+              loadPodcastHeight={this.loadPodcastHeight}
+              name={p.podcastName}
+              episodes={p.episodes.length}
+              link={p.pid}
+              description={p.description}
+              image={`${MESON_ENDPOINT}/${p.cover}`}
+              key={p.pid}
+              style={{height: '100%'}}
+            />
+          </div>
+          )
         }
-        return html
+      }
+      // push empty card to fill last row
+      html.push(
+        <div className='podcast-card'></div>
+      )
+      html.push(
+        <div className='podcast-card'></div>
+      )
+      return html
     }
 
     async componentDidMount() {
@@ -109,9 +118,9 @@ class Index extends Component {
             hide container if load with podcasts of auto height
             show container if load with podcasts of max height
           */}
-          <CardColumns style={{ visibility: this.state.isHeightsLoaded ? 'visible' : 'hidden' }}>
+          <CardDeck style={{ visibility: this.state.isHeightsLoaded ? 'visible' : 'hidden' }}>
             {podcasts}
-          </CardColumns>
+          </CardDeck>
           </div>
           </>
         )

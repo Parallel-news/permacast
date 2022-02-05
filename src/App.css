@@ -28,9 +28,30 @@ html {
   color: #61dafb;
 }
 
+.card-deck {
+  margin: 0 !important;
+  justify-content: center;
+}
+
 .podcast-grid-cover {
   margin: 2em;
   max-width: 200px;
+}
+
+.podcast-card {
+  width: 30vw;
+}
+
+@media screen and (max-width: 1024px) {
+  .podcast-card {
+    width: 45vw;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .podcast-card {
+    width: 85vw;
+  }
 }
 
 audio {
