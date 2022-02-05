@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useRef } from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
 import ArDB from 'ardb';
 import swal from 'sweetalert';
@@ -8,13 +8,14 @@ import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow()  {
-    let finalShowObj = {} 
+    let finalShowObj = {}
     const [show, setShow] = useState(false);
+    const podcastCoverRef = useRef()
 
     const deployContract = async () => {
       const initialState = `{"podcasts": []}`
       const tx = await arweave.createTransaction({data: initialState})
-    
+
       tx.addTag("Protocol", "permacast-testnet-v3")
       tx.addTag("Action", "launchCreator")
       tx.addTag("App-Name", "SmartWeaveAction")
@@ -22,17 +23,17 @@ export default function UploadShow()  {
       tx.addTag("Contract-Src", CONTRACT_SRC)
       tx.addTag("Content-Type", "application/json")
       tx.addTag("Timestamp", Date.now())
-    
+
       await arweave.transactions.sign(tx)
       await arweave.transactions.post(tx)
       console.log(tx)
       return tx.id
     }
-    
+
     const handleUploadClick = () => {
         setShow(true);
       };
-    
+
   function readFileAsync(file) {
       return new Promise((resolve, reject) => {
         let reader = new FileReader();
@@ -69,7 +70,7 @@ export default function UploadShow()  {
              await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
              addr = await window.arweaveWallet.getActiveAddress()
       }
-        
+
       tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
@@ -77,7 +78,7 @@ export default function UploadShow()  {
       .tag('Protocol', 'permacast-testnet-v3')
       .tag('Contract-Src', CONTRACT_SRC)
       .find();
-        
+
       console.log(tx)
       if (tx.length !==0) {
         contractId = tx[0].node.id
@@ -134,6 +135,27 @@ export default function UploadShow()  {
         });
       }
 
+      const resetPodcastCover = () => {
+        podcastCoverRef.current.value = ""
+        Swal.fire({
+          text: 'Podcast cover image is not squared (1:1 aspect ratio)!',
+          icon: 'warning',
+          confirmButtonText: 'Continue'
+        })
+      }
+
+      const isPodcastCoverSquared = (event) => {
+        if (event.target.files.length !== 0) {
+          const podcastCoverImage = new Image()
+          podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
+          podcastCoverImage.onload = () => {
+            if (podcastCoverImage.width !== podcastCoverImage.height) {
+              resetPodcastCover()
+            }
+          }
+        }
+      }
+
       const handleShowUpload = async (event) => {
       event.preventDefault()
       // extract attrs from form
@@ -185,11 +207,11 @@ export default function UploadShow()  {
       return optionsArr
     }
 
-    return(  
-        <>  
+    return(
+        <>
         <span className="">
             <Button variant="outline-primary" onClick={() => handleUploadClick()} style={{ marginRight: "1em" }}>+ Add a podcast</Button>
-        </span> 
+        </span>
         <Modal
         show={show}
         onClose={handleClose}
@@ -214,7 +236,7 @@ export default function UploadShow()  {
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastCover">
               <Form.Label>Cover image</Form.Label>
-              <Form.Control required type="file" /*onChange={(e) => readFile(e.target.files[0])*/ name="podcastCover"/>
+              <Form.Control required type="file" ref={podcastCoverRef} onChange={ e => isPodcastCoverSquared(e) } name="podcastCover"/>
             </Form.Group>
             <Form.Group className="mb-3" controlId="podcastAuthor">
               <Form.Label>Author</Form.Label> {/* add tooltip */}
