@@ -45,10 +45,12 @@ export async function handle(state, action) {
 
 
     await _getContractOwner(true, caller)
+    
+    // show-level string validation
 
-    _validateStringTypeLen(name, 3, 50);
+    _validateStringTypeLen(name, 3, 400);
     _validateStringTypeLen(author, 2, 50)
-    _validateStringTypeLen(desc, 10, 750);
+    _validateStringTypeLen(desc, 10, 4000);
     _validateStringTypeLen(email, 0, 320);
     _validateStringTypeLen(categories, 3, 150);
     _validateStringTypeLen(cover, 43, 43);
@@ -89,10 +91,12 @@ export async function handle(state, action) {
     const desc = input.desc
 
     await _getContractOwner(true, caller);
+    
+    // show-level string validation
 
-    _validateStringTypeLen(name, 3, 50);
+    _validateStringTypeLen(name, 3, 4000);
     _validateStringTypeLen(audio, 43, 43);
-    _validateStringTypeLen(desc, 0, 250);
+    _validateStringTypeLen(desc, 0, 4000);
     _validateInteger(index, true)
 
     const TxMetadata = await _validateDataTransaction(audio, "audio/")
