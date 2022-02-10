@@ -9,7 +9,10 @@
     "ardb": "^1.0.8",
     "arweave": "^1.10.16",
     "arweave-multihost": "^0.1.0",
+    "autoprefixer": "^10.4.2",
     "bootstrap": "^4.6.0",
+    "concurrently": "^7.0.0",
+    "postcss": "^8.4.6",
     "react": "^17.0.2",
     "react-bootstrap": "^1.6.1",
     "react-dom": "^17.0.2",
@@ -23,12 +26,15 @@
     "smartweave": "^0.4.41",
     "sweetalert": "^2.1.2",
     "sweetalert2": "^11.1.5",
+    "tailwindcss": "^3.0.19",
     "weave-aggregator": "^0.0.9",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "concurrently \"npm run start:css\" \"react-scripts start\"",
+    "start:css": "tailwindcss -o src/tailwind.css --watch",
+    "build": "npm run build:css && react-scripts build",
+    "build:css": "NODE_ENV=production tailwindcss -o src/tailwind.css -m",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
