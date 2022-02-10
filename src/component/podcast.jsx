@@ -1,14 +1,10 @@
 import { React, Component } from 'react'
-import { Container, Button, Row, Col } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
 import swal from 'sweetalert'
 import Shikwasa from 'shikwasa'
-import { FaPlay } from 'react-icons/fa';
-import { IoIosArrowRoundDown } from 'react-icons/io'
-import { IoPlaySharp } from 'react-icons/io5'
 import { arweave, queryObject, MESON_ENDPOINT } from '../utils/arweave.js'
 
 class Podcast extends Component {
@@ -37,8 +33,8 @@ class Podcast extends Component {
 
     return podcastList;
   }
-  
-  getPodcastEpisodes = async() => {
+
+  getPodcastEpisodes = async () => {
     const pid = this.props.match.params.podcastId;
 
     const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
@@ -136,23 +132,25 @@ class Podcast extends Component {
       console.log(e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
-          <div>
-            <Row className="p-1 m-2 align-items-center episode-row">
-              <Col md="auto">
-                <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <IoPlaySharp /> </Button>
-                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
-              </Col>
-              <Col md="auto">
-                <div className="font-weight-bold">{e.episodeName}</div>
-              </Col>
-              <Col>
-                {this.truncatedDesc(e.description, 52)}
-              </Col>
-              { /* this.state.thePodcast.owner === addr &&
-              <Col>
-                edit
-              </Col> */ }
-            </Row>
+          <div className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-10 md:py-2 my-4  md:h-24 font-mono">
+            <div className="flex justify-between items-center space-x-10 mr-5">
+              <button onClick={() => this.showPlayer(e)}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+              <button onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              <div className="font-bold">{e.episodeName}</div>
+
+            </div>
+            <div className='text-sm'>
+              {this.truncatedDesc(e.description, 52)}
+            </div>
           </div>
         )
 
@@ -181,7 +179,7 @@ class Podcast extends Component {
     if (desc.length < maxLength) {
       return <>{desc}</>
     } else {
-      return <>{desc.substring(0, maxLength)}... <Button variant="link" onClick={() => this.showDesc(desc)}>[read more]</Button></>
+      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => this.showDesc(desc)}>[read more]</span></>
     }
   }
 
@@ -230,13 +228,15 @@ class Podcast extends Component {
 
   render = () => {
     return (
-      <div>
+      <div className="flex flex-col items-center justify-center">
         {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast} /> : null}
         {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
-        {this.state.podcastHtml}
-        <Container className="episodes-container">{this.state.podcastEpisodes}</Container>
-        {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <Button size="" variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button>}
-        <div className="podcast-player position-sticky fixed-bottom" />
+        <div className="flex mx-auto md:w-1/3 h-auto">
+          {this.state.podcastHtml}
+        </div>
+        <div>{this.state.podcastEpisodes}</div>
+        {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <button className='btn' onClick={() => this.showEpisodeForm()}>add new episode</button>}
+        <div className="podcast-player fixed bottom-0 w-full" />
       </div>
     )
   }
