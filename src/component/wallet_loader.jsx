@@ -1,8 +1,4 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Modal,
-} from "react-bootstrap";
 
 import swal from 'sweetalert';
 import { arweave } from "../utils/arweave.js"
@@ -21,8 +17,8 @@ export default function WalletLoader() {
   };
 
   const handleDisconnect = () => {
-      sessionStorage.clear()
-      window.location.reload(false)
+    sessionStorage.clear()
+    window.location.reload(false)
   }
 
   const handleFileRead = (e) => {
@@ -35,7 +31,7 @@ export default function WalletLoader() {
       });
       sessionStorage.setItem("arweaveWallet", content);
     } catch (err) {
-      swal({title: "Invalid wallet file", text: "That doesn't look like a valid Arweave wallet - please try again", icon: "error"})
+      swal({ title: "Invalid wallet file", text: "That doesn't look like a valid Arweave wallet - please try again", icon: "error" })
     }
   };
 
@@ -48,52 +44,51 @@ export default function WalletLoader() {
   };
 
   return (
-      <div>
-          { sessionStorage.getItem("arweaveWallet") ?
-        <Button variant="outline-danger" onClick={handleDisconnect}>
+    <div>
+      {sessionStorage.getItem("arweaveWallet") ?
+        <div className="btn btn-outline btn-warning" onClick={handleDisconnect}>
           Disconnect wallet
-        </Button>
-    :
-        <Button variant="outline-success" onClick={handleClickOpen}>
+        </div>
+        :
+        <div className="btn btn-outline btn-success" onClick={handleClickOpen}>
           Login with Arweave
-        </Button>
-        }
-      <Modal
+        </div>
+      }
+      <div
         show={show}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <Modal.Title className="p-4" id="alert-dialog-title">
+        <div className="p-4" id="alert-dialog-title">
           {"Login with Arweave"}
           <br></br>
-        </Modal.Title>
-        <Modal.Body className="m-2">
-            Connect your Arweave wallet to use this app. Visit {" "}
-            <a href="https://arweave.org">Arweave</a> to create a
-            wallet.
-        <br/><br/>
+        </div>
+        <div className="m-2">
+          Connect your Arweave wallet to use this app. Visit {" "}
+          <a href="https://arweave.org">Arweave</a> to create a
+          wallet.
+          <br /><br />
           <input
-            className=""   
+            className=""
             id="raised-button-file"
             onChange={(e) => handleFileChosen(e.target.files[0])}
             type="file"
           />
-        </Modal.Body>
-        <Modal.Footer className="m-2">
-        <Button variant="danger" onClick={handleClose} color="danger">
+        </div>
+        <div className="m-2">
+          <div className="btn btn-warning" onClick={handleClose}>
             Cancel
-          </Button>
-        <Button
-              variant="success"
-              color="default"
-              component="span"
-            >
-              Upload
-            </Button>
-          
-        </Modal.Footer>
-      </Modal>
+          </div>
+          <div
+            className="btn"
+            component="span"
+          >
+            Upload
+          </div>
+
+        </div>
       </div>
+    </div>
   );
 }
