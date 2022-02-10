@@ -2,6 +2,9 @@
   "name": "permacast",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=16.5"
+  },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/typography": "^0.5.1",
