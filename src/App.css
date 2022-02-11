@@ -51,6 +51,7 @@ html {
 @media screen and (max-width: 768px) {
   .podcast-card {
     width: 85vw;
+    margin: auto;
   }
 }
 
