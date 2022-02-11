@@ -8,7 +8,8 @@ export default class PodcastHtml extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            podcastHeight: null
+            podcastHeight: null,
+            truncated: false
         }
     }
 
@@ -58,7 +59,8 @@ export default class PodcastHtml extends Component {
 
         Swal.fire({
             title: 'Coming soon',
-            text: 'Tip your favorite podcasts with $NEWS to show support'
+            text: 'Tip your favorite podcasts with $NEWS to show support',
+            customClass: "font-mono",
         })
 
         return false
@@ -108,18 +110,21 @@ export default class PodcastHtml extends Component {
         // console.log(this.props.rss)
         const { podcastHeight } = this.state
         return (
-            <div className="card text-center shadow-2xl hover:cursor-pointer w-100 hover:border" ref={e => { this.container = e }}>
+            <div className="card text-center shadow-2xl hover:cursor-pointer hover:border h-full" ref={e => { this.container = e }}>
                 <div className="px-2 pt-3 md:px-5 md:pt-5">
                     <a href={`/#/podcasts/${this.props.link}`}>
-                        <figure className='aspect-w-10 aspect-h-7 rounded-xl'>
+                        <figure className='aspect-w-10 aspect-h-7'>
                             {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
-                            <img className="object-cover pointer-events-none group-hover:opacity-75 rounded-xl" alt={`${this.props.name} cover`} src={this.props.image} />
+                            <img className="object-cover pointer-events-none group-hover:opacity-75" alt={`${this.props.name} cover`} src={this.props.image} />
                         </figure>
                     </a>
                 </div>
-                <div className='card-body pt-3 pb-1 font-mono'>
-                    <div className="card-title text-sm md:text-lg">{this.props.name} {this.props.rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => this.loadRss()}><FaRss /></button> {this.tipButton()} </span> : null} </div>
-                    <p className='text-sm'>{this.props.description}</p>
+                <div className='card-body pt-3 pb-1'>
+                    <div className="card-title text-sm md:text-lg">
+                        {this.props.name} {this.props.rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => this.loadRss()}><FaRss /></button> {this.tipButton()} </span> : null} </div>
+                    <p className="text-sm mb-2">
+                        {this.props.truncated && this.props.description.length > 52 ? this.props.description.substring(0, 52) + '...' : this.props.description}
+                    </p>
                 </div>
             </div>
         )

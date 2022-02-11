@@ -13,7 +13,7 @@ export default class App extends Component {
 
   render() {
     return (
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 flex flex-col h-screen">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 flex flex-col h-screen font-mono">
         <Router>
           <Header />
           <Route

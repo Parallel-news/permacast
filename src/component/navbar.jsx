@@ -22,7 +22,8 @@ export default class Header extends Component {
           '<li>Tip your favorite podcasts with $NEWS</li>' +
           '<li>Episodes are atomic NFTs, listable on Verto!</li>',
         customClass: {
-          htmlContainer: 'list text-left text-md',
+          title: "font-mono",
+          htmlContainer: 'list text-left text-md font-mono'
         }
       }
     )
@@ -53,9 +54,9 @@ export default class Header extends Component {
       <div className="navbar mb-2 shadow-lg rounded-box">
         <a className="flex-1 px-2 mx-2" href="/">
           <img className="block h-5 w-auto mt-1" src={YellowRec} alt="permacast" />
-          <span className="font-mono">permacast</span>
+          <span>permacast</span>
         </a>
-        <div className="font-mono mr-5 hidden md:flex">
+        <div className="mr-5 hidden md:flex">
           <a className="mx-3" href="https://t.me/permacast" target="_blank" rel="noreferrer">📨 Get help</a>
           <span className="mx-3 cursor-pointer" onClick={() => this.loadWhatsNew()}>✨ What's new</span>
         </div >

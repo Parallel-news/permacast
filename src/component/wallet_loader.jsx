@@ -31,7 +31,12 @@ export default function WalletLoader() {
       });
       sessionStorage.setItem("arweaveWallet", content);
     } catch (err) {
-      swal({ title: "Invalid wallet file", text: "That doesn't look like a valid Arweave wallet - please try again", icon: "error" })
+      swal({
+        title: "Invalid wallet file",
+        text: "That doesn't look like a valid Arweave wallet - please try again",
+        icon: "error",
+        customClass: "font-mono",
+      })
     }
   };
 

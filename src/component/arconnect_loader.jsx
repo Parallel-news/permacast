@@ -61,7 +61,8 @@ export default class Header extends Component {
       icon: 'warning',
       title: 'Install ArConnect to continue',
       text: 'Permablog uses ArConnect to make it easier to authenticate and send transactions for questions and answers',
-      footer: '<a href="https://arconnect.io" rel="noopener noreferrer" target="_blank">Download ArConnect here</a>'
+      footer: '<a href="https://arconnect.io" rel="noopener noreferrer" target="_blank">Download ArConnect here</a>',
+      customClass: "font-mono",
     })
   }
 

@@ -132,23 +132,24 @@ class Podcast extends Component {
       console.log(e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
-          <div className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-10 md:py-2 my-4  md:h-24 font-mono">
-            <div className="flex justify-between items-center space-x-10 mr-5">
-              <button onClick={() => this.showPlayer(e)}>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </button>
-              <button onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              </button>
-              <div className="font-bold">{e.episodeName}</div>
-
+          <div className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
+              <div className="flex space-x-10 mb-3 md:mb-0">
+                <button onClick={() => this.showPlayer(e)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+                <button onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}>
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </button>
+              </div>
+              <div className="font-bold w-full md:w-auto text-center">{e.episodeName}</div>
             </div>
-            <div className='text-sm'>
+            <div className='text-sm w-full md:w-auto text-center'>
               {this.truncatedDesc(e.description, 52)}
             </div>
           </div>
@@ -186,7 +187,8 @@ class Podcast extends Component {
   showDesc = (desc) => {
     swal({
       text: desc,
-      button: 'close'
+      button: 'close',
+      customClass: "font-mono",
     })
   }
 
@@ -231,7 +233,7 @@ class Podcast extends Component {
       <div className="flex flex-col items-center justify-center">
         {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast} /> : null}
         {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
-        <div className="flex mx-auto md:w-1/3 h-auto">
+        <div className="block w-full md:w-2/3 h-auto">
           {this.state.podcastHtml}
         </div>
         <div>{this.state.podcastEpisodes}</div>

@@ -57,6 +57,7 @@ class Index extends Component {
               description={p.description}
               image={`${MESON_ENDPOINT}/${p.cover}`}
               key={p.pid}
+              truncated="true"
             />
           </div>
         )
@@ -102,7 +103,7 @@ class Index extends Component {
     const podcasts = this.state.podcastHtml
     return (
       <>
-        <div className="flex items-center justify-center p-2 md:p-6 font-mono text-md">
+        <div className="flex items-center justify-center p-2 md:p-6 text-md">
           {this.state.noPodcasts ? <h5>No podcasts here yet. Upload one!</h5> : null}
           {this.state.loading ? <h5 className="p-6">Loading podcasts...</h5> : null}
         </div>

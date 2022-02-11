@@ -56,7 +56,8 @@ export default function UploadShow() {
   const uploadShow = async (show) => {
     Swal.fire({
       title: 'Uploading, please wait a few seconds...',
-      timer: 2000
+      timer: 2000,
+      customClass: "font-mono",
     })
     let contractId
     let tx
@@ -101,7 +102,12 @@ export default function UploadShow() {
     let contract = smartweave.contract(contractId).connect("use_wallet");
     let uploadTxId = await contract.writeInteraction(input, tags);
     if (uploadTxId) {
-      swal('Show added', 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.', 'success')
+      swal({
+        title: 'Show added',
+        text: 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.',
+        icon: 'success',
+        customClass: "font-mono",
+      })
       console.log(uploadTxId)
     } else {
       alert('An error occured.')
@@ -126,7 +132,12 @@ export default function UploadShow() {
             uploadShow(finalShowObj)
             setShow(false)
           } else {
-            swal('Unable to add show', 'Check your wallet balance and network connection', 'danger')
+            swal({
+              title: 'Unable to add show',
+              text: 'Check your wallet balance and network connection',
+              icon: 'danger',
+              customClass: "font-mono",
+            })
           }
         });
       });
@@ -138,7 +149,8 @@ export default function UploadShow() {
     Swal.fire({
       text: 'Podcast cover image is not squared (1:1 aspect ratio)!',
       icon: 'warning',
-      confirmButtonText: 'Continue'
+      confirmButtonText: 'Continue',
+      customClass: "font-mono",
     })
   }
 
@@ -203,10 +215,10 @@ export default function UploadShow() {
 
   return (
     <>
-      <label for="my-modal-2" className="btn btn-outline btn-primary modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
+      <label for="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <div className="modal overflow-scroll">
-        <div className='modal-box font-mono'>
+        <div className='modal-box'>
           <div className='label block uppercase text-center'>
             <h1 className="mb-2">Add a new show</h1>
             <p className="text-sm">You'll add episodes to the show next.</p>

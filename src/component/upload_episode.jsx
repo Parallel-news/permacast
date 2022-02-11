@@ -89,17 +89,21 @@ export default class UploadEpisode extends Component {
         console.log(epObj)
         this.uploadShow(epObj);
         event.target.reset();
-        swal(
-          "Upload complete",
-          "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.",
-          "success"
-        );
+        swal({
+          title: "Upload complete",
+          text: "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.",
+          icon: "success",
+          customClass: "font-mono",
+        });
         this.setState({ showUploadFee: null });
       } else {
         swal(
-          "Upload failed",
-          "Check your AR balance and network connection",
-          "error"
+          {
+            title: "Upload failed",
+            text: "Check your AR balance and network connection",
+            icon: "error",
+            customClass: "font-mono",
+          }
         );
       }
     }
@@ -110,6 +114,7 @@ export default class UploadEpisode extends Component {
     swal({
       title: `Upload underway!`,
       text: "We'll let you know when it's done. Go grab a ☕ or 🍺",
+      customClass: "font-mono",
     })
     let epObj = {}
     event.preventDefault()
@@ -156,7 +161,12 @@ export default class UploadEpisode extends Component {
       .find()
 
     if (!tx) {
-      swal('Something went wrong :( please retry the upload');
+      swal(
+        {
+          title: 'Something went wrong :( please retry the upload',
+          customClass: "font-mono",
+        }
+      );
     } else {
       return tx[0]['node']['id']
     }
@@ -222,7 +232,7 @@ export default class UploadEpisode extends Component {
     const podcastName = podcast.podcastName
 
     return (
-      <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl font-mono">
+      <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl">
         <div className="label block uppercase text-center">Add new episode to {podcastName}</div>
         <div className="form-control">
           <form className="p-4" hasValidation onSubmit={this.handleEpisodeUpload}>
