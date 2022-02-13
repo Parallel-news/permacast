@@ -215,7 +215,7 @@ export default function UploadShow() {
 
   return (
     <>
-      <label for="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
+      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <div className="modal overflow-scroll">
         <div className='modal-box'>
@@ -224,7 +224,7 @@ export default function UploadShow() {
             <p className="text-sm">You'll add episodes to the show next.</p>
           </div>
           <div className="form-control">
-            <form hasValidation onSubmit={handleShowUpload}>
+            <form onSubmit={handleShowUpload}>
               <div className='mb-3'>
                 <span className="label label-text">Show name</span>
                 <input className="input input-bordered" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
@@ -258,14 +258,14 @@ export default function UploadShow() {
                 </select>
               </div>
               <div className='my-3'>
-                <label class="cursor-pointer label flex justify-start mt-3">
-                  <input id="podcastExplicit" type="checkbox" class="checkbox checkbox-primary mx-2" />
-                  <span class="label-text">Contains explicit content</span>
+                <label className="cursor-pointer label flex justify-start mt-3">
+                  <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-primary mx-2" />
+                  <span className="label-text">Contains explicit content</span>
                 </label>
               </div>
               <div className="modal-action">
-                <button for="my-modal-2" type="submit" className="btn btn-primary">Upload</button>
-                <label for="my-modal-2" className="btn">Cancel</label>
+                <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">Upload</button>
+                <label htmlFor="my-modal-2" className="btn">Cancel</label>
               </div>
             </form>
           </div>

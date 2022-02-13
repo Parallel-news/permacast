@@ -235,7 +235,7 @@ export default class UploadEpisode extends Component {
       <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl">
         <div className="label block uppercase text-center">Add new episode to {podcastName}</div>
         <div className="form-control">
-          <form className="p-4" hasValidation onSubmit={this.handleEpisodeUpload}>
+          <form className="p-4" onSubmit={this.handleEpisodeUpload}>
             <div className="mb-3" controlId="podcastName">
               <span className="label label-text">Episode name</span>
               <input className="input input-bordered" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
@@ -249,9 +249,9 @@ export default class UploadEpisode extends Component {
               <input className="input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia" />
             </div>
             <div className="mt-5" controlId="verto">
-              <label class="cursor-pointer label flex justify-start mt-3">
-                <input class="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />
-                <span class="label-text">List as an Atomic NFT on Verto?</span>
+              <label className="cursor-pointer label flex justify-start mt-3">
+                <input className="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />
+                <span className="label-text">List as an Atomic NFT on Verto?</span>
               </label>
 
 

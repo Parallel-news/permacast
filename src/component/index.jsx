@@ -48,18 +48,16 @@ class Index extends Component {
       let p = podcast
       if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
         html.push(
-          <div>
-            <PodcastHtml
-              loadPodcastHeight={this.loadPodcastHeight}
-              name={p.podcastName}
-              episodes={p.episodes.length}
-              link={p.pid}
-              description={p.description}
-              image={`${MESON_ENDPOINT}/${p.cover}`}
-              key={p.pid}
-              truncated="true"
-            />
-          </div>
+          <PodcastHtml
+            loadPodcastHeight={this.loadPodcastHeight}
+            name={p.podcastName}
+            episodes={p.episodes.length}
+            link={p.pid}
+            description={p.description}
+            image={`${MESON_ENDPOINT}/${p.cover}`}
+            key={p.pid}
+            truncated="true"
+          />
         )
       }
     }
