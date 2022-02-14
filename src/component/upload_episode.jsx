@@ -168,7 +168,7 @@ export default class UploadEpisode extends Component {
         }
       );
     } else {
-      return tx[0]['node']['id']
+      return tx[0].id
     }
   }
 
@@ -242,11 +242,11 @@ export default class UploadEpisode extends Component {
             </div>
             <div className="mb-3" controlId="episodeShowNotes">
               <span className="label label-text">Episode description</span>
-              <input className="input input-bordered" required maxlength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
+              <input className="input input-bordered" required maxLength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
             </div>
             <div className="mb-5" controlId="episodeMedia">
               <span className="label label-text">Audio file</span>
-              <input className="input" required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia" />
+              <input required type="file" onChange={(e) => this.calculateUploadFee(e.target.files[0])} name="episodeMedia" />
             </div>
             <div className="mt-5" controlId="verto">
               <label className="cursor-pointer label flex justify-start mt-3">
@@ -259,28 +259,22 @@ export default class UploadEpisode extends Component {
             {this.state.showUploadFee ? <p className="text-gray p-3">~${this.state.showUploadFee} to upload</p> : null}
             <br /><br />
             {!this.state.episodeUploading ?
-              <div
+              <button
                 className="btn btn-primary"
                 type="submit"
-                variant="success"
-                color="default"
-                component="span"
               >
                 Upload
-              </div>
+              </button>
               :
-              <div
+              <button
                 className="btn btn-outline"
                 disabled
                 type="submit"
-                variant="success"
-                color="default"
-                component="span"
               >
                 Uploading, please wait...
-              </div>
+              </button>
             }
-            <>{this.state.uploadProgress && <div className="mt-3">Uploaded {this.state.uploadPercentComplete}%</div>}</>
+            {this.state.uploadProgress && <div className="mt-3">Uploaded {this.state.uploadPercentComplete}%</div>}
           </form>
         </div>
       </div>

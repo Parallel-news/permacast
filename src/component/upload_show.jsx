@@ -27,10 +27,6 @@ export default function UploadShow() {
     return tx.id
   }
 
-  const handleUploadClick = () => {
-    setShow(true);
-  };
-
   function readFileAsync(file) {
     return new Promise((resolve, reject) => {
       let reader = new FileReader();
@@ -165,6 +161,7 @@ export default function UploadShow() {
   }
 
   const handleShowUpload = async (event) => {
+
     event.preventDefault()
     // extract attrs from form
     const showObj = {}
@@ -213,8 +210,8 @@ export default function UploadShow() {
 
   return (
     <>
-      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
-      <input type="checkbox" id="my-modal-2" className="modal-toggle" />
+      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => setShow(true)} >+ Add a podcast</label>
+      <input type="checkbox" id="my-modal-2" className="modal-toggle" checked={show ? "checked" : false} />
       <div className="modal overflow-scroll">
         <div className="modal-box">
           <div className="label block uppercase text-center">
@@ -263,7 +260,7 @@ export default function UploadShow() {
               </div>
               <div className="modal-action">
                 <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">Upload</button>
-                <label htmlFor="my-modal-2" className="btn">Cancel</label>
+                <label htmlFor="my-modal-2" className="btn" onClick={() => setShow(false)}>Cancel</label>
               </div>
             </form>
           </div>

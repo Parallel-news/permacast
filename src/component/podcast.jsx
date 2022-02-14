@@ -238,8 +238,9 @@ class Podcast extends Component {
         </div>
         <div>{this.state.podcastEpisodes}</div>
         {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <button className='btn' onClick={() => this.showEpisodeForm()}>add new episode</button>}
-        <div className="podcast-player fixed bottom-0 w-full" />
+        <div className="podcast-player bottom-0 w-screen" />
       </div>
+
     )
   }
 
