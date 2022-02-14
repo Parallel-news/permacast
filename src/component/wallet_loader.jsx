@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { arweave } from "../utils/arweave.js"
 
 export default function WalletLoader() {
@@ -31,7 +31,7 @@ export default function WalletLoader() {
       });
       sessionStorage.setItem("arweaveWallet", content);
     } catch (err) {
-      swal({
+      Swal.fire({
         title: "Invalid wallet file",
         text: "That doesn't look like a valid Arweave wallet - please try again",
         icon: "error",

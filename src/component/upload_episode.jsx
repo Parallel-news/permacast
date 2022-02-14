@@ -1,6 +1,6 @@
 import { React, Component } from 'react'
 import ArDB from 'ardb'
-import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 import { CONTRACT_SRC, NFT_SRC, arweave, smartweave } from '../utils/arweave.js'
 
 const ardb = new ArDB(arweave)
@@ -89,7 +89,7 @@ export default class UploadEpisode extends Component {
         console.log(epObj)
         this.uploadShow(epObj);
         event.target.reset();
-        swal({
+        Swal.fire({
           title: "Upload complete",
           text: "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined.",
           icon: "success",
@@ -97,7 +97,7 @@ export default class UploadEpisode extends Component {
         });
         this.setState({ showUploadFee: null });
       } else {
-        swal(
+        Swal.fire(
           {
             title: "Upload failed",
             text: "Check your AR balance and network connection",
@@ -111,7 +111,7 @@ export default class UploadEpisode extends Component {
 
   handleEpisodeUpload = async (event) => {
     this.setState({ episodeUploading: true })
-    swal({
+    Swal.fire({
       title: `Upload underway!`,
       text: "We'll let you know when it's done. Go grab a ☕ or 🍺",
       customClass: "font-mono",
@@ -161,7 +161,7 @@ export default class UploadEpisode extends Component {
       .find()
 
     if (!tx) {
-      swal(
+      Swal.fire(
         {
           title: 'Something went wrong :( please retry the upload',
           customClass: "font-mono",

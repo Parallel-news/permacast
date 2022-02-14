@@ -1,6 +1,5 @@
 import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
-import swal from 'sweetalert';
 import { CONTRACT_SRC, arweave, languages, categories, smartweave } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 const ardb = new ArDB(arweave)
@@ -60,7 +59,6 @@ export default function UploadShow() {
       customClass: "font-mono",
     })
     let contractId
-    let tx
 
     await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "SIGNATURE"])
     let addr = await window.arweaveWallet.getActiveAddress()
@@ -70,7 +68,7 @@ export default function UploadShow() {
       addr = await window.arweaveWallet.getActiveAddress()
     }
 
-    tx = await ardb.search('transactions')
+    const tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveAction')
       .tag('Action', 'launchCreator')
@@ -80,7 +78,7 @@ export default function UploadShow() {
 
     console.log(tx)
     if (tx.length !== 0) {
-      contractId = tx[0].node.id
+      contractId = tx[0].id
     }
     if (!contractId) {
       console.log('not contractId - deploying new contract')
@@ -102,7 +100,7 @@ export default function UploadShow() {
     let contract = smartweave.contract(contractId).connect("use_wallet");
     let uploadTxId = await contract.writeInteraction(input, tags);
     if (uploadTxId) {
-      swal({
+      Swal.fire({
         title: 'Show added',
         text: 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.',
         icon: 'success',
@@ -132,7 +130,7 @@ export default function UploadShow() {
             uploadShow(finalShowObj)
             setShow(false)
           } else {
-            swal({
+            Swal.fire({
               title: 'Unable to add show',
               text: 'Check your wallet balance and network connection',
               icon: 'danger',
@@ -218,8 +216,8 @@ export default function UploadShow() {
       <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => handleUploadClick()} >+ Add a podcast</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" />
       <div className="modal overflow-scroll">
-        <div className='modal-box'>
-          <div className='label block uppercase text-center'>
+        <div className="modal-box">
+          <div className="label block uppercase text-center">
             <h1 className="mb-2">Add a new show</h1>
             <p className="text-sm">You'll add episodes to the show next.</p>
           </div>
@@ -227,11 +225,11 @@ export default function UploadShow() {
             <form onSubmit={handleShowUpload}>
               <div className='mb-3'>
                 <span className="label label-text">Show name</span>
-                <input className="input input-bordered" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
+                <input className="input input-bordered w-1/2" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
               </div>
               <div className='my-3'>
                 <span className="label label-text">Show description</span>
-                <input className="input input-bordered" required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
+                <textarea className="w-1/2 textarea textarea-bordered" required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
               </div>
               <div className='my-3'>
                 <span className="label label-text">Cover image</span>
@@ -239,21 +237,21 @@ export default function UploadShow() {
               </div>
               <div className='my-3'>
                 <span className="label label-text">Author</span>
-                <input className="input input-bordered" required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams" />
+                <input className="input input-bordered w-1/2" required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams" />
               </div>
               <div className='my-3'>
                 <span className="label label-text">Email</span>
-                <input className="input input-bordered" type="email" name="podcastEmail" placeholder="your@email.net" />
+                <input className="input input-bordered w-1/2" type="email" name="podcastEmail" placeholder="your@email.net" />
               </div>
               <div className='my-3'>
-                <span className="label">Podcast language</span>
-                <select className="select select-bordered" id="podcastLanguage" name="language">
+                <span className="label label-text">Podcast language</span>
+                <select className="select select-bordered w-1/2" id="podcastLanguage" name="language">
                   {languageOptions()}
                 </select>
               </div>
               <div className='my-3'>
                 <span className="label label-text">Category</span>
-                <select className="select select-bordered" id="podcastCategory" name="category">
+                <select className="select select-bordered w-1/2" id="podcastCategory" name="category">
                   {categoryOptions()}
                 </select>
               </div>

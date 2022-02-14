@@ -1,9 +1,7 @@
 import { React, Component } from 'react'
 import YellowRec from '../yellow-rec.svg'
-import { NavLink } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import ArConnectLoader from './arconnect_loader'
-import { getWeaveAggregator } from 'weave-aggregator'
 
 
 export default class Header extends Component {
