@@ -61,13 +61,6 @@ class Index extends Component {
         )
       }
     }
-    // push empty card to fill last row
-    html.push(
-      <div className='podcast-card'></div>
-    )
-    html.push(
-      <div className='podcast-card'></div>
-    )
     return html
   }
 
@@ -111,7 +104,7 @@ class Index extends Component {
             show container if load with podcasts of max height
           */}
           <div
-            className='grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36'
+            className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36 mb-10"
             style={{ visibility: this.state.isHeightsLoaded ? 'visible' : 'hidden' }}>
             {podcasts}
           </div>

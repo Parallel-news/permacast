@@ -97,18 +97,17 @@ class Podcast extends Component {
     const p = this.state.thePodcast
     const podcastHtml = []
     podcastHtml.push(
-      <div>
-        <PodcastHtml
-          rss={`rss/${p.pid}`}
-          owner={p.owner}
-          id={p.pid}
-          link={p.pid}
-          name={p.podcastName}
-          titleClass={'h2'}
-          description={p.description}
-          image={`${MESON_ENDPOINT}/${p.cover}`}
-        />
-      </div>
+      <PodcastHtml
+        rss={`rss/${p.pid}`}
+        owner={p.owner}
+        id={p.pid}
+        link={p.pid}
+        name={p.podcastName}
+        titleClass={'h2'}
+        description={p.description}
+        image={`${MESON_ENDPOINT}/${p.cover}`}
+        key={p.pid}
+      />
     )
     return podcastHtml
   }
@@ -132,7 +131,10 @@ class Podcast extends Component {
       console.log(e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
-          <div className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto">
+          <div
+            className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto"
+            key={e.eid}
+          >
             <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
               <div className="flex space-x-10 mb-3 md:mb-0">
                 <button onClick={() => this.showPlayer(e)}>
@@ -238,7 +240,7 @@ class Podcast extends Component {
         </div>
         <div>{this.state.podcastEpisodes}</div>
         {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <button className='btn' onClick={() => this.showEpisodeForm()}>add new episode</button>}
-        <div className="podcast-player bottom-0 w-screen" />
+        <div className="podcast-player sticky bottom-0 w-screen" />
       </div>
 
     )
