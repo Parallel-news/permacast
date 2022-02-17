@@ -1,5 +1,4 @@
 import { React, Component } from 'react'
-import { Button } from 'react-bootstrap'
 import UploadShow from './upload_show.jsx'
 
 import Swal from 'sweetalert2'
@@ -62,7 +61,8 @@ export default class Header extends Component {
       icon: 'warning',
       title: 'Install ArConnect to continue',
       text: 'Permablog uses ArConnect to make it easier to authenticate and send transactions for questions and answers',
-      footer: '<a href="https://arconnect.io" rel="noopener noreferrer" target="_blank">Download ArConnect here</a>'
+      footer: '<a href="https://arconnect.io" rel="noopener noreferrer" target="_blank">Download ArConnect here</a>',
+      customClass: "font-mono",
     })
   }
 
@@ -78,7 +78,7 @@ export default class Header extends Component {
           walletConnected: true,
           address
         })
-      } catch {}
+      } catch { }
     } else {
       this.installArConnectAlert()
     }
@@ -98,23 +98,22 @@ export default class Header extends Component {
         {/** if the wallet is connected, display the logout btn, else display login */}
         {(this.state.walletConnected && (
           <>
-            <UploadShow/>
-            <Button
-              className="mobile-hide"
-              variant="outline-danger"
+            <UploadShow />
+            <div
+              className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md hidden md:flex"
               onClick={this.arconnectDisconnect}
             >
               Logout
-            </Button>
+            </div>
           </>
         )) || (
-          <Button
-            variant="success"
-            onClick={this.arconnectConnect}
-          >
-            🦔 ArConnect login
-          </Button>
-        )}
+            <div
+              className='btn btn-primary btn-sm md:btn-md text-sm md:text-md'
+              onClick={this.arconnectConnect}
+            >
+              🦔 ArConnect login
+            </div>
+          )}
       </div>
     )
   }
