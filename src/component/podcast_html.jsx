@@ -112,7 +112,7 @@ export default class PodcastHtml extends Component {
         const { podcastHeight } = this.state
         return (
             <div className={`card text-center h-full ${!this.props.smallImage && "shadow-2xl hover:cursor-pointer hover:border"}`} ref={e => { this.container = e }}>
-                <div className={`px-2 pt-3 md:px-5 md:pt-5 ${this.props.smallImage && "w-2/5 h-auto mx-auto"}`}>
+                <div className={`px-2 pt-3 md:px-5 md:pt-5 w-full h-auto mx-auto ${this.props.smallImage && "md:w-2/5"}`}>
                     <a href={`/#/podcasts/${this.props.link} `}>
                         <figure className="aspect-h-1 aspect-w-1">
                             {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
