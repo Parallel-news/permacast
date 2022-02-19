@@ -9,7 +9,8 @@ export default class PodcastHtml extends Component {
         super(props)
         this.state = {
             podcastHeight: null,
-            truncated: false
+            truncated: false,
+            smallImage: false,
         }
     }
 
@@ -107,15 +108,14 @@ export default class PodcastHtml extends Component {
     }
 
     render() {
-        // console.log(this.props.rss)
         const { podcastHeight } = this.state
         return (
-            <div className="card text-center shadow-2xl hover:cursor-pointer hover:border h-full" ref={e => { this.container = e }}>
-                <div className="px-2 pt-3 md:px-5 md:pt-5">
-                    <a href={`/#/podcasts/${this.props.link}`}>
-                        <figure className='aspect-w-10 aspect-h-7'>
+            <div className={`card text-center h-full ${!this.props.smallImage && "shadow-2xl hover:cursor-pointer hover:border"}`} ref={e => { this.container = e }}>
+                <div className={`px-2 pt-3 md:px-5 md:pt-5 ${this.props.smallImage && "w-2/5 h-auto mx-auto"}`}>
+                    <a href={`/#/podcasts/${this.props.link} `}>
+                        <figure className="aspect-h-1 aspect-w-1">
                             {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
-                            <img className="object-cover pointer-events-none group-hover:opacity-75" alt={`${this.props.name} cover`} src={this.props.image} />
+                            <img className="object-cover pointer-events-none group-hover:opacity-75 rounded-xl" alt={`${this.props.name} cover`} src={this.props.image} />
                         </figure>
                     </a>
                 </div>
@@ -126,7 +126,7 @@ export default class PodcastHtml extends Component {
                         {this.props.truncated && this.props.description.length > 52 ? this.props.description.substring(0, 52) + '...' : this.props.description}
                     </p>
                 </div>
-            </div>
+            </div >
         )
     }
 

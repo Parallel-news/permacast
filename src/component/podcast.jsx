@@ -107,6 +107,7 @@ class Podcast extends Component {
         description={p.description}
         image={`${MESON_ENDPOINT}/${p.cover}`}
         key={p.pid}
+        smallImage="true"
       />
     )
     return podcastHtml
