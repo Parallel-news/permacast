@@ -41,6 +41,12 @@ class Index extends Component {
     return podcastList;
   }
 
+  truncateDesc = (desc) => {
+    let shortDesc = desc.substring(0, 140);
+    if (desc.length > 140) { shortDesc = shortDesc.concat(" [...]"); };
+    return shortDesc;
+  }
+
   // First, render podcasts with auto height and hidden visibility.
   // Then, calculate the max height.
   // Then, render podcasts with max height and change visibility to visible.
@@ -58,7 +64,7 @@ class Index extends Component {
               name={p.podcastName}
               episodes={p.episodes.length}
               link={p.pid}
-              description={p.description}
+              description={this.truncateDesc(p.description)}
               image={`${MESON_ENDPOINT}/${p.cover}`}
               key={p.pid}
               style={{height: '100%'}}
