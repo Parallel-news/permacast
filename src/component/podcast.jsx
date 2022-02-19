@@ -1,14 +1,10 @@
 import { React, Component } from 'react'
-import { Container, Button, Row, Col } from 'react-bootstrap'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
-import swal from 'sweetalert'
+import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
-import { FaPlay } from 'react-icons/fa';
-import { IoIosArrowRoundDown } from 'react-icons/io'
-import { IoPlaySharp } from 'react-icons/io5'
 import { arweave, queryObject, MESON_ENDPOINT } from '../utils/arweave.js'
 
 class Podcast extends Component {
@@ -37,8 +33,8 @@ class Podcast extends Component {
 
     return podcastList;
   }
-  
-  getPodcastEpisodes = async() => {
+
+  getPodcastEpisodes = async () => {
     const pid = this.props.match.params.podcastId;
 
     const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
@@ -101,18 +97,18 @@ class Podcast extends Component {
     const p = this.state.thePodcast
     const podcastHtml = []
     podcastHtml.push(
-      <div>
-        <PodcastHtml
-          rss={`rss/${p.pid}`}
-          owner={p.owner}
-          id={p.pid}
-          link={p.pid}
-          name={p.podcastName}
-          titleClass={'h2'}
-          description={p.description}
-          image={`${MESON_ENDPOINT}/${p.cover}`}
-        />
-      </div>
+      <PodcastHtml
+        rss={`rss/${p.pid}`}
+        owner={p.owner}
+        id={p.pid}
+        link={p.pid}
+        name={p.podcastName}
+        titleClass={'h2'}
+        description={p.description}
+        image={`${MESON_ENDPOINT}/${p.cover}`}
+        key={p.pid}
+        smallImage={true}
+      />
     )
     return podcastHtml
   }
@@ -136,23 +132,29 @@ class Podcast extends Component {
       console.log(e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
-          <div>
-            <Row className="p-1 m-2 align-items-center episode-row">
-              <Col md="auto">
-                <Button size="lg" variant="link" className="play-button" onClick={() => this.showPlayer(e)}> <IoPlaySharp /> </Button>
-                <Button size="lg" variant="link" className="download-button" onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}> <IoIosArrowRoundDown/> </Button>
-              </Col>
-              <Col md="auto">
-                <div className="font-weight-bold">{e.episodeName}</div>
-              </Col>
-              <Col>
-                {this.truncatedDesc(e.description, 52)}
-              </Col>
-              { /* this.state.thePodcast.owner === addr &&
-              <Col>
-                edit
-              </Col> */ }
-            </Row>
+          <div
+            className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto"
+            key={e.eid}
+          >
+            <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
+              <div className="flex space-x-10 mb-3 md:mb-0">
+                <button onClick={() => this.showPlayer(e)}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </button>
+                <button onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                </button>
+              </div>
+              <div className="font-bold w-full md:w-auto text-center">{e.episodeName}</div>
+            </div>
+            <div className='text-sm w-full md:w-auto text-center'>
+              {this.truncatedDesc(e.description, 52)}
+            </div>
           </div>
         )
 
@@ -181,14 +183,15 @@ class Podcast extends Component {
     if (desc.length < maxLength) {
       return <>{desc}</>
     } else {
-      return <>{desc.substring(0, maxLength)}... <Button variant="link" onClick={() => this.showDesc(desc)}>[read more]</Button></>
+      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => this.showDesc(desc)}>[read more]</span></>
     }
   }
 
   showDesc = (desc) => {
-    swal({
+    Swal.fire({
       text: desc,
-      button: 'close'
+      button: 'close',
+      customClass: "font-mono",
     })
   }
 
@@ -230,14 +233,17 @@ class Podcast extends Component {
 
   render = () => {
     return (
-      <div>
+      <div className="flex flex-col items-center justify-center">
         {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast} /> : null}
         {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
-        {this.state.podcastHtml}
-        <Container className="episodes-container">{this.state.podcastEpisodes}</Container>
-        {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <Button size="" variant="link" onClick={() => this.showEpisodeForm()}>add new episode</Button>}
-        <div className="podcast-player position-sticky fixed-bottom" />
+        <div className="block w-full md:w-2/3 h-auto">
+          {this.state.podcastHtml}
+        </div>
+        <div>{this.state.podcastEpisodes}</div>
+        {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <button className='btn' onClick={() => this.showEpisodeForm()}>add new episode</button>}
+        <div className="podcast-player sticky bottom-0 w-screen" />
       </div>
+
     )
   }
 

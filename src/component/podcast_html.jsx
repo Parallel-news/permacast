@@ -1,5 +1,4 @@
 import { React, Component } from 'react';
-import { Button, Card, Image } from 'react-bootstrap';
 import { FaRss, FaRegGem } from 'react-icons/fa';
 import { contract } from 'redstone-smartweave';
 import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js'
@@ -9,7 +8,9 @@ export default class PodcastHtml extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            podcastHeight: null
+            podcastHeight: null,
+            truncated: false,
+            smallImage: false,
         }
     }
 
@@ -35,7 +36,7 @@ export default class PodcastHtml extends Component {
     }
 
     tipButton = () => {
-        return <Button variant="outline-secondary" onClick={() => this.tipPrompt()} size="sm"><FaRegGem/> Tip</Button>
+        return <button className="btn btn-sm btn-outline" onClick={() => this.tipPrompt()}><FaRegGem className='mr-2' /> Tip</button>
     }
 
     checkNewsBalance = async (addr, tipAmount) => {
@@ -49,17 +50,18 @@ export default class PodcastHtml extends Component {
     }
 
     transferNews = async (recipient, tipAmount) => {
-       const input = {"function": "transfer",  "target": recipient, "qty": parseInt(tipAmount)};
-       const contract = contract(NEWS_CONTRACT);
-       const tx = await contract.writeInteraction(arweave, "use_wallet", NEWS_CONTRACT, input);
-       console.log(tx);
+        const input = { "function": "transfer", "target": recipient, "qty": parseInt(tipAmount) };
+        const contract = contract(NEWS_CONTRACT);
+        const tx = await contract.writeInteraction(arweave, "use_wallet", NEWS_CONTRACT, input);
+        console.log(tx);
     }
 
     tipPrompt = async () => {
 
         Swal.fire({
             title: 'Coming soon',
-            text: 'Tip your favorite podcasts with $NEWS to show support'
+            text: 'Tip your favorite podcasts with $NEWS to show support',
+            customClass: "font-mono",
         })
 
         return false
@@ -81,19 +83,19 @@ export default class PodcastHtml extends Component {
             let n = parseInt(tipAmount);
             if (Number.isInteger(n) && n > 0) {
 
-            if (this.transferNews(recipient, tipAmount)) {
+                if (this.transferNews(recipient, tipAmount)) {
 
-            Swal.fire({
-                title: 'You just supported a great podcast 😻',
-                text: `${name} just got ${tipAmount} $NEWS.`
-            })
+                    Swal.fire({
+                        title: 'You just supported a great podcast 😻',
+                        text: `${name} just got ${tipAmount} $NEWS.`
+                    })
 
-        } else {
-            Swal.fire({
-                title: 'Enter a whole number of $NEWS to tip.'
-            })
-        }
-        }
+                } else {
+                    Swal.fire({
+                        title: 'Enter a whole number of $NEWS to tip.'
+                    })
+                }
+            }
         }
     }
 
@@ -108,19 +110,24 @@ export default class PodcastHtml extends Component {
     render() {
         // console.log(this.props.rss)
         const { podcastHeight } = this.state
-        return(
-            <Card className="text-center p-1 border-0" ref={ e => {this.container = e}}>
-                <div className="image-item" style={{ height: '300px'}}>
-                    <a href={`/#/podcasts/${this.props.link}`}>
-                    {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
-                        <Image className="podcast-grid-cover" alt={`${this.props.name} cover`} src={this.props.image} />
+        return (
+            <div className={`card text-center h-full ${!this.props.smallImage && "shadow-2xl hover:cursor-pointer hover:border"}`} ref={e => { this.container = e }}>
+                <div className={`px-2 pt-3 md:px-5 md:pt-5 w-full h-auto mx-auto ${this.props.smallImage && "md:w-2/5"}`}>
+                    <a href={`/#/podcasts/${this.props.link} `}>
+                        <figure className="aspect-h-1 aspect-w-1">
+                            {/*!this.props.rss && <Badge className="episode-badge" bg="info">{this.episodeCount(this.props.episodes)}</Badge>*/} {/* TODO: stick badge to bounds of cover image, don't guess */}
+                            <img className="object-cover pointer-events-none group-hover:opacity-75 rounded-xl" alt={`${this.props.name} cover`} src={this.props.image} />
+                        </figure>
                     </a>
                 </div>
-                <div>
-                    <div className={this.props.titleClass || 'h3'}>{this.props.name} { this.props.rss ? <span><Button size="sm" className="rss-button" onClick={() => this.loadRss()}><FaRss/></Button>  {this.tipButton()}  </span> : null } </div>
-                    <p>{this.props.description}</p>
+                <div className='card-body pt-3 pb-1'>
+                    <div className="card-title text-sm md:text-lg">
+                        {this.props.name} {this.props.rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => this.loadRss()}><FaRss /></button> {this.tipButton()} </span> : null} </div>
+                    <p className="text-sm mb-2">
+                        {this.props.truncated && this.props.description.length > 52 ? this.props.description.substring(0, 52) + '...' : this.props.description}
+                    </p>
                 </div>
-            </Card>
+            </div >
         )
     }
 
