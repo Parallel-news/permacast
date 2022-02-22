@@ -120,9 +120,10 @@ export default class PodcastHtml extends Component {
                         </figure>
                     </a>
                 </div>
-                <div className='card-body pt-3 pb-1'>
+                <div className='card-body items-center text-center pt-3 pb-1'>
                     <div className="card-title text-sm md:text-lg">
-                        {this.props.name} {this.props.rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => this.loadRss()}><FaRss /></button> {this.tipButton()} </span> : null} </div>
+                        {this.props.name} {this.props.rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => this.loadRss()}><FaRss /></button> {this.tipButton()} </span> : null}
+                    </div>
                     <p className="text-sm mb-2">
                         {this.props.truncated && this.props.description.length > 52 ? this.props.description.substring(0, 52) + '...' : this.props.description}
                     </p>

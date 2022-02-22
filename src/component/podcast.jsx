@@ -6,6 +6,7 @@ import 'shikwasa/dist/shikwasa.min.css'
 import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
 import { arweave, queryObject, MESON_ENDPOINT } from '../utils/arweave.js'
+import { isDarkMode } from '../utils/theme.js'
 
 class Podcast extends Component {
 
@@ -201,6 +202,7 @@ class Podcast extends Component {
     const player = new Shikwasa({
       container: () => document.querySelector('.podcast-player'),
       themeColor: 'gray',
+      theme: `${isDarkMode() ? 'dark' : 'light'}`,
       autoplay: true,
       audio: {
         title: e.episodeName,
