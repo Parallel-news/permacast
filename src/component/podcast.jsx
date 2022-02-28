@@ -206,8 +206,9 @@ class Podcast extends Component {
         title: e.episodeName,
         artist: name,
         cover: `${MESON_ENDPOINT}/${cover}`,
-        src: `${MESON_ENDPOINT}/${e.audioTx}`,
+        src: `https://arweave.net/${e.audioTx}`,
       },
+      download: true
     })
     window.scrollTo(0, document.body.scrollHeight)
   }
