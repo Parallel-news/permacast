@@ -1,55 +1,20 @@
-import { React, Component } from 'react'
+import { React, useState, useEffect } from 'react'
 import PodcastHtml from './podcast_html.jsx'
 import { MESON_ENDPOINT } from '../utils/arweave.js'
+import { useTranslation } from 'react-i18next'
+import fetchPodcasts from '../utils/podcast.js'
 
-/* make arbitrary change */
-class Index extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      test: true,
-      podcasts: {},
-      // stores height passed by each podcast child
-      podcastsHeights: [],
-      // if loaded, change container visibility to true
-      isHeightsLoaded: false
-    }
-  }
+export default function Index() {
+  const [loading, setLoading] = useState(false)
+  const [podcastsHtml, setPodcastsHtml] = useState([])
+  const { t } = useTranslation()
 
-  // load height passed by each podcast child
-  loadPodcastHeight = (currentPodcastHeight) => {
-    this.setState({
-      podcastsHeights: [...this.state.podcastsHeights, currentPodcastHeight]
-    })
-    // console.log(this.state.podcastsHeights)
-  }
-
-  fetchAllSwcIds = async () => {
-    const response = await fetch("https://permacast-cache.herokuapp.com/feeds/podcasts", {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json', }
-    });
-
-    return (await response.json());
-  }
-
-  loadPodcasts = async () => {
-    let creatorsContracts = await this.fetchAllSwcIds()
-    const podcastList = creatorsContracts.res
-
-    return podcastList;
-  }
-
-  renderPodcasts = async (podcasts) => {
+  const renderPodcasts = (podcasts) => {
     let html = []
-
-    for (let podcast of podcasts) {
-      // console.log(podcast)
-      let p = podcast
+    for (const p of podcasts) {
       if (p && p.pid !== 'aMixVLXScjjNUUcXBzHQsUPmMIqE3gxDxNAXdeCLAmQ') {
         html.push(
           <PodcastHtml
-            loadPodcastHeight={this.loadPodcastHeight}
             name={p.podcastName}
             episodes={p.episodes.length}
             link={p.pid}
@@ -64,55 +29,28 @@ class Index extends Component {
     return html
   }
 
-  async componentDidMount() {
-    this.setState({ loading: true })
-    this.setState({ noPodcasts: false })
-    let pArrays = await this.loadPodcasts()
-    let p = pArrays.flat()
-    this.setState({ podcasts: p })
-    let podcasts = await this.renderPodcasts(this.state.podcasts)
-    this.setState({ podcastHtml: podcasts })
-    if (this.state.podcastHtml.length < 1) {
-      this.setState({ noPodcasts: true })
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const podcasts = await fetchPodcasts()
+      const podcastsHtml = renderPodcasts(podcasts)
+      setPodcastsHtml(podcastsHtml)
+      setLoading(false)
     }
-    this.setState({ loading: false })
-  }
+    fetchData()
+  }, [])
 
-  async componentDidUpdate(prevProps, prevState) {
-    // if for the last change of state, we get the final list of
-    // podcastsHeights, rerender with max height for podcast, not auto height
-    if (prevState.podcastsHeights.length + 1 === prevState.podcasts.length) {
-      let podcasts = await this.renderPodcasts(this.state.podcasts)
-      this.setState({
-        podcastHtml: podcasts,
-        isHeightsLoaded: true,
-      })
-    }
-  }
+  return (
+    <div>
+      <div className="flex items-center justify-center p-2 md:p-6 text-md">
+        {loading ? t("loading") : podcastsHtml.length === 0 ? t("nopodcasts") : null}
+      </div>
 
-  render() {
-    const podcasts = this.state.podcastHtml
-    return (
-      <>
-        <div className="flex items-center justify-center p-2 md:p-6 text-md">
-          {this.state.noPodcasts ? <h5>No podcasts here yet. Upload one!</h5> : null}
-          {this.state.loading ? <h5 className="p-6">Loading podcasts...</h5> : null}
-        </div>
-        <div>
-          {/*
-            hide container if load with podcasts of auto height
-            show container if load with podcasts of max height
-          */}
-          <div
-            className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36 mb-10"
-            style={{ visibility: this.state.isHeightsLoaded ? 'visible' : 'hidden' }}>
-            {podcasts}
-          </div>
-        </div>
-      </>
-    )
-  }
+      <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36 mb-10">
+        {podcastsHtml}
+      </div>
+    </div>
+  )
 
 }
 
-export default Index

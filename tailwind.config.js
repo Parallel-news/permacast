@@ -9,9 +9,4 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("daisyui"),
   ],
-  daisyui: {
-    themes: [
-      "light", // first one will be the default theme
-    ],
-  },
 };

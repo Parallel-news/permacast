@@ -1,13 +1,17 @@
 import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
-import { CONTRACT_SRC, arweave, languages, categories, smartweave } from '../utils/arweave.js'
+import { CONTRACT_SRC, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
+import { useTranslation } from 'react-i18next';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow() {
   let finalShowObj = {}
   const [show, setShow] = useState(false);
   const podcastCoverRef = useRef()
+  const { t, i18n } = useTranslation()
+  const languages = i18n.language === 'zh' ? languages_zh : languages_en
+  const categories = i18n.language === 'zh' ? categories_zh : categories_en
 
   const deployContract = async () => {
     const initialState = `{"podcasts": []}`
@@ -50,7 +54,7 @@ export default function UploadShow() {
 
   const uploadShow = async (show) => {
     Swal.fire({
-      title: 'Uploading, please wait a few seconds...',
+      title: t("uploadshow.swal.uploading.title"),
       timer: 2000,
       customClass: "font-mono",
     })
@@ -97,8 +101,8 @@ export default function UploadShow() {
     let uploadTxId = await contract.writeInteraction(input, tags);
     if (uploadTxId) {
       Swal.fire({
-        title: 'Show added',
-        text: 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.',
+        title: t("uploadshow.swal.showadded.title"),
+        text: t("uploadshow.swal.showadded.text"),
         icon: 'success',
         customClass: "font-mono",
       })
@@ -127,8 +131,8 @@ export default function UploadShow() {
             setShow(false)
           } else {
             Swal.fire({
-              title: 'Unable to add show',
-              text: 'Check your wallet balance and network connection',
+              title: t("uploadshow.swal.uploadfailed.title"),
+              text: t("uploadshow.swal.uploadfailed.text"),
               icon: 'danger',
               customClass: "font-mono",
             })
@@ -141,7 +145,7 @@ export default function UploadShow() {
   const resetPodcastCover = () => {
     podcastCoverRef.current.value = ""
     Swal.fire({
-      text: 'Podcast cover image is not squared (1:1 aspect ratio)!',
+      text: t("uploadshow.swal.reset.text"),
       icon: 'warning',
       confirmButtonText: 'Continue',
       customClass: "font-mono",
@@ -210,44 +214,44 @@ export default function UploadShow() {
 
   return (
     <>
-      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => setShow(true)} >+ Add a podcast</label>
+      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" onClick={() => setShow(true)} >+ {t("uploadshow.addpoadcast")}</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" checked={show ? "checked" : false} readOnly />
       <div className="modal overflow-scroll">
         <div className="modal-box">
           <div className="label block uppercase text-center">
-            <h1 className="mb-2">Add a new show</h1>
-            <p className="text-sm">You'll add episodes to the show next.</p>
+            <h1 className="mb-2">{t("uploadshow.title")}</h1>
+            <p className="text-sm">{t("uploadshow.label")}</p>
           </div>
           <div className="form-control">
             <form onSubmit={handleShowUpload}>
               <div className='mb-3'>
-                <span className="label label-text">Show name</span>
+                <span className="label label-text">{t("uploadshow.name")}</span>
                 <input className="input input-bordered w-1/2" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
               </div>
               <div className='my-3'>
-                <span className="label label-text">Show description</span>
+                <span className="label label-text">{t("uploadshow.description")}</span>
                 <textarea className="w-1/2 textarea textarea-bordered" required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
               </div>
               <div className='my-3'>
-                <span className="label label-text">Cover image</span>
+                <span className="label label-text">{t("uploadshow.image")}</span>
                 <input required type="file" ref={podcastCoverRef} onChange={e => isPodcastCoverSquared(e)} name="podcastCover" />
               </div>
               <div className='my-3'>
-                <span className="label label-text">Author</span>
+                <span className="label label-text">{t("uploadshow.author")}</span>
                 <input className="input input-bordered w-1/2" required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams" />
               </div>
               <div className='my-3'>
-                <span className="label label-text">Email</span>
+                <span className="label label-text">{t("uploadshow.email")}</span>
                 <input className="input input-bordered w-1/2" type="email" name="podcastEmail" placeholder="your@email.net" />
               </div>
               <div className='my-3'>
-                <span className="label label-text">Podcast language</span>
+                <span className="label label-text">{t("uploadshow.language")}</span>
                 <select className="select select-bordered w-1/2" id="podcastLanguage" name="language">
                   {languageOptions()}
                 </select>
               </div>
               <div className='my-3'>
-                <span className="label label-text">Category</span>
+                <span className="label label-text">{t("uploadshow.category")}</span>
                 <select className="select select-bordered w-1/2" id="podcastCategory" name="category">
                   {categoryOptions()}
                 </select>
@@ -255,12 +259,12 @@ export default function UploadShow() {
               <div className='my-3'>
                 <label className="cursor-pointer label flex justify-start mt-3">
                   <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-primary mx-2" />
-                  <span className="label-text">Contains explicit content</span>
+                  <span className="label-text">{t("uploadshow.explicit")}</span>
                 </label>
               </div>
               <div className="modal-action">
-                <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">Upload</button>
-                <label htmlFor="my-modal-2" className="btn" onClick={() => setShow(false)}>Cancel</label>
+                <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">{t("uploadshow.upload")}</button>
+                <label htmlFor="my-modal-2" className="btn" onClick={() => setShow(false)}>{t("uploadshow.cancel")}</label>
               </div>
             </form>
           </div>

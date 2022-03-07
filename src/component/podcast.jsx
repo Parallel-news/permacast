@@ -1,41 +1,26 @@
-import { React, Component } from 'react'
+import { useEffect, useState } from 'react'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
 import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
 import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
-import { arweave, queryObject, MESON_ENDPOINT } from '../utils/arweave.js'
+import { MESON_ENDPOINT } from '../utils/arweave.js'
+import { isDarkMode } from '../utils/theme.js'
+import fetchPodcasts from '../utils/podcast.js';
+import { useTranslation } from 'react-i18next';
 
-class Podcast extends Component {
+export default function Podcast(props) {
+  const [loading, setLoading] = useState(true)
+  const [showEpisodeForm, setShowEpisodeForm] = useState(false)
+  const [addr, setAddr] = useState('')
+  const [thePodcast, setThePodcast] = useState(null)
+  const [podcastHtml, setPodcastHtml] = useState(null)
+  const [podcastEpisodes, setPodcastEpisodes] = useState([])
+  const { t } = useTranslation()
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      test: true,
-      thePodcast: {} // await this.getPodcast()
-    }
-  }
-
-  fetchAllSwcIds = async () => {
-    const response = await fetch("https://permacast-cache.herokuapp.com/feeds/podcasts", {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json', }
-    });
-
-    return (await response.json());
-  }
-
-  loadPodcasts = async () => {
-    // let podcastList = []
-    let creatorsContracts = await this.fetchAllSwcIds()
-    const podcastList = creatorsContracts.res
-
-    return podcastList;
-  }
-
-  getPodcastEpisodes = async () => {
-    const pid = this.props.match.params.podcastId;
+  const getPodcastEpisodes = async () => {
+    const pid = props.match.params.podcastId;
 
     const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
       method: 'GET',
@@ -46,18 +31,16 @@ class Podcast extends Component {
     return episodes;
   }
 
-  getPodcast = async (p) => {
+  const getPodcast = (p) => {
     let podcasts = p.filter(
       obj => !(obj && Object.keys(obj).length === 0)
     )
-    let id = this.props.match.params.podcastId;
-    let podcast = this._findPodcastById(podcasts, id)
-    console.log(podcast)
+    let id = props.match.params.podcastId;
+    let podcast = _findPodcastById(podcasts, id)
     return podcast
   }
 
-  _findPodcastById = (podcastsList, id) => {
-
+  const _findPodcastById = (podcastsList, id) => {
     let pList = podcastsList.filter(
       obj => !(obj && Object.keys(obj).length === 0)
     )
@@ -77,42 +60,38 @@ class Podcast extends Component {
     }
     */
 
-  linkValues = (podcast) => {
-    let p = podcast.podcasts
-    const keys = Object.keys(p)
-    const values = Object.values(p)
-    const resultArr = []
+  // const linkValues = (podcast) => {
+  //   let p = podcast.podcasts
+  //   const keys = Object.keys(p)
+  //   const values = Object.values(p)
+  //   const resultArr = []
 
-    for (let i = 0; i < keys.length; i++) {
-      const currentValues = values[i]
-      const currentKey = keys[i]
-      currentValues["pid"] = currentKey
-      resultArr.push(currentValues)
+  //   for (let i = 0; i < keys.length; i++) {
+  //     const currentValues = values[i]
+  //     const currentKey = keys[i]
+  //     currentValues["pid"] = currentKey
+  //     resultArr.push(currentValues)
 
-    }
-    return resultArr
+  //   }
+  //   return resultArr
+  // }
+
+  const loadPodcastHtml = (p) => {
+    return <PodcastHtml
+      rss={`rss/${p.pid}`}
+      owner={p.owner}
+      id={p.pid}
+      link={p.pid}
+      name={p.podcastName}
+      titleClass={'h2'}
+      description={p.description}
+      image={`${MESON_ENDPOINT}/${p.cover}`}
+      key={p.pid}
+      smallImage={true}
+    />
   }
 
-  loadPodcast = () => {
-    const p = this.state.thePodcast
-    const podcastHtml = []
-    podcastHtml.push(
-      <PodcastHtml
-        rss={`rss/${p.pid}`}
-        owner={p.owner}
-        id={p.pid}
-        link={p.pid}
-        name={p.podcastName}
-        titleClass={'h2'}
-        description={p.description}
-        image={`${MESON_ENDPOINT}/${p.cover}`}
-        key={p.pid}
-        smallImage={true}
-      />
-    )
-    return podcastHtml
-  }
-  tryAddressConnecting = async () => {
+  const tryAddressConnecting = async () => {
     let addr;
     try {
       addr = await window.arweaveWallet.getActiveAddress();
@@ -123,13 +102,13 @@ class Podcast extends Component {
       return addr;
     }
   };
-  loadEpisodes = async (p) => {
-    let ep = p
+
+  const loadEpisodes = async (podcast, episodes) => {
     const episodeList = []
-    const addr = await this.tryAddressConnecting();
-    for (let i in ep) {
-      let e = ep[i]
-      console.log(e)
+    const addr = await tryAddressConnecting();
+    for (let i in episodes) {
+      let e = episodes[i]
+      console.log("episode", e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
           <div
@@ -138,24 +117,28 @@ class Podcast extends Component {
           >
             <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
               <div className="flex space-x-10 mb-3 md:mb-0">
-                <button onClick={() => this.showPlayer(e)}>
+                <button onClick={() => showPlayer(podcast, e)}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </button>
-                <button onClick={() => window.open(`{${MESON_ENDPOINT}/${e.eid}`, "_blank")}>
+                <a
+                  href={`${MESON_ENDPOINT}/${e.audioTx}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                   </svg>
-                </button>
+                </a>
               </div>
               <div className="font-bold w-full md:w-auto text-center">{e.episodeName}</div>
             </div>
             <div className='text-sm w-full md:w-auto text-center'>
-              {this.truncatedDesc(e.description, 52)}
+              {truncatedDesc(e.description, 52)}
             </div>
-          </div>
+          </div >
         )
 
       }
@@ -163,10 +146,10 @@ class Podcast extends Component {
     return episodeList
   }
 
-  showEpisodeForm = async () => {
+  const checkEpisodeForm = async (owner) => {
     let addr = await window.arweaveWallet.getActiveAddress()
-    if (addr === this.state.thePodcast.owner) {
-      this.setState({ showEpisodeForm: true })
+    if (addr === owner) {
+      setShowEpisodeForm(true)
       window.scrollTo(0, 0)
     } else {
       alert('Not the owner of this podcast')
@@ -179,15 +162,15 @@ class Podcast extends Component {
         return res
       }  
   */
-  truncatedDesc = (desc, maxLength) => {
+  const truncatedDesc = (desc, maxLength) => {
     if (desc.length < maxLength) {
       return <>{desc}</>
     } else {
-      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => this.showDesc(desc)}>[read more]</span></>
+      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => showDesc(desc)}>[read more]</span></>
     }
   }
 
-  showDesc = (desc) => {
+  const showDesc = (desc) => {
     Swal.fire({
       text: desc,
       button: 'close',
@@ -195,60 +178,51 @@ class Podcast extends Component {
     })
   }
 
-  showPlayer = (e) => {
-    let name = this.state.thePodcast.podcastName
-    let cover = this.state.thePodcast.cover
+  const showPlayer = (podcast, e) => {
     const player = new Shikwasa({
       container: () => document.querySelector('.podcast-player'),
       themeColor: 'gray',
+      theme: `${isDarkMode() ? 'dark' : 'light'}`,
       autoplay: true,
       audio: {
         title: e.episodeName,
-        artist: name,
-        cover: `${MESON_ENDPOINT}/${cover}`,
-        src: `https://arweave.net/${e.audioTx}`,
+        artist: podcast.podcastName,
+        cover: `${MESON_ENDPOINT}/${podcast.cover}`,
+        src: `${MESON_ENDPOINT}/${e.audioTx}`,
       },
       download: true
     })
+    player.play()
     window.scrollTo(0, document.body.scrollHeight)
   }
 
-  componentDidMount = async () => {
-    this.setState({ loading: true })
-    let ids = await this.fetchAllSwcIds()
-    let p = await this.loadPodcasts(ids)
-    this.setState({ podcast: p })
-    this.setState({ thePodcast: await this.getPodcast(p) })
-    console.log(this.state)
-    let podcastHtml = this.loadPodcast(this.state.thePodcast)
-    this.setState({ podcastHtml: podcastHtml })
-    const eps = await this.getPodcastEpisodes()
-    let podcastEpisodes = await this.loadEpisodes(eps)
-    this.setState({ podcastEpisodes: podcastEpisodes })
-    this.setState({ loading: false })
-    const addr = await this.tryAddressConnecting();
-    console.log(addr)
-    this.setState({ addr: addr })
-    console.log(this.state.thePodcast)
-  }
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true)
 
-  render = () => {
-    return (
-      <div className="flex flex-col items-center justify-center">
-        {this.state.showEpisodeForm ? <UploadEpisode podcast={this.state.thePodcast} /> : null}
-        {this.state.loading && <h5 className="p-5">Loading podcast...</h5>}
-        <div className="block w-full md:w-2/3 h-auto">
-          {this.state.podcastHtml}
-        </div>
-        <div>{this.state.podcastEpisodes}</div>
-        {!this.state.loading && this.state.thePodcast.owner === this.state.addr && <button className='btn' onClick={() => this.showEpisodeForm()}>add new episode</button>}
-        <div className="podcast-player sticky bottom-0 w-screen" />
+      const p = getPodcast(await fetchPodcasts())
+      const ep = await getPodcastEpisodes()
+      setThePodcast(p)
+      setPodcastHtml(loadPodcastHtml(p))
+      setPodcastEpisodes(await loadEpisodes(p, ep))
+      setAddr(await tryAddressConnecting())
+
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      {showEpisodeForm ? <UploadEpisode podcast={thePodcast} /> : null}
+      {loading && <h5 className="p-5">{t("loading")}</h5>}
+      <div className="block w-full md:w-2/3 h-auto">
+        {podcastHtml}
       </div>
+      <div>{podcastEpisodes}</div>
+      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
+      < div className="podcast-player sticky bottom-0 w-screen" />
+    </div>
 
-    )
-  }
-
+  )
 }
-
-
-export default Podcast

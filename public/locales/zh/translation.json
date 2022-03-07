@@ -1,0 +1,87 @@
+{
+	"language": "语言",
+	"navbar": {
+		"help": "获取帮助",
+		"new": "新功能",
+		"swal": {
+			"title": "Permacast V2 新功能 ✨",
+			"html": "<li>为任何播客生成符合 Spotify 和 Apple 标准的 RSS 源</li><li>为您最喜爱的播客打赏 $NEWS</li><li>剧集作为原子 NFT，可在 Verto 上展示!</li>"
+		}
+	},
+	"connector": {
+		"login": "ArConnect 登录",
+		"logout": "登出",
+		"swal": {
+			"title": "安装 ArConnect 以继续",
+			"text": "Permacast 使用 ArConnect 让认证和发送交易更加容易",
+			"footer": "下载 ArConnect"
+		}
+	},
+	"uploadshow": {
+		"addpoadcast": "添加播客",
+		"title": "添加新的节目",
+		"label": "之后您可在节目中添加剧集",
+		"name": "节目名称",
+		"description": "节目描述",
+		"image": "封面图片",
+		"author": "作者",
+		"email": "邮箱",
+		"language": "播客语言",
+		"category": "类别",
+		"explicit": "少儿不宜",
+		"upload": "上传",
+		"cancel": "取消",
+		"swal": {
+			"showadded": {
+				"title": "节目已添加",
+				"text": "节目已永久地上传到 Arweave，待交易完成几分钟后再来查看"
+			},
+			"uploadfailed": {
+				"title": "无法添加节目",
+				"text": "检查您的 AR 余额和网络连接"
+			},
+			"reset": {
+				"text": "播客的封面图片必须为正方形（1:1的长宽比）!"
+			},
+			"uploading": {
+				"title": "上传中，请稍候..."
+			}
+		}
+	},
+	"podcasthtml": {
+		"swal": {
+			"title": "即将到来",
+			"text": "支持并为您最喜爱的播客打赏 $NEWS"
+		}
+	},
+	"uploadepisode": {
+		"swal": {
+			"upload": {
+				"title": "上传中",
+				"text": "我们会在上传完成后通知您，来一杯 ☕ 或 🍺"
+			},
+			"uploadcomplete": {
+				"title": "上传完成",
+				"text": "剧集已永久地上传到 Arweave，待交易完成几分钟后再来查看"
+			},
+			"uploadfailed": {
+				"title": "上传失败",
+				"text": "检查您的 AR 余额和网络连接"
+			}
+		},
+		"title": "添加新的剧集到",
+		"name": "剧集名称",
+		"description": "剧集描述",
+		"file": "音频文件",
+		"verto": "是否在 Verto 上展示原子 NFT ？",
+		"toupload": "来进行上传",
+		"upload": "上传",
+		"uploading": "上传中，请耐心等待...",
+		"uploaded": "已完成"
+	},
+	"podcast": {
+		"newepisode": "添加新剧集"
+	},
+	"loading": "正在加载播客...",
+	"nopodcasts": "这里还没有播客，请上传一个!"
+}
