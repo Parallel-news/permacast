@@ -76,13 +76,12 @@ export default function Header() {
   }
 
   return (
-    <div>
-      {/** if the wallet is connected, display the logout btn, else display login */}
+    <>
       {(walletConnected && (
         <>
           <UploadShow />
           <div
-            className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md hidden md:flex"
+            className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md"
             onClick={arconnectDisconnect}
           >
             {t("connector.logout")}
@@ -96,7 +95,7 @@ export default function Header() {
             🦔 {t("connector.login")}
           </div>
         )}
-    </div>
+    </>
   )
 
 }
