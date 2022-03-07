@@ -103,13 +103,12 @@ export default function Podcast(props) {
     }
   };
 
-  const loadEpisodes = async (p) => {
-    let ep = p
+  const loadEpisodes = async (podcast, episodes) => {
     const episodeList = []
     const addr = await tryAddressConnecting();
-    for (let i in ep) {
-      let e = ep[i]
-      console.log(e)
+    for (let i in episodes) {
+      let e = episodes[i]
+      console.log("episode", e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
           <div
@@ -118,7 +117,7 @@ export default function Podcast(props) {
           >
             <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
               <div className="flex space-x-10 mb-3 md:mb-0">
-                <button onClick={() => showPlayer(e)}>
+                <button onClick={() => showPlayer(podcast, e)}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -143,9 +142,9 @@ export default function Podcast(props) {
     return episodeList
   }
 
-  const checkEpisodeForm = async () => {
+  const checkEpisodeForm = async (owner) => {
     let addr = await window.arweaveWallet.getActiveAddress()
-    if (addr === thePodcast.owner) {
+    if (addr === owner) {
       setShowEpisodeForm(true)
       window.scrollTo(0, 0)
     } else {
@@ -175,9 +174,7 @@ export default function Podcast(props) {
     })
   }
 
-  const showPlayer = (e) => {
-    let name = thePodcast.podcastName
-    let cover = thePodcast.cover
+  const showPlayer = (podcast, e) => {
     const player = new Shikwasa({
       container: () => document.querySelector('.podcast-player'),
       themeColor: 'gray',
@@ -185,11 +182,12 @@ export default function Podcast(props) {
       autoplay: true,
       audio: {
         title: e.episodeName,
-        artist: name,
-        cover: `${MESON_ENDPOINT}/${cover}`,
+        artist: podcast.podcastName,
+        cover: `${MESON_ENDPOINT}/${podcast.cover}`,
         src: `${MESON_ENDPOINT}/${e.audioTx}`,
       },
     })
+    player.play()
     window.scrollTo(0, document.body.scrollHeight)
   }
 
@@ -197,10 +195,11 @@ export default function Podcast(props) {
     async function fetchData() {
       setLoading(true)
 
-      const thePodcast = getPodcast(await fetchPodcasts())
-      setThePodcast(thePodcast)
-      setPodcastHtml(loadPodcastHtml(thePodcast))
-      setPodcastEpisodes(await loadEpisodes(await getPodcastEpisodes()))
+      const p = getPodcast(await fetchPodcasts())
+      const ep = await getPodcastEpisodes()
+      setThePodcast(p)
+      setPodcastHtml(loadPodcastHtml(p))
+      setPodcastEpisodes(await loadEpisodes(p, ep))
       setAddr(await tryAddressConnecting())
 
       setLoading(false)
@@ -216,7 +215,7 @@ export default function Podcast(props) {
         {podcastHtml}
       </div>
       <div>{podcastEpisodes}</div>
-      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm()}>{t("add new episode")}</button>}
+      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
       < div className="podcast-player sticky bottom-0 w-screen" />
     </div>
 
