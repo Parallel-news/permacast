@@ -190,6 +190,7 @@ export default function Podcast(props) {
         cover: `${MESON_ENDPOINT}/${podcast.cover}`,
         src: `${MESON_ENDPOINT}/${e.audioTx}`,
       },
+      download: true
     })
     player.play()
     window.scrollTo(0, document.body.scrollHeight)
