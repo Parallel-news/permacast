@@ -30,7 +30,23 @@
 		"category": "Category",
 		"explicit": "Contains explicit content",
 		"upload": "Upload",
-		"cancel": "Cancel"
+		"cancel": "Cancel",
+		"swal": {
+			"showadded": {
+				"title": "Show added",
+				"text": "Show added permanently to Arweave. Check in a few minutes after the transaction has mined."
+			},
+			"uploadfailed": {
+				"title": "Unable to add show",
+				"text": "Check your wallet balance and network connection"
+			},
+			"reset": {
+				"text": "Podcast cover image is not squared (1:1 aspect ratio)!"
+			},
+			"uploading": {
+				"title": "Uploading, please wait a few seconds..."
+			}
+		}
 	},
 	"podcasthtml": {
 		"swal": {

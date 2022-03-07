@@ -54,7 +54,7 @@ export default function UploadShow() {
 
   const uploadShow = async (show) => {
     Swal.fire({
-      title: 'Uploading, please wait a few seconds...',
+      title: t("uploadshow.swal.uploading.title"),
       timer: 2000,
       customClass: "font-mono",
     })
@@ -101,8 +101,8 @@ export default function UploadShow() {
     let uploadTxId = await contract.writeInteraction(input, tags);
     if (uploadTxId) {
       Swal.fire({
-        title: 'Show added',
-        text: 'Show added permanently to Arweave. Check in a few minutes after the transaction has mined.',
+        title: t("uploadshow.swal.showadded.title"),
+        text: t("uploadshow.swal.showadded.text"),
         icon: 'success',
         customClass: "font-mono",
       })
@@ -131,8 +131,8 @@ export default function UploadShow() {
             setShow(false)
           } else {
             Swal.fire({
-              title: 'Unable to add show',
-              text: 'Check your wallet balance and network connection',
+              title: t("uploadshow.swal.uploadfailed.title"),
+              text: t("uploadshow.swal.uploadfailed.text"),
               icon: 'danger',
               customClass: "font-mono",
             })
@@ -145,7 +145,7 @@ export default function UploadShow() {
   const resetPodcastCover = () => {
     podcastCoverRef.current.value = ""
     Swal.fire({
-      text: 'Podcast cover image is not squared (1:1 aspect ratio)!',
+      text: t("uploadshow.swal.reset.text"),
       icon: 'warning',
       confirmButtonText: 'Continue',
       customClass: "font-mono",
