@@ -1,0 +1,71 @@
+{
+	"language": "Language",
+	"navbar": {
+		"help": "Get help",
+		"new": "What's new",
+		"swal": {
+			"title": "New in permacast V2 ✨",
+			"html": "<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li><li>Tip your favorite podcasts with $NEWS</li><li>Episodes are atomic NFTs, listable on Verto!</li>"
+		}
+	},
+	"connector": {
+		"login": "ArConnect login",
+		"logout": "Logout",
+		"swal": {
+			"title": "Install ArConnect to continue",
+			"text": "Permablog uses ArConnect to make it easier to authenticate and send transactions for questions and answers",
+			"footer": "Download ArConnect here"
+		}
+	},
+	"uploadshow": {
+		"addpoadcast": "Add a podcast",
+		"title": "Add a new show",
+		"label": "You'll add episodes to the show next.",
+		"name": "Show name",
+		"description": "Show description",
+		"image": "Cover image",
+		"author": "Author",
+		"email": "Email",
+		"language": "Podcast language",
+		"category": "Category",
+		"explicit": "Contains explicit content",
+		"upload": "Upload",
+		"cancel": "Cancel"
+	},
+	"podcasthtml": {
+		"swal": {
+			"title": "Coming soon",
+			"text": "Tip your favorite podcasts with $NEWS to show support"
+		}
+	},
+	"uploadepisode": {
+		"swal": {
+			"upload": {
+				"title": "Upload underway!",
+				"text": "We'll let you know when it's done. Go grab a ☕ or 🍺"
+			},
+			"uploadcomplete": {
+				"title": "Upload complete",
+				"text": "Episode uploaded permanently to Arweave. Check in a few minutes after the transaction has mined."
+			},
+			"uploadfailed": {
+				"title": "Upload failed",
+				"text": "Check your AR balance and network connection"
+			}
+		},
+		"title": "Add new episode to",
+		"name": "Episode name",
+		"description": "Episode description",
+		"file": "Audio file",
+		"verto": "List as an Atomic NFT on Verto?",
+		"toupload": "to upload",
+		"upload": "Upload",
+		"uploading": "Uploading, please wait...",
+		"uploaded": "Uploaded"
+	},
+	"podcast": {
+		"newepisode": "add new episode"
+	},
+	"loading": "Loading podcasts...",
+	"nopodcasts": "No podcasts here yet. Upload one!"
+}
