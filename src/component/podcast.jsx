@@ -5,7 +5,7 @@ import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
 import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
-import { MESON_ENDPOINT } from '../utils/arweave.js'
+import { MESON_ENDPOINT, CONTRACT_SRC } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
 import fetchPodcasts from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
@@ -170,11 +170,32 @@ export default function Podcast(props) {
     }
   }
 
-  const showDesc = (desc) => {
+   function showDesc(desc) {
     Swal.fire({
       text: desc,
-      button: 'close',
+      showCancelButton: true,
+      confirmButtonText: 'Edit',
+      cancelButtonText: 'Close',
       customClass: "font-mono",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { value: text } = Swal.fire({
+          input: 'textarea',
+          inputValue: desc,
+          customClass: "font-mono",
+          showCancelButton: true
+        })
+        
+        if (text) {
+          const input = {
+            /* */
+          }
+        const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+        let contract = smartweave.contract(/*theContractId*/).connect("use_wallet");
+        let txId = await contract.writeInteraction(input, tags);
+        // // // //
+        }
+      }
     })
   }
 
