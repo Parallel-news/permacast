@@ -9,6 +9,8 @@ import { MESON_ENDPOINT, CONTRACT_SRC } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
 import fetchPodcasts from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
+import { smartweave } from '../utils/arweave';
+import { arweave } from '../utils/arweave.js';
 
 export default function Podcast(props) {
   const [loading, setLoading] = useState(true)
@@ -115,7 +117,7 @@ export default function Podcast(props) {
             className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto"
             key={e.eid}
           >
-            <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
+            <div className="flex flex-col md:flex-row justify-between items-center space-x-10">
               <div className="flex space-x-10 mb-3 md:mb-0">
                 <button onClick={() => showPlayer(podcast, e)}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,10 +135,10 @@ export default function Podcast(props) {
                   </svg>
                 </a>
               </div>
-              <div className="font-bold w-full md:w-auto text-center">{e.episodeName}</div>
+              <div className="font-bold w-full md:w-auto text-center md:text-left">{e.episodeName}</div>
             </div>
-            <div className='text-sm w-full md:w-auto text-center'>
-              {truncatedDesc(e.description, 52)}
+            <div className="text-sm w-auto md:w-1/2 md:ml-3 text-center md:text-left line-clamp-1 hover:line-clamp-none">
+              {e.description}
             </div>
           </div >
         )
@@ -170,7 +172,7 @@ export default function Podcast(props) {
     }
   }
 
-   function showDesc(desc) {
+  function showDesc(desc) {
     Swal.fire({
       text: desc,
       showCancelButton: true,
@@ -179,25 +181,57 @@ export default function Podcast(props) {
       customClass: "font-mono",
     }).then((result) => {
       if (result.isConfirmed) {
-        const { value: text } = Swal.fire({
+        Swal.fire({
           input: 'textarea',
           inputValue: desc,
           customClass: "font-mono",
           showCancelButton: true
-        })
-        
-        if (text) {
-          const input = {
-            /* */
+        }).then((text) => {
+          if (text) {
+            const input = {
+              "function": "editEpisodeDesc",
+              "index": 0,
+              "id": thePodcast.id,
+              "desc": text,
+            }
+            const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+            let contract = smartweave.contract(/*theContractId*/).connect("use_wallet");
+            contract.writeInteraction(input, tags).then((txhash) => {
+              console.log("txhash", txhash)
+
+              arweave.transactions.getStatus(txhash).then((status) => {
+                console.log("status", status)
+              })
+              // if (status === 200) {
+              //   Swal.fire({
+              //     title: 'Success!',
+              //     text: 'Your transaction has been submitted to the network.',
+              //     icon: 'success',
+              //     confirmButtonText: 'OK'
+              //   })
+
+
+              Swal.fire({
+                title: 'Success',
+                text: 'Description edited',
+                icon: 'success',
+                confirmButtonText: 'Close'
+              })
+            }).catch(err => {
+              Swal.fire({
+                title: 'Error',
+                text: err,
+                icon: 'error',
+                confirmButtonText: 'Close'
+              })
+            })
           }
-        const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let contract = smartweave.contract(/*theContractId*/).connect("use_wallet");
-        let txId = await contract.writeInteraction(input, tags);
-        // // // //
-        }
+        })
       }
     })
   }
+
+
 
   const showPlayer = (podcast, e) => {
     const player = new Shikwasa({

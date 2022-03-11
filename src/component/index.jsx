@@ -21,7 +21,6 @@ export default function Index() {
             description={p.description}
             image={`${MESON_ENDPOINT}/${p.cover}`}
             key={p.pid}
-            truncated="true"
           />
         )
       }
