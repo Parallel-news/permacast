@@ -95,7 +95,7 @@ export default function PodcastHtml({ name, link, description, image, rss, small
                     {name} {rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => loadRss()}><FaRss /></button> {tipButton()} </span> : null}
                 </div>
                 <p className="mb-2">
-                    <span className="line-clamp-3">{description}</span>
+                    <span className={!smallImage && "line-clamp-3"}>{description}</span>
                 </p>
             </div>
         </div >
