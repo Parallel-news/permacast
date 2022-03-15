@@ -11,11 +11,12 @@ import fetchPodcasts from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
 import { smartweave } from '../utils/arweave';
 import { arweave } from '../utils/arweave.js';
+import { getSwcId } from '../utils/ardb.js';
 
 export default function Podcast(props) {
   const [loading, setLoading] = useState(true)
   const [showEpisodeForm, setShowEpisodeForm] = useState(false)
-  const [addr, setAddr] = useState('')
+  const [isOwner, setIsOwner] = useState(false)
   const [thePodcast, setThePodcast] = useState(null)
   const [podcastHtml, setPodcastHtml] = useState(null)
   const [podcastEpisodes, setPodcastEpisodes] = useState([])
@@ -105,9 +106,8 @@ export default function Podcast(props) {
     }
   };
 
-  const loadEpisodes = async (podcast, episodes) => {
+  const loadEpisodes = async (podcast, episodes, isOwner) => {
     const episodeList = []
-    const addr = await tryAddressConnecting();
     for (let i in episodes) {
       let e = episodes[i]
       console.log("episode", e)
@@ -137,8 +137,17 @@ export default function Podcast(props) {
               </div>
               <div className="font-bold w-full md:w-auto text-center md:text-left">{e.episodeName}</div>
             </div>
-            <div className="text-sm w-auto md:w-1/2 md:ml-3 text-center md:text-left line-clamp-1 hover:line-clamp-none">
-              {e.description}
+            <div className="flex items-center text-sm w-auto md:w-1/2 md:ml-3 text-center md:text-left">
+              <div>
+                <p className="line-clamp-1 hover:line-clamp-none">
+                  {e.description}
+                </p>
+              </div>
+              {isOwner &&
+                <div className="btn btn-sm btn-outline ml-3" onClick={() => { editEpisodeDesc(e, i) }}>
+                  edit
+                </div>
+              }
             </div>
           </div >
         )
@@ -164,74 +173,47 @@ export default function Podcast(props) {
         return res
       }  
   */
-  const truncatedDesc = (desc, maxLength) => {
-    if (desc.length < maxLength) {
-      return <>{desc}</>
-    } else {
-      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => showDesc(desc)}>[read more]</span></>
+
+  const editEpisodeDesc = async (e, idx) => {
+    let swcId;
+    try {
+      swcId = await getSwcId()
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        text: error.message,
+      })
+    }
+
+    const result = await Swal.fire({
+      input: 'textarea',
+      inputValue: e.description,
+      customClass: "font-mono",
+      showCancelButton: true
+    })
+
+    if (result.isConfirmed && result.value !== '') {
+      // write to contract
+      const input = {
+        "function": "editEpisodeDesc",
+        "index": e.childOf,
+        "id": idx,
+        "desc": result.value
+      }
+      const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+      const contract = smartweave.contract(swcId).connect("use_wallet");
+      const tx = await contract.writeInteraction(input, tags)
+      console.log("editEpisodeDesc tx", tx)
+
+      Swal.fire({
+        title: t('podcast.swal.edit.title'),
+        text: t('podcast.swal.edit.text'),
+        icon: 'success',
+        confirmButtonText: 'Close'
+      })
+
     }
   }
-
-  function showDesc(desc) {
-    Swal.fire({
-      text: desc,
-      showCancelButton: true,
-      confirmButtonText: 'Edit',
-      cancelButtonText: 'Close',
-      customClass: "font-mono",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          input: 'textarea',
-          inputValue: desc,
-          customClass: "font-mono",
-          showCancelButton: true
-        }).then((text) => {
-          if (text) {
-            const input = {
-              "function": "editEpisodeDesc",
-              "index": 0,
-              "id": thePodcast.id,
-              "desc": text,
-            }
-            const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-            let contract = smartweave.contract(/*theContractId*/).connect("use_wallet");
-            contract.writeInteraction(input, tags).then((txhash) => {
-              console.log("txhash", txhash)
-
-              arweave.transactions.getStatus(txhash).then((status) => {
-                console.log("status", status)
-              })
-              // if (status === 200) {
-              //   Swal.fire({
-              //     title: 'Success!',
-              //     text: 'Your transaction has been submitted to the network.',
-              //     icon: 'success',
-              //     confirmButtonText: 'OK'
-              //   })
-
-
-              Swal.fire({
-                title: 'Success',
-                text: 'Description edited',
-                icon: 'success',
-                confirmButtonText: 'Close'
-              })
-            }).catch(err => {
-              Swal.fire({
-                title: 'Error',
-                text: err,
-                icon: 'error',
-                confirmButtonText: 'Close'
-              })
-            })
-          }
-        })
-      }
-    })
-  }
-
-
 
   const showPlayer = (podcast, e) => {
     const player = new Shikwasa({
@@ -257,10 +239,12 @@ export default function Podcast(props) {
 
       const p = getPodcast(await fetchPodcasts())
       const ep = await getPodcastEpisodes()
+      const addr = await tryAddressConnecting()
+      const isOwner = p.owner === addr
       setThePodcast(p)
       setPodcastHtml(loadPodcastHtml(p))
-      setPodcastEpisodes(await loadEpisodes(p, ep))
-      setAddr(await tryAddressConnecting())
+      setPodcastEpisodes(await loadEpisodes(p, ep, isOwner))
+      setIsOwner(isOwner)
 
       setLoading(false)
     }
@@ -275,7 +259,7 @@ export default function Podcast(props) {
         {podcastHtml}
       </div>
       <div>{podcastEpisodes}</div>
-      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
+      {isOwner && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
       < div className="podcast-player sticky bottom-0 w-screen" />
     </div>
 

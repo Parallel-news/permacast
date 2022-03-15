@@ -80,7 +80,13 @@
 		"uploaded": "已完成"
 	},
 	"podcast": {
-		"newepisode": "添加新剧集"
+		"newepisode": "添加新剧集",
+		"swal": {
+			"edit": {
+				"title": "编辑成功",
+				"text": "剧集描述已更新，请在几分钟后再来查看"
+			}
+		}
 	},
 	"loading": "正在加载播客...",
 	"nopodcasts": "这里还没有播客，请上传一个!"
