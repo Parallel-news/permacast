@@ -108,8 +108,7 @@ export default function Podcast(props) {
 
   const loadEpisodes = async (podcast, episodes, isOwner) => {
     const episodeList = []
-    for (let i in episodes) {
-      let e = episodes[i]
+    for (const [i, e] of episodes.entries()) {
       console.log("episode", e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
@@ -184,7 +183,6 @@ export default function Podcast(props) {
         text: error.message,
       })
     }
-
     const result = await Swal.fire({
       input: 'textarea',
       inputValue: e.description,
@@ -211,7 +209,6 @@ export default function Podcast(props) {
         icon: 'success',
         confirmButtonText: 'Close'
       })
-
     }
   }
 
