@@ -100,6 +100,7 @@ export async function handle(state, action) {
       explicit: isExplicit,
       categories: categories.split(",").map((category) => category.trim()),
       cover: cover,
+      isVisible: true,
       episodes: [],
       logs: [pid],
     });
@@ -137,6 +138,7 @@ export async function handle(state, action) {
       uploader: caller,
       uploadedAt: SmartWeave.block.timestamp,
       uploadedAtBlockheight: SmartWeave.block.height, // V3 metadata
+      isVisible: true,
       logs: [SmartWeave.transaction.id],
     });
 
@@ -334,7 +336,34 @@ export async function handle(state, action) {
 
     return { state };
   }
+  
+  if (input.function === "reverseVisibility") {
+    const type = input.type // 'eid' or 'pid'
+    const id = input.id // TXID of PID or EID
 
+    await _isSuperAdmin(true, caller);
+    
+    if (type === "pid") {
+      const pidIndex = _getAndValidatePidIndex(id);
+      const currentVisibility = podcasts[pidIndex].isVisible;
+      podcasts[pidIndex].isVisible = !currentVisibility;
+
+      return { state };
+    }
+
+    if (type === "eid") {
+      const pid = _getPidOfEid(id);
+      const pidIndex = _getAndValidatePidIndex(pid);
+      const eidIndex = _getAndValidateEidIndex(id);
+
+      const currentVisibility = podcasts[pidIndex]["episodes"][eidIndex].isVisible;
+      podcasts[pidIndex]["episodes"][eidIndex].isVisible = !currentVisibility;
+
+      return { state };
+    }
+
+    throw new ContractError(ERROR_INVALID_CALLER)
+  }
   // EPISODES ACTIONS:
   // PERMISSIONED TO THE CONTRACT
   // OWNER AND MAINTAINERS
