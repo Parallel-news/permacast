@@ -5,7 +5,7 @@
 		"new": "What's new",
 		"swal": {
 			"title": "New in permacast V2 ✨",
-			"html": "<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li><li>Tip your favorite podcasts with $NEWS</li><li>Episodes are atomic NFTs, listable on Verto!</li>"
+			"html": "<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li><li>Episodes are atomic NFTs, listable on Verto!</li>"
 		}
 	},
 	"connector": {
