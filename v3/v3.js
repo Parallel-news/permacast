@@ -60,20 +60,19 @@ export async function handle(state, action) {
   if (input.function === "createPodcast") {
     const name = input.name;
     const author = input.author;
-    const desc = input.desc;
     const lang = input.lang;
     const isExplicit = input.isExplicit;
     const categories = input.categories;
     const email = input.email;
     const cover = input.cover;
+    
+    await _isSuperAdmin(true, caller);
 
     const pid = SmartWeave.transaction.id;
-
-    await _isSuperAdmin(true, caller);
+    const desc = await handleDescription(pid, 10, 15000);
 
     _validateStringTypeLen(name, 2, 500);
     _validateStringTypeLen(author, 2, 150);
-    _validateStringTypeLen(desc, 10, 7500);
     _validateStringTypeLen(email, 0, 320);
     _validateStringTypeLen(categories, 1, 300);
     _validateStringTypeLen(cover, 43, 43);
@@ -112,14 +111,14 @@ export async function handle(state, action) {
     const pid = input.pid; // podcast's PID
     const name = input.name;
     const audio = input.audio; // the TXID of 'audio/' data
-    const desc = input.desc;
-
     await _getMaintainers(true, caller);
-
+    
+    const eid = SmartWeave.transaction.id;
+    const desc = await handleDescription(eid, 1, 5000);
+    
     _validateStringTypeLen(name, 3, 500);
     _validateStringTypeLen(audio, 43, 43);
     _validateStringTypeLen(pid, 43, 43);
-    _validateStringTypeLen(desc, 0, 5000);
 
     const pidIndex = _getAndValidatePidIndex(pid);
     // auto prevent double episode uploads
@@ -152,13 +151,13 @@ export async function handle(state, action) {
   if (input.function === "updatePodcastMetadata") {
     const pid = input.pid;
     const name = input.name;
-    const desc = input.desc;
     const cover = input.cover;
     const author = input.author;
     const email = input.email;
     const lang = input.lang;
     const categories = input.categories;
     const isExplicit = input.isExplicit;
+    let desc = input.desc; //boolean
 
     await _isSuperAdmin(true, caller);
 
@@ -171,7 +170,7 @@ export async function handle(state, action) {
     }
 
     if (desc) {
-      _validateStringTypeLen(desc, 10, 7500);
+      desc = await handleDescription(actionTx, 10, 15000);
       podcasts[pidIndex]["description"] = desc;
     }
 
@@ -371,7 +370,7 @@ export async function handle(state, action) {
   if (input.function === "updateEpisodeMetadata") {
     const eid = input.eid;
     const name = input.name;
-    const desc = input.desc;
+    let desc = input.desc; // boolean
 
     await _getMaintainers(true, caller);
 
@@ -386,7 +385,7 @@ export async function handle(state, action) {
     }
 
     if (desc) {
-      _validateStringTypeLen(desc, 0, 5000);
+      desc = await handleDescription(actionTx, 3, 5000);
       podcasts[pidIndex]["episodes"][eidIndex]["description"] = desc;
     }
 
@@ -573,6 +572,39 @@ export async function handle(state, action) {
 
     return false;
   }
+  
+  async function handleDescription(txid, min, max) {
+  if (/[a-z0-9_-]{43}/i.test(txid)) {
+    const tagsMap = new Map();
+    const txObject = await SmartWeave.unsafeClient.transactions.get(txid);
+
+    const tags = txObject.get("tags");
+
+    for (let tag of tags) {
+      const key = tag.get("name", { decode: true, string: true });
+      const value = tag.get("value", { decode: true, string: true });
+      tagsMap.set(key, value);
+    }
+
+    if (!tagsMap.has("Content-Type")) {
+      throw new ContractError(ERROR_NOT_A_DATA_TX);
+    }
+
+    if (!tagsMap.get("Content-Type").startsWith("text/")) {
+      throw new ContractError(ERROR_MIME_TYPE);
+    }
+
+    const data = await SmartWeave.unsafeClient.transactions.getData(txid, {
+      decode: true,
+      string: true,
+    });
+
+    _validateStringTypeLen(data, min, max);
+    return data;
+  }
+
+  throw new ContractError(ERROR_INVALID_STRING_LENGTH);
+}
 
   throw new ContractError("unknow function supplied: ", input.function);
 }
