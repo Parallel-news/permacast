@@ -1,6 +1,6 @@
 import ArDB from 'ardb'
 import Swal from 'sweetalert2'
-import { CONTRACT_SRC, NFT_SRC, arweave, smartweave } from '../utils/arweave.js'
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -65,7 +65,9 @@ export default function UploadEpisode({ podcast }) {
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
       tx.addTag("Thumbnail", podcast.cover);
-
+     
+      tx.reward = (+tx.reward * FEE_MULTIPLIER).toString();
+      
       await arweave.transactions.sign(tx);
       console.log("signed tx", tx);
       const uploader = await arweave.transactions.getUploader(tx);
