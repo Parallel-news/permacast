@@ -1,10 +1,10 @@
-# permacast
+## Permacast
 
 Permacast is a podcasting hosting and discovery platform powered by the Arweave Permaweb. Let you podcasts live forever with censorship resistance.
 
 
 
-# workflow
+## Workflow
 
 Any content creator (podcasts) can use the permacast platform to perma-host his/her podcasts and its episodes. The audio files are permanently archived in Arweave's Permaweb once uploaded to Permacast frontend. 
 
@@ -12,12 +12,15 @@ Each content-creator needs an <a href="https://faucet.arweave.net/">Arweave wall
 
 <center> <img src="./diagrams/permacast.png"> </center>
 
-# tech-stack 
+## Tech-Stack 
 - Frontend: React
 - backend: SmartWeave contracts
 - gateway: [Meson Network](https://meson.network/)
 
-# License
+## Documentation & Guides
+You can find guide and tutorials on how to use Permacast [here](https://github.com/Parallel-news/permacast-docs).
 
-Permacast is licensed under the MIT license
+## License
+
+Permacast is licensed under the [MIT license](./LICENSE).
 
