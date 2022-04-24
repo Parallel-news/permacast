@@ -17,6 +17,9 @@ Each content-creator needs an <a href="https://faucet.arweave.net/">Arweave wall
 - backend: SmartWeave contracts
 - gateway: [Meson Network](https://meson.network/)
 
+## Permacast API
+[permacast-cache](https://github.com/Parallel-news/permacast-cache) is the repositiry of the API of Permacast FE.
+
 ## Documentation & Guides
 You can find guide and tutorials on how to use Permacast [here](https://github.com/Parallel-news/permacast-docs).
 
