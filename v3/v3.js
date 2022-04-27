@@ -620,12 +620,14 @@ export async function handle(state, action) {
   async function _getMaintainers(validate, address) {
     const superAdmins = await _isSuperAdmin(false);
     const contractMaintainers = superAdmins.concat(maintainers);
+    // remove any address duplication amongst different privileges
+    const filteredMaintainers = Array.from(new Set(contractMaintainers));
 
-    if (validate && !contractMaintainers.includes(address)) {
+    if (validate && !filteredMaintainers.includes(address)) {
       throw new ContractError(ERROR_INVALID_CALLER);
     }
 
-    return contractMaintainers;
+    return filteredMaintainers;
   }
 
   async function _validateDataTransaction(tx, mimeType) {
@@ -701,11 +703,14 @@ export async function handle(state, action) {
     const contractOwner = SmartWeave.contract.owner;
     const allAdmins = superAdmins.concat(contractOwner);
 
-    if (validate && !allAdmins.includes(address)) {
+    // remove any address duplication amongst different privileges
+    const filteredSupers = Array.from(new Set(allAdmins));
+
+    if (validate && !filteredSupers.includes(address)) {
       throw new ContractError(ERROR_INVALID_CALLER);
     }
 
-    return allAdmins;
+    return filteredSupers;
   }
 
   function _checkPodcastUploadDuplication(name) {
