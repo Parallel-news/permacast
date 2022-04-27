@@ -13,10 +13,26 @@
 export async function handle(state, action) {
   const input = action.input;
   const caller = action.caller;
+
+  // STATE
   const podcasts = state.podcasts;
   const maintainers = state.maintainers;
   const superAdmins = state.superAdmins;
   const v2SourceCode = state.v2SourceCode;
+  const limitations = state.limitations;
+
+  // CONSTANTS
+  // temporal oracle address for testing purposes
+  const ORACLE_ADDRESS = "ocjLC0V7gZGfT-64jjPOpjtYCeX4xQrHGE10PRtUpHo";
+
+  // LIMITATION METADATA ACCESS
+  const POD_NAME_LIMITS = limitations["podcast_name_len"];
+  const POD_DESC_LIMITS = limitations["podcast_desc_len"];
+  const EP_NAME_LIMITS = limitations["episode_name_len"];
+  const EP_DESC_LIMITS = limitations["episode_desc_len"];
+  const AUTHOR_NAME_LIMITS = limitations["author_name_len"];
+  const LANG_CHAR_LIMITS = limitations["lang_char_code"];
+  const CATEGORY_LIMITS = limitations["categories"];
 
   // ERRORS List
   const ERROR_INVALID_CALLER =
@@ -89,14 +105,26 @@ export async function handle(state, action) {
     await _isSuperAdmin(true, caller);
 
     const pid = SmartWeave.transaction.id;
-    const desc = await _handleDescription(pid, 10, 15000);
+    const desc = await _handleDescription(
+      pid,
+      POD_DESC_LIMITS.min,
+      POD_DESC_LIMITS.max
+    );
 
-    _validateStringTypeLen(name, 2, 500);
-    _validateStringTypeLen(author, 2, 150);
+    _validateStringTypeLen(name, POD_NAME_LIMITS.min, POD_NAME_LIMITS.max);
+    _validateStringTypeLen(
+      author,
+      AUTHOR_NAME_LIMITS.min,
+      AUTHOR_NAME_LIMITS.max
+    );
     _validateStringTypeLen(email, 0, 320);
-    _validateStringTypeLen(categories, 1, 300);
+    _validateStringTypeLen(
+      categories,
+      CATEGORY_LIMITS.min,
+      CATEGORY_LIMITS.max
+    );
     _validateStringTypeLen(cover, 43, 43);
-    _validateStringTypeLen(lang, 2, 2);
+    _validateStringTypeLen(lang, LANG_CHAR_LIMITS.min, LANG_CHAR_LIMITS.max);
     // auto-prevent double podcast creation
     _checkPodcastUploadDuplication(name);
     await _validateDataTransaction(cover, "image/");
@@ -152,9 +180,13 @@ export async function handle(state, action) {
 
     // episode's description is extracted from the
     // interaction's TX body data.
-    const desc = await _handleDescription(eid, 1, 5000);
+    const desc = await _handleDescription(
+      eid,
+      EP_DESC_LIMITS.min,
+      EP_DESC_LIMITS.max
+    );
 
-    _validateStringTypeLen(name, 3, 500);
+    _validateStringTypeLen(name, EP_NAME_LIMITS.min, EP_NAME_LIMITS.max);
     _validateStringTypeLen(audio, 43, 43);
     _validateStringTypeLen(pid, 43, 43);
 
@@ -222,17 +254,25 @@ export async function handle(state, action) {
     const actionTx = SmartWeave.transaction.id;
 
     if (name) {
-      _validateStringTypeLen(name, 2, 500);
+      _validateStringTypeLen(name, POD_NAME_LIMITS.min, POD_NAME_LIMITS.max);
       podcasts[pidIndex]["podcastName"] = name;
     }
 
     if (desc) {
-      desc = await _handleDescription(actionTx, 10, 15000);
+      desc = await _handleDescription(
+        actionTx,
+        POD_DESC_LIMITS.min,
+        POD_DESC_LIMITS.max
+      );
       podcasts[pidIndex]["description"] = desc;
     }
 
     if (author) {
-      _validateStringTypeLen(author, 2, 150);
+      _validateStringTypeLen(
+        author,
+        AUTHOR_NAME_LIMITS.min,
+        AUTHOR_NAME_LIMITS.max
+      );
       podcasts[pidIndex]["author"] = author;
     }
 
@@ -242,12 +282,16 @@ export async function handle(state, action) {
     }
 
     if (lang) {
-      _validateStringTypeLen(lang, 2, 2);
+      _validateStringTypeLen(lang, LANG_CHAR_LIMITS.min, LANG_CHAR_LIMITS.max);
       podcasts[pidIndex]["language"] = lang;
     }
 
     if (categories) {
-      _validateStringTypeLen(categories, 1, 300);
+      _validateStringTypeLen(
+        categories,
+        CATEGORY_LIMITS.min,
+        CATEGORY_LIMITS.max
+      );
       podcasts[pidIndex]["categories"] = categories
         .split(",")
         .map((category) => category.trim());
@@ -525,12 +569,16 @@ export async function handle(state, action) {
     const actionTx = SmartWeave.transaction.id;
 
     if (name) {
-      _validateStringTypeLen(name, 2, 500);
+      _validateStringTypeLen(name, EP_NAME_LIMITS.min, EP_NAME_LIMITS.max);
       podcasts[pidIndex]["episodes"][eidIndex]["episodeName"] = name;
     }
 
     if (desc) {
-      desc = await _handleDescription(actionTx, 3, 5000);
+      desc = await _handleDescription(
+        actionTx,
+        EP_DESC_LIMITS.min,
+        EP_DESC_LIMITS.max
+      );
       podcasts[pidIndex]["episodes"][eidIndex]["description"] = desc;
     }
 
@@ -563,6 +611,27 @@ export async function handle(state, action) {
     }
 
     throw new ContractError(ERROR_OWNER_ALREADY_SWAPPED);
+  }
+
+  if (input.function === "fetchOracle") {
+    /**
+     * @dev read the oracle's state and update the limitations
+     * object of the factory (contract's state).
+     *
+     * @return state
+     *
+     **/
+
+    await _getContractOwner(true, caller);
+
+    const oracleState = await SmartWeave.contracts.readContractState(
+      ORACLE_ADDRESS
+    );
+
+    // update the limitations according to the oracle;
+    state.limitations = oracleState.limitations;
+
+    return { state };
   }
 
   // HELPER FUNCTIONS:
