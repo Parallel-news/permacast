@@ -5,7 +5,7 @@
  * version: TESTNET V3
  *
  * website: permacast.net
- * contributor(s): charmful0x
+ * @author charmful0x
  *
  * Licence: MIT
  **/
@@ -56,8 +56,28 @@ export async function handle(state, action) {
     "auto-minimal protection from double podcast creation activated";
   const ERROR_EPISODE_UPLOAD_DUPLICATED =
     "auto-minimal protection from double episode uploads activated";
+  const ERROR_OWNER_ALREADY_SWAPPED =
+    "contract owner can be swapped one time only";
+  const ERROR_INVALID_ARWEAVE_ADDRESS = "invalid Arweave address";
 
   if (input.function === "createPodcast") {
+    /**
+     * @dev create a podcast object and append it to
+     * the smart contract state. Only the factory's
+     * superAdmins have the permission to invoke it.
+     *
+     * @param name podcast name
+     * @param author podcast author
+     * @param lang language char code (ISO 639-1:2002)
+     * @param isExplicit indicates the existence of
+     * explicit content, used for RSS feed generating
+     * @param categories RSS supported categories strings
+     * @param email author email address
+     * @param cover Arweave data TXID of type `image/*`
+     *
+     * @return state
+     **/
+
     const name = input.name;
     const author = input.author;
     const lang = input.lang;
@@ -65,11 +85,11 @@ export async function handle(state, action) {
     const categories = input.categories;
     const email = input.email;
     const cover = input.cover;
-    
+
     await _isSuperAdmin(true, caller);
 
     const pid = SmartWeave.transaction.id;
-    const desc = await handleDescription(pid, 10, 15000);
+    const desc = await _handleDescription(pid, 10, 15000);
 
     _validateStringTypeLen(name, 2, 500);
     _validateStringTypeLen(author, 2, 150);
@@ -87,7 +107,8 @@ export async function handle(state, action) {
 
     podcasts.push({
       pid: pid,
-      createdAtBlockheight: SmartWeave.block.height, // V3 metadata
+      createdAtBlockheight: SmartWeave.block.height, // blockheight - V3 metadata
+      createdAt: SmartWeave.block.timestamp, // block's timestamp
       index: _getPodcastIndex(), // id equals the index of the podacast obj in the podcasts array
       childOf: SmartWeave.contract.id,
       owner: caller,
@@ -108,14 +129,31 @@ export async function handle(state, action) {
   }
 
   if (input.function === "addEpisode") {
-    const pid = input.pid; // podcast's PID
+    /**
+     * @dev create an episode object and append
+     *  it to a podcast object's episodes array
+     *  Maintainers and SuperAdmins can invoke
+     *  this function.
+     *
+     * @param pid podcast ID (pid). 43 chars string
+     * @param name episode name
+     * @param audio episode audio's Arweave TXID
+     *
+     * @return state
+     **/
+
+    const pid = input.pid;
     const name = input.name;
-    const audio = input.audio; // the TXID of 'audio/' data
+    const audio = input.audio;
+
     await _getMaintainers(true, caller);
-    
+
     const eid = SmartWeave.transaction.id;
-    const desc = await handleDescription(eid, 1, 5000);
-    
+
+    // episode's description is extracted from the
+    // interaction's TX body data.
+    const desc = await _handleDescription(eid, 1, 5000);
+
     _validateStringTypeLen(name, 3, 500);
     _validateStringTypeLen(audio, 43, 43);
     _validateStringTypeLen(pid, 43, 43);
@@ -149,6 +187,22 @@ export async function handle(state, action) {
   // OWNER (DEPLOYER) ONLY
 
   if (input.function === "updatePodcastMetadata") {
+    /**
+     * @dev update a podcast's object metadata that is
+     * already created. Only superAdmins can invoke it.
+     *
+     * @param name podcast name
+     * @param author podcast author
+     * @param lang language char code (ISO 639-1:2002)
+     * @param isExplicit indicates the existence of
+     * explicit content, used for RSS feed generating
+     * @param categories RSS supported categories strings
+     * @param email author email address
+     * @param cover Arweave data TXID of type `image/*`
+     *
+     * @return state
+     **/
+
     const pid = input.pid;
     const name = input.name;
     const cover = input.cover;
@@ -157,7 +211,10 @@ export async function handle(state, action) {
     const lang = input.lang;
     const categories = input.categories;
     const isExplicit = input.isExplicit;
-    let desc = input.desc; //boolean
+
+    // boolean - if true, get and validate
+    // the interaction body TX data ( text/* )
+    let desc = input.desc;
 
     await _isSuperAdmin(true, caller);
 
@@ -170,7 +227,7 @@ export async function handle(state, action) {
     }
 
     if (desc) {
-      desc = await handleDescription(actionTx, 10, 15000);
+      desc = await _handleDescription(actionTx, 10, 15000);
       podcasts[pidIndex]["description"] = desc;
     }
 
@@ -214,11 +271,22 @@ export async function handle(state, action) {
     return { state };
   }
 
+  // PERMISSION: CONTRACT OWNER (DEPLOYER)
+
   if (input.function === "addMaintainer") {
+    /**
+     * @dev add an address the the maintainers array.
+     * Only the contract owner (deployer) has permission.
+     *
+     * @param address the new maintainer address
+     *
+     * @return state
+     **/
+
     const address = input.address;
 
     await _getContractOwner(true, caller);
-    _validateStringTypeLen(address, 43, 43);
+    _validateAddress(address);
 
     if (maintainers.includes(address)) {
       throw new ContractError(ERROR_MAINTAINER_ALREADY_ADDED);
@@ -229,10 +297,23 @@ export async function handle(state, action) {
   }
 
   if (input.function === "removeMaintainer") {
+    /**
+     * @dev remove a maintainer from the the maintainers array.
+     * Only the contract owner (deployer) has permission.
+     *
+     * @param address the address of to-remove maintainer
+     *
+     * @return state
+     **/
+
     const address = input.address;
 
-    await _getContractOwner(true, caller);
-    _validateStringTypeLen(address, 43, 43);
+    _validateAddress(address);
+
+    // a maintainer can remove himself or get removed by the sc owner
+    if (address !== caller && caller !== SmartWeave.contract.owner) {
+      throw new ContractError(ERROR_INVALID_CALLER);
+    }
 
     if (!maintainers.includes(address)) {
       throw new ContractError(ERROR_MAINTAINER_NOT_FOUND);
@@ -247,10 +328,19 @@ export async function handle(state, action) {
   }
 
   if (input.function === "addSuperAdmin") {
+    /**
+     * @dev add an address the the superAdmins array.
+     * Only the contract owner (deployer) has permission.
+     *
+     * @param address the new superAdmin address
+     *
+     * @return state
+     **/
+
     const address = input.address;
 
     await _getContractOwner(true, caller);
-    _validateStringTypeLen(address, 43, 43);
+    _validateAddress(address);
 
     if (superAdmins.includes(address)) {
       throw new ContractError(ERROR_SUPER_ADMIN_ALREADY_ADDED);
@@ -262,11 +352,21 @@ export async function handle(state, action) {
   }
 
   if (input.function === "removeSuperAdmin") {
+    /**
+     * @dev remove a superAdmin from the the superAdmins array.
+     * Only the contract owner (deployer) has permission.
+     *
+     * @param address the address of to-remove maintainer
+     *
+     * @return state
+     **/
+
     const address = input.address;
 
-    _validateStringTypeLen(address, 43, 43);
+    _validateAddress(address);
 
-    if (caller !== address && caller != SmartWeave.contract.owner) {
+    // a superAdmin can remove himself or get removed by the sc owner
+    if (caller !== address && caller !== SmartWeave.contract.owner) {
       throw new ContractError(ERROR_INVALID_CALLER);
     }
 
@@ -283,12 +383,24 @@ export async function handle(state, action) {
   }
 
   if (input.function === "importState") {
-    // for migration from V2 to V3
-    // migration is valid for a single attempt
+    /**
+     * @dev migrate state from V2 factory to
+     * a new non-used V3 deployed factory.
+     *
+     * Only a superAdmin can invoke this function.
+     *
+     * This function can be invoked only once. After
+     * that, the migration possibility will be sealed.
+     *
+     * @param factoryID the contract ID of the V2 factory
+     *
+     * @return overwritten state
+     **/
+
     const factoryID = input.factoryID;
 
     await _isSuperAdmin(true, caller);
-    _validateStringTypeLen(factoryID, 43, 43);
+    _validateAddress(factoryID);
 
     const factoryTxObject = await SmartWeave.unsafeClient.transactions.get(
       factoryID
@@ -335,13 +447,28 @@ export async function handle(state, action) {
 
     return { state };
   }
-  
+
   if (input.function === "reverseVisibility") {
-    const type = input.type // 'eid' or 'pid'
-    const id = input.id // TXID of PID or EID
+    /**
+     * @dev reverse the visibility of a podcast/episode.
+     * it just reverse a boolean value of the `isVisibile`
+     * property. The podcast/episode cannot be removed
+     * from the factory state.
+     *
+     * Only superAdmins can invoke this function.
+     *
+     * @param type is the object type, "eid" or "pid"
+     * @param id PID of type "pid" or EID of type "eid"
+     *
+     * @return state
+     *
+     **/
+
+    const type = input.type;
+    const id = input.id;
 
     await _isSuperAdmin(true, caller);
-    
+
     if (type === "pid") {
       const pidIndex = _getAndValidatePidIndex(id);
       const currentVisibility = podcasts[pidIndex].isVisible;
@@ -355,22 +482,40 @@ export async function handle(state, action) {
       const pidIndex = _getAndValidatePidIndex(pid);
       const eidIndex = _getAndValidateEidIndex(id);
 
-      const currentVisibility = podcasts[pidIndex]["episodes"][eidIndex].isVisible;
+      const currentVisibility =
+        podcasts[pidIndex]["episodes"][eidIndex].isVisible;
       podcasts[pidIndex]["episodes"][eidIndex].isVisible = !currentVisibility;
 
       return { state };
     }
 
-    throw new ContractError(ERROR_INVALID_CALLER)
+    throw new ContractError(ERROR_INVALID_CALLER);
   }
+
   // EPISODES ACTIONS:
   // PERMISSIONED TO THE CONTRACT
   // OWNER AND MAINTAINERS
 
   if (input.function === "updateEpisodeMetadata") {
+    /**
+     * @dev update the episode's metadata.
+     *  Maintainers and SuperAdmins can invoke
+     *  this function.
+     *
+     * @param eid episode ID (eid). 43 chars string
+     * @param name episode name
+     * @param audio episode audio's Arweave TXID
+     * @param desc is a boolean that's when set to true,
+     * the episode's description is extracted from the
+     * interaction TXID body data.
+     *
+     * @return state
+     *
+     **/
+
     const eid = input.eid;
     const name = input.name;
-    let desc = input.desc; // boolean
+    let desc = input.desc;
 
     await _getMaintainers(true, caller);
 
@@ -385,13 +530,39 @@ export async function handle(state, action) {
     }
 
     if (desc) {
-      desc = await handleDescription(actionTx, 3, 5000);
+      desc = await _handleDescription(actionTx, 3, 5000);
       podcasts[pidIndex]["episodes"][eidIndex]["description"] = desc;
     }
 
     podcasts[pidIndex]["episodes"][eidIndex]["logs"].push(actionTx);
 
     return { state };
+  }
+
+  if (input.function === "swapOwner") {
+    /**
+     * @dev this function is invoked one time only after V2 <> V3 migration
+     * the purpose of this function is to deploy & migrate V2 on behalf
+     * of the V2 factory owner, then give him/her back full ownership.
+     *
+     * @param address the address of the new contract owner.
+     *
+     * @return state
+     **/
+
+    const address = input.address;
+
+    _validateAddress(address);
+    await _getContractOwner(true, caller);
+
+    // contract owner can be swapped for once only
+    if (!state.ownerSwapped) {
+      SmartWeave.contract.owner = address;
+      state.ownerSwapped = true;
+      return { state };
+    }
+
+    throw new ContractError(ERROR_OWNER_ALREADY_SWAPPED);
   }
 
   // HELPER FUNCTIONS:
@@ -401,6 +572,14 @@ export async function handle(state, action) {
     }
 
     return podcasts.length;
+  }
+
+  function _validateAddress(address) {
+    _validateStringTypeLen(address, 43, 43);
+
+    if (!/[a-z0-9_-]{43}/i.test(address)) {
+      throw new ContractError(ERROR_INVALID_ARWEAVE_ADDRESS);
+    }
   }
 
   function _validateStringTypeLen(str, minLen, maxLen) {
@@ -572,39 +751,39 @@ export async function handle(state, action) {
 
     return false;
   }
-  
-  async function handleDescription(txid, min, max) {
-  if (/[a-z0-9_-]{43}/i.test(txid)) {
-    const tagsMap = new Map();
-    const txObject = await SmartWeave.unsafeClient.transactions.get(txid);
 
-    const tags = txObject.get("tags");
+  async function _handleDescription(txid, min, max) {
+    if (/[a-z0-9_-]{43}/i.test(txid)) {
+      const tagsMap = new Map();
+      const txObject = await SmartWeave.unsafeClient.transactions.get(txid);
 
-    for (let tag of tags) {
-      const key = tag.get("name", { decode: true, string: true });
-      const value = tag.get("value", { decode: true, string: true });
-      tagsMap.set(key, value);
+      const tags = txObject.get("tags");
+
+      for (let tag of tags) {
+        const key = tag.get("name", { decode: true, string: true });
+        const value = tag.get("value", { decode: true, string: true });
+        tagsMap.set(key, value);
+      }
+
+      if (!tagsMap.has("Content-Type")) {
+        throw new ContractError(ERROR_NOT_A_DATA_TX);
+      }
+
+      if (!tagsMap.get("Content-Type").startsWith("text/")) {
+        throw new ContractError(ERROR_MIME_TYPE);
+      }
+
+      const data = await SmartWeave.unsafeClient.transactions.getData(txid, {
+        decode: true,
+        string: true,
+      });
+
+      _validateStringTypeLen(data, min, max);
+      return data;
     }
 
-    if (!tagsMap.has("Content-Type")) {
-      throw new ContractError(ERROR_NOT_A_DATA_TX);
-    }
-
-    if (!tagsMap.get("Content-Type").startsWith("text/")) {
-      throw new ContractError(ERROR_MIME_TYPE);
-    }
-
-    const data = await SmartWeave.unsafeClient.transactions.getData(txid, {
-      decode: true,
-      string: true,
-    });
-
-    _validateStringTypeLen(data, min, max);
-    return data;
+    throw new ContractError(ERROR_INVALID_STRING_LENGTH);
   }
-
-  throw new ContractError(ERROR_INVALID_STRING_LENGTH);
-}
 
   throw new ContractError("unknow function supplied: ", input.function);
 }
