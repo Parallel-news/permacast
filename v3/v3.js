@@ -1,13 +1,22 @@
 /**
- * SWC used as first level data registery for
- * Arweave hosted podcasts.
+ * 
+ * 
+ * 
+ * 
+ * 
+ *               ██████╗░███████╗██████╗░███╗░░░███╗░█████╗░░█████╗░░█████╗░░██████╗████████╗
+ *               ██╔══██╗██╔════╝██╔══██╗████╗░████║██╔══██╗██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
+ *               ██████╔╝█████╗░░██████╔╝██╔████╔██║███████║██║░░╚═╝███████║╚█████╗░░░░██║░░░
+ *               ██╔═══╝░██╔══╝░░██╔══██╗██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║░╚═══██╗░░░██║░░░
+ *               ██║░░░░░███████╗██║░░██║██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║██████╔╝░░░██║░░░
+ *               ╚═╝░░░░░╚══════╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░
+ *                                  
+ *                     SWC as first level data registery for Arweave hosted podcasts.
  *
- * version: TESTNET V3
- *
- * website: permacast.net
+ * @version: TESTNET V3
  * @author charmful0x
- *
- * Licence: MIT
+ * website: permacast.net
+ * License: MIT
  **/
 
 export async function handle(state, action) {
