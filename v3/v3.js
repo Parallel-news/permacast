@@ -31,8 +31,7 @@ export async function handle(state, action) {
   const limitations = state.limitations;
 
   // CONSTANTS
-  // temporal oracle address for testing purposes
-  const ORACLE_ADDRESS = "ocjLC0V7gZGfT-64jjPOpjtYCeX4xQrHGE10PRtUpHo";
+  const ORACLE_ADDRESS = "LmrB0NrGH3dDT4Yr4ymCIAv86hmHlvuyfDiMuXMUU5Y";
 
   // LIMITATION METADATA ACCESS
   const POD_NAME_LIMITS = limitations["podcast_name_len"];
