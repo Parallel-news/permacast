@@ -615,6 +615,7 @@ export async function handle(state, action) {
     if (!state.ownerSwapped) {
       SmartWeave.contract.owner = address;
       state.ownerSwapped = true;
+      state.contractOwner = address;
       return { state };
     }
 
