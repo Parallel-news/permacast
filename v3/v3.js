@@ -1,22 +1,22 @@
 /**
- * 
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
+ *
  *               ██████╗░███████╗██████╗░███╗░░░███╗░█████╗░░█████╗░░█████╗░░██████╗████████╗
  *               ██╔══██╗██╔════╝██╔══██╗████╗░████║██╔══██╗██╔══██╗██╔══██╗██╔════╝╚══██╔══╝
  *               ██████╔╝█████╗░░██████╔╝██╔████╔██║███████║██║░░╚═╝███████║╚█████╗░░░░██║░░░
  *               ██╔═══╝░██╔══╝░░██╔══██╗██║╚██╔╝██║██╔══██║██║░░██╗██╔══██║░╚═══██╗░░░██║░░░
  *               ██║░░░░░███████╗██║░░██║██║░╚═╝░██║██║░░██║╚█████╔╝██║░░██║██████╔╝░░░██║░░░
  *               ╚═╝░░░░░╚══════╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚═════╝░░░░╚═╝░░░
- *                                  
+ *
  *                     SWC as first level data registery for Arweave hosted podcasts.
  *
  * @version: TESTNET V3
  * @author charmful0x
- * website: permacast.net
- * License: MIT
+ * @website permacast.net
+ * @license MIT
  **/
 
 export async function handle(state, action) {
@@ -28,6 +28,7 @@ export async function handle(state, action) {
   const maintainers = state.maintainers;
   const superAdmins = state.superAdmins;
   const v2SourceCode = state.v2SourceCode;
+  const v2MaskingContract = state.v2MaskingContract;
   const limitations = state.limitations;
 
   // CONSTANTS
@@ -489,11 +490,26 @@ export async function handle(state, action) {
 
     const v2State = (await SmartWeave.contracts.readContractState(factoryID))
       ?.podcasts;
+    const v2MaskState = await SmartWeave.contracts.readContractState(
+      v2MaskingContract
+    );
 
     if (v2State === undefined) {
       throw new ContractError(ERROR_STATE_CANNOT_MIGRATE);
     }
 
+    for (let pod of v2State) {
+      pod.isVisible = v2MaskState["podcasts"].includes(pod.pid) ? false : true;
+      if (pod?.episodes?.length && pod.episodes.length > 0) {
+        for (let ep of pod.episodes) {
+          ep.isVisible = pod.episodes.find((episode) =>
+            v2MaskState["episodes"].includes(episode.eid)
+          )
+            ? false
+            : true;
+        }
+      }
+    }
     state.podcasts = v2State;
     state.hasMigrated = true;
 
