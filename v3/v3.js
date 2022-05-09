@@ -99,6 +99,8 @@ export async function handle(state, action) {
      * @param categories RSS supported categories strings
      * @param email author email address
      * @param cover Arweave data TXID of type `image/*`
+     * @param contentType 'a' or 'v' indication audio or
+     * video (content type) that will be supported in this podcast. 
      *
      * @return state
      **/
@@ -110,6 +112,8 @@ export async function handle(state, action) {
     const categories = input.categories;
     const email = input.email;
     const cover = input.cover;
+
+    const contentType = input.contentType === "a" ? "audio/" : "video/"
 
     await _isSuperAdmin(true, caller);
 
@@ -144,6 +148,7 @@ export async function handle(state, action) {
 
     podcasts.push({
       pid: pid,
+      contentType: contentType,
       createdAtBlockheight: SmartWeave.block.height, // blockheight - V3 metadata
       createdAt: SmartWeave.block.timestamp, // block's timestamp
       index: _getPodcastIndex(), // id equals the index of the podacast obj in the podcasts array
@@ -174,14 +179,14 @@ export async function handle(state, action) {
      *
      * @param pid podcast ID (pid). 43 chars string
      * @param name episode name
-     * @param audio episode audio's Arweave TXID
+     * @param content episode audio's or video's Arweave TXID
      *
      * @return state
      **/
 
     const pid = input.pid;
     const name = input.name;
-    const audio = input.audio;
+    const content = input.content;
 
     await _getMaintainers(true, caller);
 
@@ -196,21 +201,23 @@ export async function handle(state, action) {
     );
 
     _validateStringTypeLen(name, EP_NAME_LIMITS.min, EP_NAME_LIMITS.max);
-    _validateStringTypeLen(audio, 43, 43);
+    _validateStringTypeLen(content, 43, 43);
     _validateStringTypeLen(pid, 43, 43);
 
     const pidIndex = _getAndValidatePidIndex(pid);
     // auto prevent double episode uploads
     _checkEpisodeUploadDuplication(pidIndex, name);
 
-    const TxMetadata = await _validateDataTransaction(audio, "audio/");
+    const contentType = podcasts[pidIndex]["contentType"];
+
+    const TxMetadata = await _validateDataTransaction(content, contentType);
 
     podcasts[pidIndex]["episodes"].push({
       eid: SmartWeave.transaction.id,
       childOf: pidIndex,
       episodeName: name,
       description: desc,
-      audioTx: audio,
+      contentTx: content,
       audioTxByteSize: Number.parseInt(TxMetadata.size),
       type: TxMetadata.type,
       uploader: caller,
@@ -499,6 +506,9 @@ export async function handle(state, action) {
     }
 
     for (let pod of v2State) {
+      // add the contentType property which was only `audio/*` in V2
+      pod.contentType = "audio/";
+      // add the visibility property imported from the V2 Masking contract
       pod.isVisible = v2MaskState["podcasts"].includes(pod.pid) ? false : true;
       if (pod?.episodes?.length && pod.episodes.length > 0) {
         for (let ep of pod.episodes) {
@@ -625,7 +635,7 @@ export async function handle(state, action) {
     const address = input.address;
 
     _validateAddress(address);
-    await _getContractOwner(true, caller);
+    await _isSuperAdmin(true, caller);
 
     // contract owner can be swapped for once only
     if (!state.ownerSwapped) {
