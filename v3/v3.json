@@ -2,10 +2,7 @@
   "podcasts": [],
   "superAdmins": [],
   "maintainers": [],
-  "v2SourceCode": "KrMNSCljeT0sox8bengHf0Z8dxyE0vCTLEAOtkdrfjM",
-  "v2MaskingContract": "rFD_owQauwCYgahb4nD2WaMW4tIstmg47gN1QtRhcpE",
   "contractOwner": "ARWEAVE_ADDRESS",
-  "hasMigrated": false,
   "ownerSwapped": false,
   "limitations": {
     "podcast_name_len": {
