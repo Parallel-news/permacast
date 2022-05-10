@@ -13,7 +13,7 @@
  *
  *                     SWC as first level data registery for Arweave hosted podcasts.
  *
- * @version: TESTNET V3
+ * @version: TESTNET V3 - Amber Version
  * @author charmful0x
  * @website permacast.net
  * @license MIT
@@ -27,8 +27,6 @@ export async function handle(state, action) {
   const podcasts = state.podcasts;
   const maintainers = state.maintainers;
   const superAdmins = state.superAdmins;
-  const v2SourceCode = state.v2SourceCode;
-  const v2MaskingContract = state.v2MaskingContract;
   const limitations = state.limitations;
 
   // CONSTANTS
@@ -218,7 +216,7 @@ export async function handle(state, action) {
       episodeName: name,
       description: desc,
       contentTx: content,
-      audioTxByteSize: Number.parseInt(TxMetadata.size),
+      contentTxByteSize: Number.parseInt(TxMetadata.size),
       type: TxMetadata.type,
       uploader: caller,
       uploadedAt: SmartWeave.block.timestamp,
@@ -438,90 +436,6 @@ export async function handle(state, action) {
       superAdmins.findIndex((m) => m === address),
       1
     );
-
-    return { state };
-  }
-
-  if (input.function === "importState") {
-    /**
-     * @dev migrate state from V2 factory to
-     * a new non-used V3 deployed factory.
-     *
-     * Only a superAdmin can invoke this function.
-     *
-     * This function can be invoked only once. After
-     * that, the migration possibility will be sealed.
-     *
-     * @param factoryID the contract ID of the V2 factory
-     *
-     * @return overwritten state
-     **/
-
-    const factoryID = input.factoryID;
-
-    await _isSuperAdmin(true, caller);
-    _validateAddress(factoryID);
-
-    const factoryTxObject = await SmartWeave.unsafeClient.transactions.get(
-      factoryID
-    );
-    const owner = await SmartWeave.unsafeClient.wallets.ownerToAddress(
-      factoryTxObject.owner
-    );
-    const tags = factoryTxObject.get("tags");
-    const tagsMap = new Map();
-
-    for (let tag of tags) {
-      const key = tag.get("name", { decode: true, string: true });
-      const value = tag.get("value", { decode: true, string: true });
-      tagsMap.set(key, value);
-    }
-
-    // validate if the factory deployer is a superAdmin/contractOwner
-    await _isSuperAdmin(true, owner);
-
-    if (
-      !tagsMap.has("Contract-Src") ||
-      tagsMap.get("Contract-Src") !== v2SourceCode
-    ) {
-      throw new ContractError(ERROR_V2_SRC_NOT_VALID);
-    }
-
-    if (state.hasMigrated) {
-      throw new ContractError(ERROR_MIGRATION_DONE);
-    }
-
-    if (podcasts.length > 0) {
-      throw new ContractError(ERROR_CANNOT_MIGRATE_TO_ACTIVE_FACTORY);
-    }
-
-    const v2State = (await SmartWeave.contracts.readContractState(factoryID))
-      ?.podcasts;
-    const v2MaskState = await SmartWeave.contracts.readContractState(
-      v2MaskingContract
-    );
-
-    if (v2State === undefined) {
-      throw new ContractError(ERROR_STATE_CANNOT_MIGRATE);
-    }
-
-    for (let pod of v2State) {
-      // add the contentType property which was only `audio/*` in V2
-      pod.contentType = "audio/";
-      // add the visibility property imported from the V2 Masking contract
-      pod.isVisible = v2MaskState["podcasts"].includes(pod.pid) ? false : true;
-      if (pod?.episodes?.length && pod.episodes.length > 0) {
-        for (let ep of pod.episodes) {
-          ep.isVisible = pod.episodes.find((episode) =>
-            v2MaskState["episodes"].includes(episode.eid)
-          )
-            ? false
-            : true;
-        }
-      }
-    }
-    state.podcasts = v2State;
-    state.hasMigrated = true;
 
     return { state };
   }
