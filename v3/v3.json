@@ -2,6 +2,7 @@
   "podcasts": [],
   "superAdmins": [],
   "maintainers": [],
+  "oracle_address": "8K77MdQ855XCjdbwAO-SjeB89z3tlWGQYDowAHR45pA",
   "contractOwner": "ARWEAVE_ADDRESS",
   "ownerSwapped": false,
   "limitations": {
@@ -35,3 +36,5 @@
     }
   }
 }
+
+
