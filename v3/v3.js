@@ -28,9 +28,7 @@ export async function handle(state, action) {
   const maintainers = state.maintainers;
   const superAdmins = state.superAdmins;
   const limitations = state.limitations;
-
-  // CONSTANTS
-  const ORACLE_ADDRESS = "LmrB0NrGH3dDT4Yr4ymCIAv86hmHlvuyfDiMuXMUU5Y";
+  const oracle_address = state.oracle_address;
 
   // LIMITATION METADATA ACCESS
   const POD_NAME_LIMITS = limitations["podcast_name_len"];
@@ -574,13 +572,37 @@ export async function handle(state, action) {
     await _getContractOwner(true, caller);
 
     const oracleState = await SmartWeave.contracts.readContractState(
-      ORACLE_ADDRESS
+      state.oracle_address
     );
 
     // update the limitations according to the oracle;
     state.limitations = oracleState.limitations;
 
     return { state };
+  }
+
+  if (input.function === "updateOracleAddress") {
+    /**
+     * @dev contract owner can update the factory's
+     * oracle address to his/her own oracle. The initial
+     * factory's state come with an oracle provided from
+     * Permacast protocol developers. The new oracle state
+     * must be backward compatible with the original oracle,
+     * 
+     * @param address the new oracle address
+     * 
+     * @return state
+     * 
+     **/
+
+     const address = input.address;
+
+     await _getContractOwner(true, caller);
+     _validateAddress(address);
+
+     state.oracle_address = address;
+
+     return { state };
   }
 
   // HELPER FUNCTIONS:
