@@ -694,7 +694,7 @@ export async function handle(state, action) {
   }
 
   function _getAndValidateEidIndex(eid, pidIndex) {
-    const index = podcasts[pidIndex].episodes.find(
+    const index = podcasts[pidIndex].episodes.findIndex(
       (episode) => episode["eid"] === eid
     );
 
