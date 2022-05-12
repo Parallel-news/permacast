@@ -472,7 +472,7 @@ export async function handle(state, action) {
     if (type === "eid") {
       const pid = _getPidOfEid(id);
       const pidIndex = _getAndValidatePidIndex(pid);
-      const eidIndex = _getAndValidateEidIndex(id);
+      const eidIndex = _getAndValidateEidIndex(id, pidIndex);
 
       const currentVisibility =
         podcasts[pidIndex]["episodes"][eidIndex].isVisible;
@@ -513,7 +513,7 @@ export async function handle(state, action) {
 
     const pid = _getPidOfEid(eid);
     const pidIndex = _getAndValidatePidIndex(pid);
-    const eidIndex = _getAndValidateEidIndex(eid);
+    const eidIndex = _getAndValidateEidIndex(eid, pidIndex);
     const actionTx = SmartWeave.transaction.id;
 
     if (name) {
@@ -694,7 +694,7 @@ export async function handle(state, action) {
   }
 
   function _getAndValidateEidIndex(eid, pidIndex) {
-    const index = podcasts[pidIndex].episodes.find(
+    const index = podcasts[pidIndex].episodes.findIndex(
       (episode) => episode["eid"] === eid
     );
 
