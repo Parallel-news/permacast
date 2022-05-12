@@ -65,7 +65,7 @@ export async function handle(state, action) {
   }
 
   function _validateInteger(nb) {
-    if (typeof number !== "number" && !Number.isInteger(nb)) {
+    if (typeof nb !== "number" && !Number.isInteger(nb)) {
       throw new ContractError(NON_INTEGER_NUMBER_PASSED);
     }
 
