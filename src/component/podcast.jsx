@@ -22,7 +22,7 @@ export default function Podcast(props) {
   const getPodcastEpisodes = async () => {
     const pid = props.match.params.podcastId;
 
-    const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
+    const response = await fetch(`https://whispering-retreat-94540.herokuapp.com/feeds/episodes/${pid}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', }
     });
@@ -104,6 +104,7 @@ export default function Podcast(props) {
   };
 
   const loadEpisodes = async (podcast, episodes) => {
+    console.log(podcast)
     const episodeList = []
     const addr = await tryAddressConnecting();
     for (let i in episodes) {
@@ -124,7 +125,7 @@ export default function Podcast(props) {
                   </svg>
                 </button>
                 <a
-                  href={`${MESON_ENDPOINT}/${e.audioTx}`}
+                  href={`${MESON_ENDPOINT}/${e.contentTx}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -188,7 +189,7 @@ export default function Podcast(props) {
         title: e.episodeName,
         artist: podcast.podcastName,
         cover: `${MESON_ENDPOINT}/${podcast.cover}`,
-        src: `${MESON_ENDPOINT}/${e.audioTx}`,
+        src: `${MESON_ENDPOINT}/${e.contentTx}`,
       },
       download: true
     })
@@ -201,6 +202,7 @@ export default function Podcast(props) {
       setLoading(true)
 
       const p = getPodcast(await fetchPodcasts())
+      console.log(p)
       const ep = await getPodcastEpisodes()
       setThePodcast(p)
       setPodcastHtml(loadPodcastHtml(p))
