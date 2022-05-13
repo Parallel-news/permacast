@@ -9,7 +9,7 @@ export default function PodcastHtml({ name, link, description, image, rss, small
     const { t } = useTranslation()
     const loadRss = () => {
         console.log(rss)
-        window.open(`https://permacast-cache.herokuapp.com/feeds/${rss}`, '_blank')
+        window.open(`https://whispering-retreat-94540.herokuapp.com/feeds/${rss}`, '_blank')
     }
     const tipButton = () => {
         return <button className="btn btn-sm btn-outline" onClick={() => tipPrompt()}><FaRegGem className='mr-2' /> Tip</button>
