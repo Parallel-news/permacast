@@ -13,9 +13,9 @@ Each content-creator needs an <a href="https://faucet.arweave.net/">Arweave wall
 ## Permacast Smart Contracts
 | Name  | Path | Onchain Source Code |
 | ------------- |:-------------:| ------------- |
-| Permacast V2 Master Contract |    [./v2-contracts](./v2-contracts)  |   [KrMNSCljeT0sox8bengHf0Z8dxyE0vCTLEAOtkdrfjM](https://viewblock.io/arweave/tx/KrMNSCljeT0sox8bengHf0Z8dxyE0vCTLEAOtkdrfjM) |
-| Permacast V3 Master Contract     | [./v3](./v3)   | TBD |
-| Factories Oracle Contract     |   [./v3/oracle](./v3/oracle)   | [LmrB0NrGH3dDT4Yr4ymCIAv86hmHlvuyfDiMuXMUU5Y](https://viewblock.io/arweave/address/LmrB0NrGH3dDT4Yr4ymCIAv86hmHlvuyfDiMuXMUU5Y) |
+| Permacast V2 Master Contract Src |    [./v2-contracts](./v2-contracts)  |   [KrMNSCljeT0sox8bengHf0Z8dxyE0vCTLEAOtkdrfjM](https://viewblock.io/arweave/tx/KrMNSCljeT0sox8bengHf0Z8dxyE0vCTLEAOtkdrfjM) |
+| Permacast V3 Master Contract Src     | [./v3](./v3)   | [-SoIrUzyGEBklizLQo1w5AnS7uuOB87zUrg-kN1QWw4](https://viewblock.io/arweave/tx/-SoIrUzyGEBklizLQo1w5AnS7uuOB87zUrg-kN1QWw4) |
+| Factories Oracle Contract Address   |   [./v3/oracle](./v3/oracle)   | [8K77MdQ855XCjdbwAO-SjeB89z3tlWGQYDowAHR45pA](https://viewblock.io/arweave/address/8K77MdQ855XCjdbwAO-SjeB89z3tlWGQYDowAHR45pA) |
 
 ## Front-Ends Access:
 - Production version -- Decentralized UI hosting: [permacast.net](https://permacast.net)
