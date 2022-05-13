@@ -1,11 +1,13 @@
 import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
+import { genetateFactoryState } from '../utils/initStateGen.js';
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 const ardb = new ArDB(arweave)
 
 export default function UploadShow() {
+
   let finalShowObj = {}
   const [show, setShow] = useState(false);
   const podcastCoverRef = useRef()
@@ -13,15 +15,17 @@ export default function UploadShow() {
   const languages = i18n.language === 'zh' ? languages_zh : languages_en
   const categories = i18n.language === 'zh' ? categories_zh : categories_en
 
-  const deployContract = async () => {
-    const initialState = `{"podcasts": []}`
+  const deployContract = async (address) => {
+
+    const initialState = await genetateFactoryState(address);
+    console.log(initialState)
     const tx = await arweave.createTransaction({ data: initialState })
 
-    tx.addTag("Protocol", "permacast-testnet-v3")
-    tx.addTag("Action", "launchCreator")
-    tx.addTag("App-Name", "SmartWeaveAction")
+
+    tx.addTag("App-Name", "SmartWeaveContract")
     tx.addTag("App-Version", "0.3.0")
     tx.addTag("Contract-Src", CONTRACT_SRC)
+    tx.addTag("Permacast-Version", "amber");
     tx.addTag("Content-Type", "application/json")
     tx.addTag("Timestamp", Date.now())
     
@@ -69,12 +73,12 @@ export default function UploadShow() {
       await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
       addr = await window.arweaveWallet.getActiveAddress()
     }
-
+    console.log("ADDRESSS")
+    console.log(addr)
     const tx = await ardb.search('transactions')
       .from(addr)
-      .tag('App-Name', 'SmartWeaveAction')
-      .tag('Action', 'launchCreator')
-      .tag('Protocol', 'permacast-testnet-v3')
+      .tag('App-Name', 'SmartWeaveContract')
+      .tag('Permacast-Version', 'amber')
       .tag('Contract-Src', CONTRACT_SRC)
       .find();
 
@@ -84,12 +88,12 @@ export default function UploadShow() {
     }
     if (!contractId) {
       console.log('not contractId - deploying new contract')
-      contractId = await deployContract()
+      contractId = await deployContract(addr)
     }
     let input = {
       'function': 'createPodcast',
       'name': show.name,
-      'desc': show.desc,
+      'contentType': 'a',
       'cover': show.cover,
       'lang': show.lang,
       'isExplicit': show.isExplicit,
@@ -98,17 +102,30 @@ export default function UploadShow() {
       'email': show.email
     }
 
-    let tags = { "Contract-Src": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "application/json" }
-    let contract = smartweave.contract(contractId).connect("use_wallet");
-    let uploadTxId = await contract.writeInteraction(input, tags);
-    if (uploadTxId) {
+    console.log(input)
+    console.log("CONTRACT ID:")
+    console.log(contractId);
+
+    let tags = { "Contract": contractId, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input)};
+
+    const interaction = await arweave.createTransaction({data: show.desc});
+
+    for (const key in tags) {
+      interaction.addTag(key, tags[key]);
+    }
+
+    interaction.reward = (+interaction.reward * FEE_MULTIPLIER).toString();
+    await arweave.transactions.sign(interaction);
+    await arweave.transactions.post(interaction);
+    if (interaction.id) {
       Swal.fire({
         title: t("uploadshow.swal.showadded.title"),
         text: t("uploadshow.swal.showadded.text"),
         icon: 'success',
         customClass: "font-mono",
       })
-      console.log(uploadTxId)
+      console.log("INTERACTION.ID")
+      console.log(interaction.id)
     } else {
       alert('An error occured.')
     }
@@ -228,11 +245,11 @@ export default function UploadShow() {
             <form onSubmit={handleShowUpload}>
               <div className='mb-3'>
                 <span className="label label-text">{t("uploadshow.name")}</span>
-                <input className="input input-bordered w-1/2" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
+                <input className="input input-bordered w-1/2" required pattern=".{2,500}" title="Between 2 and 500 characters" type="text" name="podcastName" placeholder="The Arweave Show" />
               </div>
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.description")}</span>
-                <textarea className="w-1/2 textarea textarea-bordered" required pattern=".{10,75}" title="Between 10 and 75 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
+                <textarea className="w-1/2 textarea textarea-bordered" required pattern=".{10,15000}" title="Between 10 and 15000 characters" as="textarea" name="podcastDescription" placeholder="This is a show about..." rows={3} />
               </div>
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.image")}</span>
@@ -240,7 +257,7 @@ export default function UploadShow() {
               </div>
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.author")}</span>
-                <input className="input input-bordered w-1/2" required pattern=".{2,50}" title="Between 2 and 50 characters" type="text" name="podcastAuthor" placeholder="Sam Williams" />
+                <input className="input input-bordered w-1/2" required pattern=".{2,150}" title="Between 2 and 150 characters" type="text" name="podcastAuthor" placeholder="Sam Williams" />
               </div>
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.email")}</span>
