@@ -98,7 +98,8 @@ export default function Podcast(props) {
       return addr;
     } catch (error) {
       console.log("🦔Displaying feed for non-ArConnect installed users🦔");
-      addr = "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0";
+      //  address retrived from the top list of https://viewblock.io/arweave/addresses
+      addr = "dRFuVE-s6-TgmykU4Zqn246AR2PIsf3HhBhZ0t5-WXE";
       return addr;
     }
   };
@@ -147,9 +148,9 @@ export default function Podcast(props) {
     return episodeList
   }
 
-  const checkEpisodeForm = async (owner) => {
-    let addr = await window.arweaveWallet.getActiveAddress()
-    if (addr === owner) {
+  const checkEpisodeForm = async (podObj) => {
+    let addr = await window.arweaveWallet.getActiveAddress();
+    if (addr === podObj.owner || podObj.superAdmins.includes(addr)) {
       setShowEpisodeForm(true)
       window.scrollTo(0, 0)
     } else {
@@ -222,7 +223,7 @@ export default function Podcast(props) {
         {podcastHtml}
       </div>
       <div>{podcastEpisodes}</div>
-      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
+      {!loading && (thePodcast.owner === addr || thePodcast.superAdmins.includes(addr)) && <button className='btn' onClick={() => checkEpisodeForm(thePodcast)}>{t("add new episode")}</button>}
       < div className="podcast-player sticky bottom-0 w-screen" />
     </div>
 
