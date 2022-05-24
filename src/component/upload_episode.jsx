@@ -49,7 +49,7 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
-  const uploadToArweave = async (data, fileType, epObj, event) => { // 0000000000   1
+  const uploadToArweave = async (data, fileType, epObj, event) => { 
     const wallet = await window.arweaveWallet.getActiveAddress();
     console.log(wallet);
     if (!wallet) {
@@ -78,15 +78,10 @@ export default function UploadEpisode({ podcast }) {
 
         setUploadProgress(true)
         setUploadPercentComplete(uploader.pctComplete)
-
-        console.log(
-          //  `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
-        );
       }
       if (uploader.txPosted) {
         epObj.content = tx.id;
-        // epObj.type = fileType;
-        // epObj.audioTxByteSize = data.size;
+
         console.log('txPosted:')
         console.log(epObj)
         uploadShow(epObj);
@@ -120,8 +115,7 @@ export default function UploadEpisode({ podcast }) {
     })
     let epObj = {}
     event.preventDefault();
-    // const pid = props.match.params.podcastId;
-    // console.log("PIDDDD", pid)
+
     epObj.name = event.target.episodeName.value
     epObj.desc = event.target.episodeShowNotes.value
     epObj.index = podcast.index
@@ -135,18 +129,6 @@ export default function UploadEpisode({ podcast }) {
     setEpisodeUploading(false)
   }
 
-
-  // const getAddrRetry = async () => {
-  //   await window.arweaveWallet.connect(['ACCESS_ADDRESS'])
-  //   let addr = window.arweaveWallet.getActiveAddress();
-  //   while (!addr) {
-  //     if (addr) {
-  //       return addr;
-  //     } else {
-  //       //
-  //     }
-  //   }
-  // }
 
   const getSwcId = async () => {
     await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"])
@@ -166,7 +148,7 @@ export default function UploadEpisode({ podcast }) {
     if (!tx || tx.length === 0) {
       Swal.fire(
         {
-          title: 'Something went wrong :( please retry the upload',
+          title: 'Insuffucient balance or Arweave gateways are unstable. Please try again later',
           customClass: "font-mono",
         }
       );
@@ -176,7 +158,7 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
-  const uploadShow = async (show) => { // 0000000000   2
+  const uploadShow = async (show) => { 
     const theContractId = await getSwcId()
     console.log("theContractId", theContractId)
     console.log("show", show)
