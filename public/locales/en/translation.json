@@ -38,19 +38,7 @@
 			},
 			"uploadfailed": {
 				"title": "Unable to add show",
-				"text": "Check your wallet balance and network connection",
-				"cantfindaddress": {
-					"title": "Unable to find address",
-					"text": "Make sure your address exists and re-connect the wallet"
-				},
-				"cantfetchprices": {
-					"title": "Unable to fetch storage prices",
-					"text": "Check your internet connection and try again later"
-				},
-				"lowbalance": {
-					"title": "Low balance",
-					"text": "You don't have enough AR to cover the transaction fee. This transaction will cost: "
-				}
+				"text": "Check your wallet balance and network connection"
 			},
 			"reset": {
 				"text": "Podcast cover image is not squared (1:1 aspect ratio)!"
@@ -90,6 +78,20 @@
 		"upload": "Upload",
 		"uploading": "Uploading, please wait...",
 		"uploaded": "Uploaded"
+	},
+	"generalerrors": {
+		"cantfindaddress": {
+			"title": "Unable to find address",
+			"text": "Make sure your address exists and re-connect the wallet"
+		},
+		"cantfetchprices": {
+			"title": "Unable to fetch storage prices",
+			"text": "Check your internet connection and try again later"
+		},
+		"lowbalance": {
+			"title": "Low balance",
+			"text": "You don't have enough AR to cover the transaction fee. This transaction will cost: "
+		}
 	},
 	"podcast": {
 		"newepisode": "add new episode"
