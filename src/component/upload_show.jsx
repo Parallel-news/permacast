@@ -2,8 +2,12 @@ import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
 import { genetateFactoryState } from '../utils/initStateGen.js';
+import { swal, fetchWalletAddress } from '../utils/shorthands.js';
+
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
+import { getStorageTable } from 'arweave-fees.js';
+
 const ardb = new ArDB(arweave)
 
 export default function UploadShow() {
@@ -65,14 +69,8 @@ export default function UploadShow() {
       customClass: "font-mono",
     })
     let contractId
+    let addr = await fetchWalletAddress()
 
-    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "SIGNATURE"])
-    let addr = await window.arweaveWallet.getActiveAddress()
-
-    if (!addr) {
-      await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
-      addr = await window.arweaveWallet.getActiveAddress()
-    }
     console.log("ADDRESSS")
     console.log(addr)
     const tx = await ardb.search('transactions')
@@ -207,7 +205,21 @@ export default function UploadShow() {
     showObj.lang = podcastLanguage
     // upload cover, send all to Arweave
     let cover = await processFile(podcastCover)
-    await uploadToArweave(cover, coverFileType, showObj)
+    const storagePrices = await getStorageTable()
+    let address = await fetchWalletAddress()
+    let failText = 'uploadshow.swal.uploadfailed.'
+    if (!address) return swal(t, 'error', failText + 'cantfindaddress')
+
+    let balance = await arweave.wallets.getBalance(address).then((balance) => balance)
+    let avgStoragePriceKB = storagePrices['KB'] ? storagePrices['KB'].ar : 0
+
+    if (avgStoragePriceKB == 0) return swal(t, 'error', failText + 'cantfetchprices')
+
+    let showObjSize = JSON.stringify(showObj).length // in bytes
+    let cost = (Math.max(cover.byteLength + showObjSize, 1) / 1024) * avgStoragePriceKB
+
+    if (balance >= cost) await uploadToArweave(cover, coverFileType, showObj)
+    else return swal(t, 'error', failText + 'lowbalance', `${cost}`.split("", 6).join('') + ' AR')
   }
 
   const languageOptions = () => {

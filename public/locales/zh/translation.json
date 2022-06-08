@@ -34,7 +34,19 @@
 		"swal": {
 			"showadded": {
 				"title": "节目已添加",
-				"text": "节目已永久地上传到 Arweave，待交易完成几分钟后再来查看"
+				"text": "节目已永久地上传到 Arweave，待交易完成几分钟后再来查看",
+				"cantfindaddress": {
+					"title": "找不到地址",
+					"text": "尝试重新连接您的钱包并更改其访问配置"
+				},
+				"cantfetchprices": {
+					"title": "无法获取存储价格",
+					"text": "检查您的互联网连接，稍后再试"
+				},
+				"lowbalance": {
+					"title": "余额不足",
+					"text": "您没有足够的 AR 来支付交易费用。 该交易将花费："
+				}
 			},
 			"uploadfailed": {
 				"title": "无法添加节目",
