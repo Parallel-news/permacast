@@ -103,9 +103,11 @@ export default function UploadEpisode({ podcast }) {
     processFile(episodeFile).then((file) => {
       let epObjSize = JSON.stringify(epObj).length
       let bytes = file.byteLength + epObjSize + fileType.length
-      if (userHasEnoughAR(t, bytes) === "all good") {
-        uploadToArweave(file, fileType, epObj, event)
-      }
+      userHasEnoughAR(t, bytes).then((result) => {
+        if (result === "all good") {
+          uploadToArweave(file, fileType, epObj, event)
+        } else console.log('upload failed');
+      })
     })
     setEpisodeUploading(false)
   }

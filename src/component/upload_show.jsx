@@ -40,7 +40,7 @@ export default function UploadShow() {
     return tx.id
   }
 
-  
+
   const uploadShow = async (show) => {
     Swal.fire({
       title: t("uploadshow.swal.uploading.title"),
@@ -186,10 +186,9 @@ export default function UploadShow() {
     let cover = await processFile(podcastCover)
     let showObjSize = JSON.stringify(showObj).length
     let bytes = cover.byteLength + showObjSize + coverFileType.length
-
-    if (userHasEnoughAR(t, bytes) === "all good") {
+    if (await userHasEnoughAR(t, bytes) === "all good") {
       await uploadToArweave(cover, coverFileType, showObj)
-    }
+    } else console.log('upload failed');
   }
 
   const languageOptions = () => {
