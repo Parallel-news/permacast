@@ -86,7 +86,7 @@
 	"nopodcasts": "这里还没有播客，请上传一个!",
 	"sortpodcastsby": "播客排序",
 	"sorting": {
-		"default": "默认",
+		"lastupdated": "最近更新时间",
 		"podcastsactivity": "最新的",
 		"episodescount": "剧集数"
 	}
