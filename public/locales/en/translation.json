@@ -4,8 +4,8 @@
 		"help": "Get help",
 		"new": "What's new",
 		"swal": {
-			"title": "New in permacast V2 ✨",
-			"html": "<li>Generate a Spotify & Apple-compliant RSS feed for any podcast</li><li>Episodes are atomic NFTs, listable on Verto!</li>"
+			"title": "New in permacast V3 ✨",
+			"html": "<li>iTunes/Spotify compatible RSS imports via the upcoming permacast CLI</li><li>Gas cost reduction</li><li>Auto-protection from duplicated uploads</li><li><a href='https://github.com/Parallel-news/permacast/issues/46'>Read full changelog</a></li>"
 		}
 	},
 	"connector": {
