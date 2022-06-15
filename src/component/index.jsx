@@ -12,7 +12,6 @@ export default function Index() {
   const [sortedPodcasts, setSortedPodcasts] = useState()
   const [selection, setSelection] = useState(0)
   const filters = [
-    {type: "lastupdated", desc: t("sorting.lastupdated")},
     {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
     {type: "episodescount", desc: t("sorting.episodescount")}
   ]
@@ -41,10 +40,8 @@ export default function Index() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      const podcasts = await fetchPodcasts()
       const sorted = await sortPodcasts(filterTypes)
-      const podcastsHtml = renderPodcasts(podcasts)
-      sorted['lastupdated'] = podcasts
+      const podcastsHtml = renderPodcasts(sorted[filterTypes[selection]])
       setPodcastsHtml(podcastsHtml)
       setSortedPodcasts(sorted)
       setLoading(false)

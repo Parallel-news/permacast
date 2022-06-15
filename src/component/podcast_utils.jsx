@@ -9,6 +9,7 @@ export function Dropdown({filters, selection, changeSorting}) {
     <div className="relative z-10 inline-block text-left float-right">
       <button onClick={() => setOpen(!open)}
         className={`
+          btn btn-outline btn-secondary
           z-10
           px-4
           py-3
@@ -36,15 +37,16 @@ export function Dropdown({filters, selection, changeSorting}) {
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-95"
       >
-        <div className="origin-top-right absolute right-0 mt-11 w-44 rounded shadow-lg select-none">
-          <ul className="py-1">
+        <div className="origin-top-right absolute right-0 mt-14 w-44 shadow-lg select-none">
+          <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box">
             {filters.map((filter, index) => (
               <li key={index} onClick={() => {
                 changeSorting(index)
                 setOpen(!open);
               }} className={`
+                rounded-lg
                 bg-base-100
-                rounded-sm
+                rounded-lg
                 py-2
                 px-4
                 w-full

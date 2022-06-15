@@ -86,8 +86,7 @@
 	"nopodcasts": "No podcasts here yet. Upload one!",
 	"sortpodcastsby": "Sort podcasts by",
 	"sorting": {
-		"lastupdated": "Last Updated",
-		"podcastsactivity": "Latest",
+		"podcastsactivity": "Latest Active podcast",
 		"episodescount": "Episodes Count"
 	}
 }

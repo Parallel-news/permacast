@@ -11,7 +11,6 @@ export const sortPodcasts = async (filters) => {
   
   // Basically, this sandwiches all possible filter requests into one
   await Promise.all(filters.map(async (filter) => {
-    if (filter === "default") return false;
     result[filter] = await fetch(url+filter).then(res => res.json()).then(json => json.res);
   }))
 
