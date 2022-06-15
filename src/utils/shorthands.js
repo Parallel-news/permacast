@@ -45,10 +45,6 @@ export async function processFile(file) {
   }
 }
 
-export function calculateStorageCostInAR(bytes, avgStoragePricePerKB, feeMultiplier) {
-  return (Math.max(bytes, 1) / 1024) * avgStoragePricePerKB * feeMultiplier
-}
-
 export async function userHasEnoughAR (t, bytes) {
   const storagePrices = await getStorageTable()
   let address = await fetchWalletAddress()
@@ -58,15 +54,18 @@ export async function userHasEnoughAR (t, bytes) {
   // this query returns balance in Winston units
   let balance = await arweave.wallets.getBalance(address).then((balance) => balance)
 
-  // https://docs.arweave.org/developers/server/http-api#ar-and-winston
-  let balanceInAR = Math.max(balance, 1) / (10**12)
-  let costPerKB = storagePrices['KB'] ? storagePrices['KB'].ar : 0
+  let balanceInAR = balance * 1e-12
+  let costPerMB = storagePrices['MB'] ? storagePrices['MB'].ar : 0
+  if (costPerMB === 0 || bytes === 0) return swal(t, 'error', failText + 'cantfetchprices')
+  let cost = bytes * (costPerMB / 1024 / 1024)
+  if (storagePrices['KB'].ar >= cost) {
+    console.log('Size too small')
+    cost = storagePrices['KB'].ar
+  }
+  cost = cost * FEE_MULTIPLIER
 
-  if (costPerKB === 0) return swal(t, 'error', failText + 'cantfetchprices')
-  const cost = calculateStorageCostInAR(bytes, costPerKB, FEE_MULTIPLIER)
-  // if cost > 1 AR: show one decimal, if cost > 0.1 AR show 3 decimals, or show 8 by default
-  let repr = cost > 1 ? cost.toFixed(1) : cost > 0.1? cost.toFixed(3) : cost.toFixed(8)
-  console.log('this operation will cost ' + cost)
+  let repr = cost > 1 ? cost.toFixed(1) : cost > 0.1 ? cost.toFixed(3) : cost.toFixed(6)
+  console.log('this operation will cost (with x3 fee): ' + cost)
   console.log('this wallet has ' + balanceInAR)
   if (balanceInAR >= cost) return "all good"
   else return swal(t, 'error', failText + 'lowbalance', `${repr}` + ' AR')
