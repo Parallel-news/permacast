@@ -83,5 +83,10 @@
 		"newepisode": "add new episode"
 	},
 	"loading": "Loading podcasts...",
-	"nopodcasts": "No podcasts here yet. Upload one!"
+	"nopodcasts": "No podcasts here yet. Upload one!",
+	"sortpodcastsby": "Sort podcasts by",
+	"sorting": {
+		"podcastsactivity": "Latest Active podcast",
+		"episodescount": "Episodes Count"
+	}
 }

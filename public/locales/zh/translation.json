@@ -83,5 +83,10 @@
 		"newepisode": "添加新剧集"
 	},
 	"loading": "正在加载播客...",
-	"nopodcasts": "这里还没有播客，请上传一个!"
+	"nopodcasts": "这里还没有播客，请上传一个!",
+	"sortpodcastsby": "播客排序",
+	"sorting": {
+		"podcastsactivity": "最新收听最多的播客",
+		"episodescount": "剧集数"
+	}
 }
