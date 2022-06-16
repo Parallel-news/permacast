@@ -9,6 +9,7 @@ import { MESON_ENDPOINT } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
 import fetchPodcasts from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
+import VideoJS from './video.jsx';
 
 export default function Podcast(props) {
   const [loading, setLoading] = useState(true)
@@ -18,6 +19,8 @@ export default function Podcast(props) {
   const [podcastHtml, setPodcastHtml] = useState(null)
   const [podcastEpisodes, setPodcastEpisodes] = useState([])
   const { t } = useTranslation()
+  const [isVideo, setIsVideo] = useState()
+  const [videoJsOptions, setVideoJsOptions] = useState()
 
   const getPodcastEpisodes = async () => {
     const pid = props.match.params.podcastId;
@@ -181,21 +184,45 @@ export default function Podcast(props) {
   }
 
   const showPlayer = (podcast, e) => {
-    const player = new Shikwasa({
-      container: () => document.querySelector('.podcast-player'),
-      themeColor: 'gray',
-      theme: `${isDarkMode() ? 'dark' : 'light'}`,
-      autoplay: true,
-      audio: {
-        title: e.episodeName,
-        artist: podcast.podcastName,
-        cover: `${MESON_ENDPOINT}/${podcast.cover}`,
-        src: `${MESON_ENDPOINT}/${e.contentTx}`,
-      },
-      download: true
-    })
-    player.play()
-    window.scrollTo(0, document.body.scrollHeight)
+    setIsVideo(false)
+    let type = e?.type?.split('/')?.[0]
+    if (type === "audio") {
+      const player = new Shikwasa({
+        container: () => document.querySelector('.podcast-player'),
+        themeColor: 'gray',
+        theme: `${isDarkMode() ? 'dark' : 'light'}`,
+        autoplay: true,
+        audio: {
+          title: e.episodeName,
+          artist: podcast.podcastName,
+          cover: `${MESON_ENDPOINT}/${podcast.cover}`,
+          src: `${MESON_ENDPOINT}/${e.contentTx}`,
+        },
+        download: true
+      })
+      player.play()
+      window.scrollTo(0, document.body.scrollHeight)
+    }
+    if (type === "video") {
+      setIsVideo(true)
+      setVideoJsOptions({
+        autoplay: true,
+        controls: true,
+        // fluid: true,
+        // responsive: true,
+        height: 180,
+        width: 500,
+        // fill: true,
+        // aspectRatio: '16:9',
+        playbackRates: [0.5, 1, 1.25, 1.5, 2],
+        controls: true,
+        sources: [{
+          src: `${MESON_ENDPOINT}/${e.contentTx}`,
+          type: e.type
+        }]
+      });
+    }
+    else console.log('not audio or video')
   }
 
   useEffect(() => {
@@ -224,7 +251,15 @@ export default function Podcast(props) {
       </div>
       <div>{podcastEpisodes}</div>
       {!loading && (thePodcast.owner === addr || thePodcast.superAdmins.includes(addr)) && <button className='btn' onClick={() => checkEpisodeForm(thePodcast)}>{t("add new episode")}</button>}
-      < div className="podcast-player sticky bottom-0 w-screen" />
+      {isVideo ? 
+        <div className="podcast-player sticky bottom-0">
+          <div className="ml-auto mr-auto">
+            <VideoJS options={videoJsOptions} />
+          </div>
+        </div>
+        :
+        <div className="podcast-player sticky bottom-0 w-screen" />
+      }
     </div>
 
   )
