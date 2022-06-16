@@ -208,7 +208,7 @@ export default function UploadEpisode({ podcast }) {
     <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl">
       <div className="label block uppercase text-center">{t("uploadepisode.title")} {podcast?.podcastName}</div>
       <div className="form-control">
-        <form className="p-4" onSubmit={handleEpisodeUpload}>
+        <form className="p-4" onSubmit={/*handlEpisodeUpload*/ () => console.log('bazinga')}>
           <div className="mb-3">
             <span className="label label-text">{t("uploadepisode.name")}</span>
             <input className="input input-bordered" required pattern=".{3,500}" title="Between 3 and 500 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
@@ -235,14 +235,15 @@ export default function UploadEpisode({ podcast }) {
             <button
               className="btn btn-primary"
               type="submit"
+              disabled={true}
             >
               {t("uploadepisode.upload")}
             </button>
             :
             <button
               className="btn btn-outline"
-              disabled
               type="submit"
+              disabled={true}
             >
               {t("uploadepisode.uploading")}
             </button>
