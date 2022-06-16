@@ -80,7 +80,13 @@
 		"uploaded": "Uploaded"
 	},
 	"podcast": {
-		"newepisode": "add new episode"
+		"newepisode": "add new episode",
+		"swal": {
+			"edit": {
+				"title": "Success",
+				"text": "Episode description updated, check after a few minutes"
+			}
+		}
 	},
 	"loading": "Loading podcasts...",
 	"nopodcasts": "No podcasts here yet. Upload one!",
