@@ -9,11 +9,14 @@ import { MESON_ENDPOINT, CONTRACT_SRC } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
 import fetchPodcasts from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
+import { smartweave } from '../utils/arweave';
+import { arweave } from '../utils/arweave.js';
+import { getSwcId } from '../utils/ardb.js';
 
 export default function Podcast(props) {
   const [loading, setLoading] = useState(true)
   const [showEpisodeForm, setShowEpisodeForm] = useState(false)
-  const [addr, setAddr] = useState('')
+  const [isOwner, setIsOwner] = useState(false)
   const [thePodcast, setThePodcast] = useState(null)
   const [podcastHtml, setPodcastHtml] = useState(null)
   const [podcastEpisodes, setPodcastEpisodes] = useState([])
@@ -103,11 +106,9 @@ export default function Podcast(props) {
     }
   };
 
-  const loadEpisodes = async (podcast, episodes) => {
+  const loadEpisodes = async (podcast, episodes, isOwner) => {
     const episodeList = []
-    const addr = await tryAddressConnecting();
-    for (let i in episodes) {
-      let e = episodes[i]
+    for (const [i, e] of episodes.entries()) {
       console.log("episode", e)
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
@@ -115,7 +116,7 @@ export default function Podcast(props) {
             className="flex flex-col md:flex-row justify-between items-center shadow-lg rounded-xl hover:border px-10 py-5 md:py-2 my-4 md:h-24 mx-3 md:mx-auto"
             key={e.eid}
           >
-            <div className="flex flex-col md:flex-row justify-between items-center space-x-10 mr-5">
+            <div className="flex flex-col md:flex-row justify-between items-center space-x-10">
               <div className="flex space-x-10 mb-3 md:mb-0">
                 <button onClick={() => showPlayer(podcast, e)}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -133,10 +134,19 @@ export default function Podcast(props) {
                   </svg>
                 </a>
               </div>
-              <div className="font-bold w-full md:w-auto text-center">{e.episodeName}</div>
+              <div className="font-bold w-full md:w-auto text-center md:text-left">{e.episodeName}</div>
             </div>
-            <div className='text-sm w-full md:w-auto text-center'>
-              {truncatedDesc(e.description, 52)}
+            <div className="flex items-center text-sm w-auto md:w-1/2 md:ml-3 text-center md:text-left">
+              <div>
+                <p className="line-clamp-1 hover:line-clamp-none">
+                  {e.description}
+                </p>
+              </div>
+              {isOwner &&
+                <div className="btn btn-sm btn-outline ml-3" onClick={() => { editEpisodeDesc(e, i) }}>
+                  edit
+                </div>
+              }
             </div>
           </div >
         )
@@ -162,41 +172,44 @@ export default function Podcast(props) {
         return res
       }  
   */
-  const truncatedDesc = (desc, maxLength) => {
-    if (desc.length < maxLength) {
-      return <>{desc}</>
-    } else {
-      return <>{desc.substring(0, maxLength)}... <span className="text-blue-500 hover:cursor-pointer" onClick={() => showDesc(desc)}>[read more]</span></>
-    }
-  }
 
-   function showDesc(desc) {
-    Swal.fire({
-      text: desc,
-      showCancelButton: true,
-      confirmButtonText: 'Edit',
-      cancelButtonText: 'Close',
+  const editEpisodeDesc = async (e, idx) => {
+    let swcId;
+    try {
+      swcId = await getSwcId()
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        text: error.message,
+      })
+    }
+    const result = await Swal.fire({
+      input: 'textarea',
+      inputValue: e.description,
       customClass: "font-mono",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const { value: text } = Swal.fire({
-          input: 'textarea',
-          inputValue: desc,
-          customClass: "font-mono",
-          showCancelButton: true
-        })
-        
-        if (text) {
-          const input = {
-            /* */
-          }
-        const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-        let contract = smartweave.contract(/*theContractId*/).connect("use_wallet");
-        let txId = await contract.writeInteraction(input, tags);
-        // // // //
-        }
-      }
+      showCancelButton: true
     })
+
+    if (result.isConfirmed && result.value !== '') {
+      // write to contract
+      const input = {
+        "function": "editEpisodeDesc",
+        "index": e.childOf,
+        "id": idx,
+        "desc": result.value
+      }
+      const tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
+      const contract = smartweave.contract(swcId).connect("use_wallet");
+      const tx = await contract.writeInteraction(input, tags)
+      console.log("editEpisodeDesc tx", tx)
+
+      Swal.fire({
+        title: t('podcast.swal.edit.title'),
+        text: t('podcast.swal.edit.text'),
+        icon: 'success',
+        confirmButtonText: 'Close'
+      })
+    }
   }
 
   const showPlayer = (podcast, e) => {
@@ -223,10 +236,12 @@ export default function Podcast(props) {
 
       const p = getPodcast(await fetchPodcasts())
       const ep = await getPodcastEpisodes()
+      const addr = await tryAddressConnecting()
+      const isOwner = p.owner === addr
       setThePodcast(p)
       setPodcastHtml(loadPodcastHtml(p))
-      setPodcastEpisodes(await loadEpisodes(p, ep))
-      setAddr(await tryAddressConnecting())
+      setPodcastEpisodes(await loadEpisodes(p, ep, isOwner))
+      setIsOwner(isOwner)
 
       setLoading(false)
     }
@@ -241,7 +256,7 @@ export default function Podcast(props) {
         {podcastHtml}
       </div>
       <div>{podcastEpisodes}</div>
-      {!loading && thePodcast.owner === addr && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
+      {isOwner && <button className='btn' onClick={() => checkEpisodeForm(thePodcast.owner)}>{t("add new episode")}</button>}
       < div className="podcast-player sticky bottom-0 w-screen" />
     </div>
 

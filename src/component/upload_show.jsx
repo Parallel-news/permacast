@@ -191,26 +191,17 @@ export default function UploadShow() {
     await uploadToArweave(cover, coverFileType, showObj)
   }
 
-  const languageOptions = () => {
-    const langsArray = Object.entries(languages);
+  const options = (items) => {
+    const array = Object.entries(items);
     let optionsArr = []
-    for (let lang of langsArray) {
+    for (let item of array) {
       optionsArr.push(
-        <option value={lang[0]} key={lang[1]}>{lang[1]}</option>
+        <option value={item[0]} key={item[1]}>{item[1]}</option>
       )
     }
     return optionsArr
   }
 
-  const categoryOptions = () => {
-    let optionsArr = []
-    for (let i in categories) {
-      optionsArr.push(
-        <option value={categories[i]} key={i}>{categories[i]}</option>
-      )
-    }
-    return optionsArr
-  }
 
   return (
     <>
@@ -247,13 +238,13 @@ export default function UploadShow() {
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.language")}</span>
                 <select className="select select-bordered w-1/2" id="podcastLanguage" name="language">
-                  {languageOptions()}
+                  {options(languages)}
                 </select>
               </div>
               <div className='my-3'>
                 <span className="label label-text">{t("uploadshow.category")}</span>
                 <select className="select select-bordered w-1/2" id="podcastCategory" name="category">
-                  {categoryOptions()}
+                  {options(categories)}
                 </select>
               </div>
               <div className='my-3'>

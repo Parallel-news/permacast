@@ -5,7 +5,7 @@ import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 
-export default function PodcastHtml({ name, link, description, image, rss, smallImage = false, truncated = false }) {
+export default function PodcastHtml({ name, link, description, image, rss, smallImage = false }) {
     const { t } = useTranslation()
     const loadRss = () => {
         console.log(rss)
@@ -90,12 +90,12 @@ export default function PodcastHtml({ name, link, description, image, rss, small
                     </figure>
                 </a>
             </div>
-            <div className='card-body items-center text-center pt-3 pb-1'>
+            <div className="card-body items-center text-center pt-3 pb-1 text-sm">
                 <div className="card-title text-sm md:text-lg">
                     {name} {rss ? <span><button className="btn btn-sm bg-yellow-400 border-none" onClick={() => loadRss()}><FaRss /></button> {tipButton()} </span> : null}
                 </div>
-                <p className="text-sm mb-2">
-                    {truncated && description.length > 52 ? description.substring(0, 52) + '...' : description}
+                <p className="mb-2">
+                    <span className={!smallImage && "line-clamp-3"}>{description}</span>
                 </p>
             </div>
         </div >
