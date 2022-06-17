@@ -1,4 +1,4 @@
-export async function genetateFactoryState(address) {
+export async function generateFactoryState(address) {
   return `{
   "podcasts": [],
   "superAdmins": [

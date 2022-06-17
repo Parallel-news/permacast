@@ -39,6 +39,8 @@ export const FEE_MULTIPLIER = 3;
 export const NEWS_CONTRACT = "HJFEnaWHLMp2ryrR0nzDKb0DSW7aBplDjcs3vQoVbhw";
 // + tag { name: "Protocol", values: "permacast-testnet-v3"}
 export const MESON_ENDPOINT = "https://coldcdn.com/api/cdn/f38vax";
+export const WEBSITE_URL = "https://whispering-retreat-94540.herokuapp.com/";
+
 export const queryObject = {
   query: `query {
       transactions(
