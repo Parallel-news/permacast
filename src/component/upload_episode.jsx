@@ -208,7 +208,7 @@ export default function UploadEpisode({ podcast }) {
     <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl">
       <div className="label block uppercase text-center">{t("uploadepisode.title")} {podcast?.podcastName}</div>
       <div className="form-control">
-        <form className="p-4" onSubmit={/*handlEpisodeUpload*/ () => console.log('bazinga')}>
+        <form className="p-4" onSubmit={handleEpisodeUpload}>
           <div className="mb-3">
             <span className="label label-text">{t("uploadepisode.name")}</span>
             <input className="input input-bordered" required pattern=".{3,500}" title="Between 3 and 500 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />

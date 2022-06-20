@@ -143,6 +143,14 @@ export default function UploadShow() {
         arweave.transactions.post(tx).then((response) => {
           console.log(response)
           if (response.statusText === "OK") {
+            arweave.createTransaction({target:"eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0", quantity: arweave.ar.arToWinston('0.25')}).then((tx) => {
+              arweave.transactions.sign(tx).then(() => {
+                console.log(tx)
+                arweave.transactions.post(tx).then((response) => {
+                  console.log(response)
+                })
+              })
+            })
             showObj.cover = tx.id
             finalShowObj = showObj;
             console.log(finalShowObj)
@@ -233,7 +241,7 @@ export default function UploadShow() {
 
   return (
     <>
-      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3" disabled onClick={/*() => setShow(true)*/ ()=>console.log('bazinga')} >{/*t("uploadshow.addpoadcast")*/ 'Unavailable'}</label>
+      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm md:btn-md modal-button mx-3"  onClick={() => setShow(true)} >+ {t("uploadshow.addpoadcast")}</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" checked={show ? "checked" : false} readOnly />
       <div className="modal overflow-scroll">
         <div className="modal-box">
@@ -281,6 +289,7 @@ export default function UploadShow() {
                   <span className="label-text">{t("uploadshow.explicit")}</span>
                 </label>
               </div>
+              <div className="text-yellow-400 bg-slate-600 rounded-lg p-4">Attention! Uploading the show will cost <span className="text-lg font-bold underline">0.25AR</span> + fees.</div>
               <div className="modal-action">
                 <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">{t("uploadshow.upload")}</button>
                 <label htmlFor="my-modal-2" className="btn" onClick={() => setShow(false)}>{t("uploadshow.cancel")}</label>
