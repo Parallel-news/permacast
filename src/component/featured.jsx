@@ -150,22 +150,29 @@ export function RecentlyAdded({podcasts, themeColor}) {
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 pb-40 text-zinc-100">
         {podcas.map((podcast, index) => (
-          <div key={index} className="border border-zinc-800 rounded-[24px] p-4 w-full flex">
-            <div className="w-12 h-12">
-              <img className="rounded-md h-full w-full" src={podcast.cover} alt={podcast.podcastName} />
-            </div>
-            <div className="ml-4 flex flex-col">
-              <div className="text-lg">{podcast.podcastName}</div>
-              <div className="flex items-center">
-                <p className="text-zinc-400 text-[6px]">by</p>
-                  <div style={{backgroundColor: bg}} className="ml-1.5 p-1 rounded-full">
-                    <div className="flex items-center">
-                      {/* <img className="h-6 w-6" src={podcast.cover} alt={podcast.podcastName} /> */}
-                      <Cooyub className="rounded-full" svgStyle="h-2 w-2" rectStyle="h-6 w-6" fill={'rgb(255, 0, 0)'} />
-                      <p style={{color: themeColor}} className="text-[6px] ml-1">@{podcast.owner}</p>
+          <div key={index} className="border border-zinc-800 rounded-[24px] p-4 w-full">
+            <div className="flex justify-between">
+              <div className="flex">
+                <div className="w-12 h-12">
+                  <img className="rounded-md h-full w-full" src={podcast.cover} alt={podcast.podcastName} />
+                </div>
+                <div className="ml-4 flex flex-col">
+                  <div className="text-lg">{podcast.podcastName}</div>
+                  <div className="flex items-center">
+                    <p className="text-zinc-400 text-[6px]">by</p>
+                    <div style={{backgroundColor: bg}} className="ml-1.5 p-1 rounded-full">
+                      <div className="flex items-center">
+                        {/* <img className="h-6 w-6" src={podcast.cover} alt={podcast.podcastName} /> */}
+                        <Cooyub className="rounded-full" svgStyle="h-2 w-2" rectStyle="h-6 w-6" fill={'rgb(255, 0, 0)'} />
+                        <p style={{color: themeColor}} className="text-[6px] ml-1">@{podcast.owner}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
+              <div className="p-2 cursor-pointer rounded-[34px]" style={{backgroundColor: bg}}>
+                <PlayButton svgStyle={themeColor} fill={themeColor} outline={themeColor} />
+              </div>
             </div>
           </div>
         ))}

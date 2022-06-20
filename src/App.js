@@ -38,7 +38,7 @@ export default function App() {
             <Player />
           </div>
         </div>
-        <div className="flex overflow-scroll ml-16 mr-10 pt-9 pb-40">
+        <div className="flex overflow-scroll ml-16 mr-10 pt-9 pb-40 w-screen">
           <div className="w-[80%]">
             <Searchbar />
             <div className="mt-10">
