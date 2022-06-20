@@ -235,15 +235,14 @@ export default function UploadEpisode({ podcast }) {
             <button
               className="btn btn-primary"
               type="submit"
-              disabled={true}
             >
               {t("uploadepisode.upload")}
             </button>
             :
             <button
               className="btn btn-outline"
+              disabled
               type="submit"
-              disabled={true}
             >
               {t("uploadepisode.uploading")}
             </button>
