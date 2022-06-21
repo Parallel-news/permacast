@@ -1,38 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import FastAverageColor from 'fast-average-color';
 import { MESON_ENDPOINT } from '../utils/arweave';
 import { RGBtoHSL, HSLtoRGB, replaceDarkColorsRGB } from '../utils/ui';
-import FastAverageColor from 'fast-average-color';
-import Cooyub from './cooyub';
+import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
-import { PlayIcon } from '@heroicons/react/solid';
+import { Podcast } from './podcast';
 
-function PlayButton ({svgStyle, fill, outline, size="20"}) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 18 18" fill={svgStyle} xmlns="http://www.w3.org/2000/svg">
-      <path d="M13 9L5 4V14L13 9Z" fill={fill} stroke={outline} strokeWidth="0" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  )
-}
-
-let podcas = [
+let creatos = [
   {
-    podcastName: 'The Gentlemen',
-    cover: 'https://upload.wikimedia.org/wikipedia/en/0/06/The_Gentlemen_poster.jpg',
-    episodes: 18,
-    description: 'Funny British Accent',
-    owner: 'GuyRitchie'
+    fullname: 'Marton Lederer',
+    anshandle: 'martonlederer',
+    avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
   }, {
-    podcastName: 'Donnie Darko',
-    cover: 'https://upload.wikimedia.org/wikipedia/en/d/db/Donnie_Darko_poster.jpg',
-    episodes: 18,
-    description: 'Time travelling is cool',
-    owner: 'RichardKelly'
+    fullname: 'Marton Lederer',
+    anshandle: 'martonlederer',
+    avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
   }, {
-    podcastName: 'The Prestige',
-    cover: 'https://upload.wikimedia.org/wikipedia/en/d/d2/Prestige_poster.jpg',
-    episodes: 18,
-    description: 'Amazing twist, gripping story',
-    owner: 'ChristopherNolan'
+    fullname: 'Marton Lederer',
+    anshandle: 'martonlederer',
+    avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
   }
 ]
 
@@ -72,7 +58,7 @@ export function FeaturedEpisode(podcast, episode) {
           {!isLoading && dominantColor && (
             <div>
               <div className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
-                <PlayButton svgStyle={dominantColor} fill={dominantColorAlt} outline={dominantColorAlt} />
+                <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
                 <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
               </div>
               <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
@@ -88,11 +74,11 @@ export function FeaturedEpisode(podcast, episode) {
 }
 
 
-export function FeaturedPodcasts (podcasts) {
+export function FeaturedPodcasts ({podcasts}) {
 
   return (
     <div className="w-full mt-8 grid grid-cols-3 gap-x-24">
-      {podcas.map((podcast, index) => (
+      {podcasts.map((podcast, index) => (
         <div key={index}>
           <FeaturedPodcast podcast={podcast} />
         </div>
@@ -143,37 +129,14 @@ export function FeaturedPodcast({podcast}) {
 }
 
 export function RecentlyAdded({podcasts, themeColor}) {
-  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
 
   return (
     <div>
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 pb-40 text-zinc-100">
-        {podcas.map((podcast, index) => (
+        {podcasts.map((podcast, index) => (
           <div key={index} className="border border-zinc-800 rounded-[24px] p-4 w-full">
-            <div className="flex justify-between">
-              <div className="flex">
-                <div className="w-12 h-12">
-                  <img className="rounded-md h-full w-full" src={podcast.cover} alt={podcast.podcastName} />
-                </div>
-                <div className="ml-4 flex flex-col">
-                  <div className="text-lg">{podcast.podcastName}</div>
-                  <div className="flex items-center">
-                    <p className="text-zinc-400 text-[6px]">by</p>
-                    <div style={{backgroundColor: bg}} className="ml-1.5 p-1 rounded-full">
-                      <div className="flex items-center">
-                        {/* <img className="h-6 w-6" src={podcast.cover} alt={podcast.podcastName} /> */}
-                        <Cooyub className="rounded-full" svgStyle="h-2 w-2" rectStyle="h-6 w-6" fill={'rgb(255, 0, 0)'} />
-                        <p style={{color: themeColor}} className="text-[6px] ml-1">@{podcast.owner}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-2 cursor-pointer rounded-[34px]" style={{backgroundColor: bg}}>
-                <PlayButton svgStyle={themeColor} fill={themeColor} outline={themeColor} />
-              </div>
-            </div>
+            <Podcast podcast={podcast} themeColor={themeColor} />
           </div>
         ))}
       </div>
@@ -181,10 +144,35 @@ export function RecentlyAdded({podcasts, themeColor}) {
   )
 }
 
-export function FeaturedCreators({color, creators}) {
+export function FeaturedCreators({themeColor, creators}) {
+  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
+
   return (
     <div>
-      <h2 className="text-zinc-400">Featured Creators</h2>
+      <h2 className="text-zinc-400 mb-4">Featured Creators</h2>
+      {creatos.map((creator, index) => (
+        <div key={index} className="flex justify-between items-center py-4 mb-4">
+          <div className="flex items-center">
+            <div className="w-12 h-12">
+              {creator?.avatar ? (
+                <img className="rounded-lg h-full w-full" src={creator.avatar} alt={creator.fullname} />
+                ) : (
+                  <Cooyub svgStyle="rounded-lg h-full w-full" rectStyle="h-6 w-6" fill={'rgb(255, 80, 0)'} />
+                )
+              }
+            </div>
+            <div className="ml-4 flex items-center">
+              <div className="flex flex-col">
+                <div className="text-zinc-100 text-sm cursor-pointer">{creator.fullname}</div>
+                <div className="text-zinc-400 cursor-pointer text-[8px]">@{creator.anshandle}</div>
+              </div>
+              <div className=" ">
+                <p style={{backgroundColor: bg, color: themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">View artist</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
