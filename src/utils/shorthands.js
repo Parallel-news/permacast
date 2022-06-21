@@ -62,10 +62,10 @@ export async function userHasEnoughAR (t, bytes) {
     console.log('Size too small')
     cost = storagePrices['KB'].ar
   }
-  cost = cost * FEE_MULTIPLIER
+  cost = (cost * FEE_MULTIPLIER) + 0.25
 
-  let repr = cost > 1 ? cost.toFixed(1) : cost > 0.1 ? cost.toFixed(3) : cost.toFixed(6)
-  console.log('this operation will cost (with x3 fee): ' + cost)
+  let repr = cost.toFixed(2)
+  console.log('this operation will cost (with x3 fee + 0.25 AR): ' + cost)
   console.log('this wallet has ' + balanceInAR)
   if (balanceInAR >= cost) return "all good"
   else return swal(t, 'error', failText + 'lowbalance', `${repr}` + ' AR')

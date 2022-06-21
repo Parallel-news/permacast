@@ -46,7 +46,6 @@ export function Dropdown({filters, selection, changeSorting}) {
               }} className={`
                 rounded-lg
                 bg-base-100
-                rounded-lg
                 py-2
                 px-4
                 w-full
