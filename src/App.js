@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HashRouter as Router, Route } from "react-router-dom";
 import Sidenav from "./component/sidenav.jsx";
 import Searchbar from "./component/searchbar.jsx";
@@ -6,27 +7,39 @@ import ArConnect from './component/arconnect.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
 import Player from './component/player.jsx';
 import { FeaturedEpisode, FeaturedPodcasts, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
-import { sortPodcasts, filterTypes, filters } from './utils/podcast.js'
+import { sortPodcasts } from './utils/podcast.js'
 
-// import Podcast from "./component/podcast.jsx";
-// import Index from "./component/index.jsx";
-// import PodcastRss from "./component/podcast_rss.jsx";
 
 export default function App() {
-  const [podcasts, setPodcasts] = useState([]);
+  const { t } = useTranslation()
+
+  const [podcasts, setPodcasts] = useState();
+  const [sortedPodcasts, setSortedPodcasts] = useState();
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('rgb(255, 255, 0)');
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     setLoading(true)
-  //     // const sorted = await sortPodcasts(filterTypes)
-  //     // const podcastsHtml = renderPodcasts(sorted[filterTypes[selection]])
-  //     // setPodcastsHtml(podcastsHtml)
-  //     // setSortedPodcasts(sorted)
-  //     setLoading(false)
-  //   }
-  //   fetchData()
-  // }, [])
+
+  const [selection, setSelection] = useState(0)
+  const filters = [
+      {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
+      {type: "episodescount", desc: t("sorting.episodescount")}
+    ];
+  const filterTypes = filters.map(f => f.type)
+
+  const changeSorting = (n) => {
+    setPodcasts(podcasts[filterTypes[n]])
+    setSelection(n)
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const sorted = await sortPodcasts(filterTypes)
+      setSortedPodcasts(sorted)
+      setPodcasts(sorted[filterTypes[selection]])
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
 
   let podcas = [
     {
@@ -59,17 +72,17 @@ export default function App() {
             <Player />
           </div>
         </div>
-        <div className="grid grid-cols-12 overflow-scroll ml-16 mr-10 pt-9 pb-20 w-screen">
+        <div className="grid grid-cols-12 overflow-scroll ml-16 mr-10 pt-9 w-screen">
           <div className="col-span-9">
             <Searchbar />
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
               <FeaturedEpisode episode={undefined} podcast={undefined} />
-              <FeaturedPodcasts podcasts={podcas} />
+              {!loading ? <FeaturedPodcasts podcasts={podcasts} /> : <div>Loading...</div>}
               <div className="mt-9 grid grid-cols-3 gap-x-24">
                 <div className="col-span-2">
-                  <RecentlyAdded themeColor={primaryColor} podcasts={podcas} />
+                {!loading ? <RecentlyAdded themeColor={primaryColor} podcasts={podcasts} />: <div>Loading...</div>}
                 </div>
                 <div className="">
                   <FeaturedCreators themeColor={primaryColor} creators={undefined} />
@@ -79,7 +92,7 @@ export default function App() {
           </div>
           <div className="col-span-3 ml-12">
             <ArConnect />
-            <EpisodeQueue episodes={podcas} themeColor={primaryColor} />
+            {!loading ? <EpisodeQueue episodes={podcasts} themeColor={primaryColor} /> : <div>Loading...</div>}
           </div>
         </div>
       </div>

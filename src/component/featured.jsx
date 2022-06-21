@@ -75,10 +75,11 @@ export function FeaturedEpisode(podcast, episode) {
 
 
 export function FeaturedPodcasts ({podcasts}) {
+  let podcastLimit = 3;
 
   return (
     <div className="w-full mt-8 grid grid-cols-3 gap-x-24">
-      {podcasts.map((podcast, index) => (
+      {podcasts.splice(0, podcastLimit).map((podcast, index) => (
         <div key={index}>
           <FeaturedPodcast podcast={podcast} />
         </div>
@@ -91,12 +92,12 @@ export function FeaturedPodcast({podcast}) {
   console.log(podcast)
   const [dominantColor, setDominantColor] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  // let podcastImageURL = `${MESON_ENDPOINT}/${podcast?.cover}`
+  let podcastImageURL = `${MESON_ENDPOINT}/${podcast?.cover}`
 
   useEffect(() => {
     setIsLoading(true)
     const fac = new FastAverageColor();
-    fac.getColorAsync(podcast.cover).then(color => {
+    fac.getColorAsync(podcastImageURL).then(color => {
       const rgb = replaceDarkColorsRGB(color.rgb)
       setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
     })
@@ -108,9 +109,9 @@ export function FeaturedPodcast({podcast}) {
       {!isLoading && dominantColor && (
         <div style={{backgroundColor: dominantColor}} className="backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
-            <div className="text-zinc-100 pt-5 pb-3 text-xs">{podcast.episodes} Episodes</div>
+            <div className="text-zinc-100 pt-5 pb-3 text-xs">{podcast.episodes.length} Episodes</div>
             <div className="w-full mb-11">
-              <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
+              <img className="object-contain h-[180px] w-full" src={podcastImageURL} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
               <div className="p-2 bg-white cursor-pointer rounded-[34px]">
@@ -129,7 +130,7 @@ export function FeaturedPodcast({podcast}) {
 }
 
 export function RecentlyAdded({podcasts, themeColor}) {
-
+  let podcastLimit = 3
   return (
     <div>
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
@@ -152,7 +153,7 @@ export function FeaturedCreators({themeColor, creators}) {
       <h2 className="text-zinc-400 mb-4">Featured Creators</h2>
       {creatos.map((creator, index) => (
         <div key={index} className="flex justify-between items-center py-4 mb-4">
-          <div className="flex items-center">
+          <div className="flex">
             <div className="w-12 h-12">
               {creator?.avatar ? (
                 <img className="rounded-lg h-full w-full" src={creator.avatar} alt={creator.fullname} />
