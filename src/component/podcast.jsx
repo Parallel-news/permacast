@@ -7,7 +7,7 @@ import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
 import { MESON_ENDPOINT } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
-import fetchPodcasts from '../utils/podcast.js';
+import { fetchPodcasts } from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
 
 export default function Podcast(props) {
