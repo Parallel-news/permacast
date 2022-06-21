@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Swal from 'sweetalert2'
+import { shortenAddress } from '../utils/ui'
 
 const requiredPermissions = ['ACCESS_ADDRESS', 'ACCESS_ALL_ADDRESSES', 'SIGNATURE', 'SIGN_TRANSACTION']
 
@@ -61,13 +62,6 @@ export default function ArConnect() {
 
   const getAddr = () => window.arweaveWallet.getActiveAddress()
 
-  const shortenAddress = (addr) => {
-    if (addr) {
-      return addr.substring(0, 4) + '...' + addr.substring(addr.length - 4)
-    }
-    return addr
-  }
-
   // const getANSLabel = async (addr) => {
 
   //   return ans?.currentLabel
@@ -116,15 +110,15 @@ export default function ArConnect() {
               className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md normal-case mb-2"
               onClick={arconnectDisconnect}
             >
-              <span>
-                {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
-              </span>
               {(ansData?.avatar === "") ?
-                <div className="rounded-full h-6 w-6 ml-2 btn-secondary" style={{ backgroundColor: ansData?.address_color }}></div> :
+                <div className="rounded-full h-6 w-6 mr-2 btn-secondary" style={{ backgroundColor: ansData?.address_color }}></div> :
                 // <img className="mx-auto bg-black rounded-full" src={`https://arweave.net/${props.userInfo.avatar}`} />}
                 <div className="rounded-full h-6 w-6 overflow-hidden btn-secondary border-[1px]">
                   <img src={`https://arweave.net/${ansData?.avatar}`} alt="Profile" width="100%" height="100%" />
                 </div>}
+                <span>
+                  {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
+                </span>
             </div>
           </>
         )) || (

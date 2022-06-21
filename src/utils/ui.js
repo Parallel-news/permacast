@@ -1,4 +1,20 @@
-export function RGBtoHSL (r, g, b) {
+export function RGBobjectToString(rgb) {
+  return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+}
+
+export function RGBobjectToArray(rgb) {
+  return [rgb.r, rgb.g, rgb.b];
+}
+
+export function RGBstringToArray(str) {
+  return str.replace(/[^0-9,]/g, '').split(',');
+}
+
+export function RGBtoHSL (rgb) {
+  let r, g, b;
+  if (typeof(rgb) === 'string') [r, g, b] = rgb.replace(/[^0-9,]/g, '').split(',');
+  if (Array.isArray(rgb)) [r, g, b] = rgb;
+  if (typeof rgb === 'object') [r, g, b] = RGBobjectToArray(rgb);  
 
   r /= 255;
   g /= 255;
@@ -49,13 +65,38 @@ export function HSLtoRGB (h, s, l) {
 }
 
 export function replaceDarkColorsRGB (rgbArg, lightness=0.25) {
-  //example rgbArg: 'rgb(255, 255, 255)'
-  let rgb = rgbArg.replace(/[^0-9\.,]/g, '').split(',');
-  let hsl = RGBtoHSL(...rgb);
+  let hsl = RGBtoHSL(rgbArg);
   if (hsl.l < lightness) hsl.l = lightness;
-  rgb = HSLtoRGB(hsl.h, hsl.s, hsl.l);
+  let rgb = HSLtoRGB(hsl.h, hsl.s, hsl.l);
   rgb.r = Math.round(rgb.r);
   rgb.g = Math.round(rgb.g);
   rgb.b = Math.round(rgb.b);
   return rgb;
+}
+
+
+export function replaceLightColorsRGB(rgbArg, lightness=0.9) {
+  let hsl = RGBtoHSL(...rgbArg);
+  if (hsl.l > lightness) hsl.l = lightness;
+  let rgb = HSLtoRGB(hsl.h, hsl.s, hsl.l);
+  rgb.r = Math.round(rgb.r);
+  rgb.g = Math.round(rgb.g);
+  rgb.b = Math.round(rgb.b);
+  return rgb;
+}
+
+/** @param {Array} rgbArg - example: [255, 255, 255] */
+export function isTooDark (rgbArg, lightness=0.25) {
+  let hsl = RGBtoHSL(rgbArg);
+  return hsl.l < lightness;
+}
+
+/** @param {Array} rgbArg - example: [255, 255, 255] */
+export function isTooLight(rgbArg, lightness=0.9) {
+  let hsl = RGBtoHSL(rgbArg);
+  return hsl.l > lightness;
+}
+
+export const shortenAddress = (addr) => {
+  return addr.substring(0, 4) + '...' + addr.substring(addr.length - 4);
 }

@@ -17,8 +17,9 @@ export default function App() {
   const [sortedPodcasts, setSortedPodcasts] = useState();
   const [loading, setLoading] = useState(true);
   const [primaryColor, setPrimaryColor] = useState('rgb(255, 255, 0)');
-
+  const [queue, setQueue] = useState([])
   const [selection, setSelection] = useState(0)
+
   const filters = [
       {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
       {type: "episodescount", desc: t("sorting.episodescount")}
@@ -41,28 +42,23 @@ export default function App() {
     fetchData()
   }, [])
 
-  let podcas = [
+  let creators = [
     {
-      podcastName: 'The Gentlemen',
-      cover: 'https://upload.wikimedia.org/wikipedia/en/0/06/The_Gentlemen_poster.jpg',
-      episodes: 18,
-      description: 'Funny British Accent',
-      owner: 'GuyRitchie'
+      fullname: 'Marton Lederer',
+      anshandle: 'martonlederer',
+      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
     }, {
-      podcastName: 'Donnie Darko',
-      cover: 'https://upload.wikimedia.org/wikipedia/en/d/db/Donnie_Darko_poster.jpg',
-      episodes: 18,
-      description: 'Time travelling is cool',
-      owner: 'RichardKelly'
+      fullname: 'Marton Lederer',
+      anshandle: 'martonlederer',
+      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
     }, {
-      podcastName: 'The Prestige',
-      cover: 'https://upload.wikimedia.org/wikipedia/en/d/d2/Prestige_poster.jpg',
-      episodes: 18,
-      description: 'Amazing twist, gripping story',
-      owner: 'ChristopherNolan'
+      fullname: 'Marton Lederer',
+      anshandle: 'martonlederer',
+      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
     }
-  ]  
+  ]
 
+  // idea: do the podcast color query logic here, then pass the colors down to components
   return (
     <div className="h-full bg-black overflow-hidden">
       <div className="flex h-screen">
@@ -72,27 +68,27 @@ export default function App() {
             <Player />
           </div>
         </div>
-        <div className="grid grid-cols-12 overflow-scroll ml-16 mr-10 pt-9 w-screen">
+        <div className="grid grid-cols-12 overflow-scroll ml-16 pr-10 pt-9 w-screen">
           <div className="col-span-9">
             <Searchbar />
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
               <FeaturedEpisode episode={undefined} podcast={undefined} />
-              {!loading ? <FeaturedPodcasts podcasts={podcasts} /> : <div>Loading...</div>}
+              {!loading ? <FeaturedPodcasts podcasts={podcasts} />: <div>Loading...</div>}
               <div className="mt-9 grid grid-cols-3 gap-x-24">
                 <div className="col-span-2">
-                {!loading ? <RecentlyAdded themeColor={primaryColor} podcasts={podcasts} />: <div>Loading...</div>}
+                  {!loading ? <RecentlyAdded themeColor={primaryColor} podcasts={podcasts} />: <div>Loading...</div>}
                 </div>
                 <div className="">
-                  <FeaturedCreators themeColor={primaryColor} creators={undefined} />
+                  <FeaturedCreators themeColor={primaryColor} creators={creators} />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-span-3 ml-12">
             <ArConnect />
-            {!loading ? <EpisodeQueue episodes={podcasts} themeColor={primaryColor} /> : <div>Loading...</div>}
+            {!loading ? <EpisodeQueue themeColor={primaryColor} episodes={podcasts} />: <div>Loading...</div>}
           </div>
         </div>
       </div>
