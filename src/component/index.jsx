@@ -12,7 +12,6 @@ export default function Index() {
   const [sortedPodcasts, setSortedPodcasts] = useState()
   const [selection, setSelection] = useState(0)
   const filters = [
-    {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
     {type: "episodescount", desc: t("sorting.episodescount")}
   ]
   const filterTypes = filters.map(f => f.type)
@@ -62,11 +61,6 @@ export default function Index() {
         {loading ? t("loading") : podcastsHtml.length === 0 ? t("nopodcasts") : null}
       </div>
       
-      <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36 mb-10">
-        <div className="col-start-1 md:col-start-3 lg:col-start-3">
-          {loading ? "":  <Dropdown filters={filters} selection={selection} changeSorting={changeSorting} disabled={loading} />}
-        </div>
-      </div>
       <div className="grid grid-cols-1 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-3 xl:gap-x-36 mb-10">
         {podcastsHtml}
       </div>
