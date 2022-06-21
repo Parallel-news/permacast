@@ -2,8 +2,11 @@ import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
 import { genetateFactoryState } from '../utils/initStateGen.js';
+import { processFile, fetchWalletAddress, userHasEnoughAR } from '../utils/shorthands.js';
+
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
+
 const ardb = new ArDB(arweave)
 
 export default function UploadShow() {
@@ -37,26 +40,6 @@ export default function UploadShow() {
     return tx.id
   }
 
-  function readFileAsync(file) {
-    return new Promise((resolve, reject) => {
-      let reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    })
-  }
-
-  async function processFile(file) {
-    try {
-      let contentBuffer = await readFileAsync(file);
-
-      return contentBuffer
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
   const uploadShow = async (show) => {
     Swal.fire({
@@ -65,14 +48,8 @@ export default function UploadShow() {
       customClass: "font-mono",
     })
     let contractId
+    let addr = await fetchWalletAddress()
 
-    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "SIGNATURE"])
-    let addr = await window.arweaveWallet.getActiveAddress()
-
-    if (!addr) {
-      await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
-      addr = await window.arweaveWallet.getActiveAddress()
-    }
     console.log("ADDRESSS")
     console.log(addr)
     const tx = await ardb.search('transactions')
@@ -215,7 +192,11 @@ export default function UploadShow() {
     showObj.lang = podcastLanguage
     // upload cover, send all to Arweave
     let cover = await processFile(podcastCover)
-    await uploadToArweave(cover, coverFileType, showObj)
+    let showObjSize = JSON.stringify(showObj).length
+    let bytes = cover.byteLength + showObjSize + coverFileType.length
+    if (await userHasEnoughAR(t, bytes) === "all good") {
+      await uploadToArweave(cover, coverFileType, showObj)
+    } else console.log('upload failed');
   }
 
   const languageOptions = () => {

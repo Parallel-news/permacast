@@ -1,8 +1,9 @@
 import ArDB from 'ardb'
 import Swal from 'sweetalert2'
-import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
+import { processFile, userHasEnoughAR } from '../utils/shorthands.js';
 
 const ardb = new ArDB(arweave)
 
@@ -23,30 +24,6 @@ export default function UploadEpisode({ podcast }) {
     };
     const contract = smartweave.contract(vertoContractId).connect('use_wallet');
     await contract.writeInteraction(input);
-  }
-
-  const readFileAsync = (file) => {
-    return new Promise((resolve, reject) => {
-      let reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-
-      reader.onerror = reject;
-
-      reader.readAsArrayBuffer(file);
-    })
-  }
-
-  const processFile = async (file) => {
-    try {
-      let contentBuffer = await readFileAsync(file);
-      console.log(contentBuffer)
-      return contentBuffer
-    } catch (err) {
-      console.log(err);
-    }
   }
 
   const uploadToArweave = async (data, fileType, epObj, event) => { 
@@ -124,7 +101,13 @@ export default function UploadEpisode({ podcast }) {
     let fileType = episodeFile.type
     console.log(fileType)
     processFile(episodeFile).then((file) => {
-      uploadToArweave(file, fileType, epObj, event)
+      let epObjSize = JSON.stringify(epObj).length
+      let bytes = file.byteLength + epObjSize + fileType.length
+      userHasEnoughAR(t, bytes).then((result) => {
+        if (result === "all good") {
+          uploadToArweave(file, fileType, epObj, event)
+        } else console.log('upload failed');
+      })
     })
     setEpisodeUploading(false)
   }

@@ -38,7 +38,7 @@
 			},
 			"uploadfailed": {
 				"title": "无法添加节目",
-				"text": "检查您的 AR 余额和网络连接"
+				"text": "检查您的 AR 余额和网络连接"		
 			},
 			"reset": {
 				"text": "播客的封面图片必须为正方形（1:1的长宽比）!"
@@ -78,6 +78,20 @@
 		"upload": "上传",
 		"uploading": "上传中，请耐心等待...",
 		"uploaded": "已完成"
+	},
+	"generalerrors": {
+		"cantfindaddress": {
+			"title": "找不到地址",
+			"text": "尝试重新连接您的钱包并更改其访问配置"
+		},
+		"cantfetchprices": {
+			"title": "无法获取存储价格",
+			"text": "检查您的互联网连接，稍后再试"
+		},
+		"lowbalance": {
+			"title": "余额不足",
+			"text": "您没有足够的 AR 来支付交易费用。 该交易将花费："
+		}
 	},
 	"podcast": {
 		"newepisode": "添加新剧集"
