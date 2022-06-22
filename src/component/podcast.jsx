@@ -7,7 +7,7 @@ import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'
 import { MESON_ENDPOINT, CONTRACT_SRC } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
-import fetchPodcasts from '../utils/podcast.js';
+import { fetchPodcasts } from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
 import { smartweave } from '../utils/arweave';
 import { arweave } from '../utils/arweave.js';
@@ -25,7 +25,7 @@ export default function Podcast(props) {
   const getPodcastEpisodes = async () => {
     const pid = props.match.params.podcastId;
 
-    const response = await fetch(`https://permacast-cache.herokuapp.com/feeds/episodes/${pid}`, {
+    const response = await fetch(`https://whispering-retreat-94540.herokuapp.com/feeds/episodes/${pid}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json', }
     });
@@ -101,7 +101,8 @@ export default function Podcast(props) {
       return addr;
     } catch (error) {
       console.log("🦔Displaying feed for non-ArConnect installed users🦔");
-      addr = "vZY2XY1RD9HIfWi8ift-1_DnHLDadZMWrufSh-_rKF0";
+      //  address retrived from the top list of https://viewblock.io/arweave/addresses
+      addr = "dRFuVE-s6-TgmykU4Zqn246AR2PIsf3HhBhZ0t5-WXE";
       return addr;
     }
   };
@@ -125,7 +126,7 @@ export default function Podcast(props) {
                   </svg>
                 </button>
                 <a
-                  href={`${MESON_ENDPOINT}/${e.audioTx}`}
+                  href={`${MESON_ENDPOINT}/${e.contentTx}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -156,9 +157,9 @@ export default function Podcast(props) {
     return episodeList
   }
 
-  const checkEpisodeForm = async (owner) => {
-    let addr = await window.arweaveWallet.getActiveAddress()
-    if (addr === owner) {
+  const checkEpisodeForm = async (podObj) => {
+    let addr = await window.arweaveWallet.getActiveAddress();
+    if (addr === podObj.owner || podObj.superAdmins.includes(addr)) {
       setShowEpisodeForm(true)
       window.scrollTo(0, 0)
     } else {
@@ -222,7 +223,7 @@ export default function Podcast(props) {
         title: e.episodeName,
         artist: podcast.podcastName,
         cover: `${MESON_ENDPOINT}/${podcast.cover}`,
-        src: `${MESON_ENDPOINT}/${e.audioTx}`,
+        src: `${MESON_ENDPOINT}/${e.contentTx}`,
       },
       download: true
     })
@@ -235,6 +236,7 @@ export default function Podcast(props) {
       setLoading(true)
 
       const p = getPodcast(await fetchPodcasts())
+      console.log(p)
       const ep = await getPodcastEpisodes()
       const addr = await tryAddressConnecting()
       const isOwner = p.owner === addr

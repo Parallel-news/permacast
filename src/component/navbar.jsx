@@ -49,7 +49,8 @@ export default function NavBar() {
   }
 
   return (
-    <Disclosure as="nav" className="mb-2 shadow-lg rounded-box">
+    <div className="flex gap-x-8 justify-center">
+    <Disclosure as="nav" className="mb-2 shadow-lg rounded-box w-full md:w-2/3">
       {({ open }) =>
         <>
 
@@ -81,9 +82,6 @@ export default function NavBar() {
                   </li>
                 ))}
               </ul>
-            </div>
-            <div className="hidden md:block">
-              <ArConnectLoader />
             </div>
             <div className="-mr-2 flex sm:hidden">
               <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -137,5 +135,11 @@ export default function NavBar() {
           </Disclosure.Panel>
         </>}
     </Disclosure >
+     <Disclosure as="nav" className="hidden md:grid">
+     <div className="mx-auto mt-2 px-3 mb-2 shadow-lg rounded-box">
+              <ArConnectLoader />
+            </div>
+     </Disclosure>
+     </div>
   )
 }

@@ -1,10 +1,8 @@
 {
   "name": "permacast",
-  "version": "0.1.0",
+  "version": "0.3.2",
   "private": true,
-  "engines": {
-    "node": ">=16.5"
-  },
+
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@heroicons/react": "^1.0.6",
@@ -40,6 +38,9 @@
     "theme-change": "^2.0.2",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "react-error-overlay": "6.0.9"
+  },
   "scripts": {
     "start": "concurrently \"npm run start:css\" \"react-scripts start\"",
     "start:css": "tailwindcss -o src/tailwind.css --watch",
@@ -49,17 +50,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",

@@ -5,7 +5,7 @@
 		"new": "新功能",
 		"swal": {
 			"title": "Permacast V2 新功能 ✨",
-			"html": "<li>为任何播客生成符合 Spotify 和 Apple 标准的 RSS 源</li><li>为您最喜爱的播客打赏 $NEWS</li><li>剧集作为原子 NFT，可在 Verto 上展示!</li>"
+			"html": "<li>为任何播客生成符合 Spotify 和 Apple 标准的 RSS 源</li><li>剧集作为原子 NFT，可在 Verto 上展示!</li>"
 		}
 	},
 	"connector": {
@@ -89,5 +89,10 @@
 		}
 	},
 	"loading": "正在加载播客...",
-	"nopodcasts": "这里还没有播客，请上传一个!"
+	"nopodcasts": "这里还没有播客，请上传一个!",
+	"sortpodcastsby": "播客排序",
+	"sorting": {
+		"podcastsactivity": "最新收听最多的播客",
+		"episodescount": "剧集数"
+	}
 }

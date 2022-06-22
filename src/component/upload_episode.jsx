@@ -1,12 +1,13 @@
 import ArDB from 'ardb'
 import Swal from 'sweetalert2'
-import { CONTRACT_SRC, NFT_SRC, arweave, smartweave } from '../utils/arweave.js'
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 const ardb = new ArDB(arweave)
 
 export default function UploadEpisode({ podcast }) {
+  console.log(podcast)
   const { t } = useTranslation()
   const [showUploadFee, setShowUploadFee] = useState(null)
   const [episodeUploading, setEpisodeUploading] = useState(false)
@@ -48,14 +49,14 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
-  const uploadToArweave = async (data, fileType, epObj, event) => {
+  const uploadToArweave = async (data, fileType, epObj, event) => { 
     const wallet = await window.arweaveWallet.getActiveAddress();
     console.log(wallet);
     if (!wallet) {
       return null;
     } else {
       const tx = await arweave.createTransaction({ data: data });
-      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "${epObj.desc}","thumbnail": "${podcast.cover}","balances": {"${wallet}": 1}}`;
+      const initState = `{"issuer": "${wallet}","owner": "${wallet}","name": "${epObj.name}","ticker": "PANFT","description": "Permacast Episode from ${epObj.name}","thumbnail": "${podcast.cover}","balances": {"${wallet}": 1}}`;
       tx.addTag("Content-Type", fileType);
       tx.addTag("App-Name", "SmartWeaveContract");
       tx.addTag("App-Version", "0.3.0");
@@ -65,7 +66,9 @@ export default function UploadEpisode({ podcast }) {
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
       tx.addTag("Thumbnail", podcast.cover);
-
+     
+      tx.reward = (+tx.reward * FEE_MULTIPLIER).toString();
+      
       await arweave.transactions.sign(tx);
       console.log("signed tx", tx);
       const uploader = await arweave.transactions.getUploader(tx);
@@ -75,15 +78,10 @@ export default function UploadEpisode({ podcast }) {
 
         setUploadProgress(true)
         setUploadPercentComplete(uploader.pctComplete)
-
-        console.log(
-          //  `${uploader.pctComplete}% complete, ${uploader.uploadedChunks}/${uploader.totalChunks}`
-        );
       }
       if (uploader.txPosted) {
-        epObj.audio = tx.id;
-        epObj.type = fileType;
-        epObj.audioTxByteSize = data.size;
+        epObj.content = tx.id;
+
         console.log('txPosted:')
         console.log(epObj)
         uploadShow(epObj);
@@ -116,7 +114,8 @@ export default function UploadEpisode({ podcast }) {
       customClass: "font-mono",
     })
     let epObj = {}
-    event.preventDefault()
+    event.preventDefault();
+
     epObj.name = event.target.episodeName.value
     epObj.desc = event.target.episodeShowNotes.value
     epObj.index = podcast.index
@@ -131,18 +130,6 @@ export default function UploadEpisode({ podcast }) {
   }
 
 
-  // const getAddrRetry = async () => {
-  //   await window.arweaveWallet.connect(['ACCESS_ADDRESS'])
-  //   let addr = window.arweaveWallet.getActiveAddress();
-  //   while (!addr) {
-  //     if (addr) {
-  //       return addr;
-  //     } else {
-  //       //
-  //     }
-  //   }
-  // }
-
   const getSwcId = async () => {
     await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"])
     let addr = await window.arweaveWallet.getActiveAddress() //await getAddrRetry() 
@@ -152,9 +139,8 @@ export default function UploadEpisode({ podcast }) {
     }
     const tx = await ardb.search('transactions')
       .from(addr)
-      .tag('App-Name', 'SmartWeaveAction')
-      .tag('Action', 'launchCreator')
-      .tag('Protocol', 'permacast-testnet-v3')
+      .tag('App-Name', 'SmartWeaveContract')
+      .tag('Permacast-Version', 'amber')
       .tag('Contract-Src', CONTRACT_SRC)
       .find()
 
@@ -162,7 +148,7 @@ export default function UploadEpisode({ podcast }) {
     if (!tx || tx.length === 0) {
       Swal.fire(
         {
-          title: 'Something went wrong :( please retry the upload',
+          title: 'Insuffucient balance or Arweave gateways are unstable. Please try again later',
           customClass: "font-mono",
         }
       );
@@ -172,52 +158,45 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
-  const uploadShow = async (show) => {
+  const uploadShow = async (show) => { 
     const theContractId = await getSwcId()
     console.log("theContractId", theContractId)
     console.log("show", show)
     let input = {
       'function': 'addEpisode',
-      'index': podcast.index,
+      'pid': podcast.pid,
       'name': show.name,
-      'desc': show.desc,
-      'audio': show.audio,
-      'audioTxByteSize': show.audioTxByteSize,
-      'type': show.type
+      'desc': true,
+      'content': show.content
     }
 
     console.log(input)
+    const contract = podcast?.newChildOf ? podcast.newChildOf : podcast.childOf;
+    console.log("CONTRACT CHILDOF")
+    console.log(contract)
+    let tags = { "Contract": contract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input) }
+    // let contract = smartweave.contract(theContractId).connect("use_wallet");
+    // let txId = await contract.writeInteraction(input, tags);
+    const interaction = await arweave.createTransaction({data: show.desc});
 
-    let tags = { "Contract-Src": CONTRACT_SRC, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain" }
-    let contract = smartweave.contract(theContractId).connect("use_wallet");
-    let txId = await contract.writeInteraction(input, tags);
+    for (let key in tags) {
+      interaction.addTag(key, tags[key]);
+    }
+    
+    interaction.reward = (+interaction.reward * FEE_MULTIPLIER).toString();
+
+    await arweave.transactions.sign(interaction);
+    await arweave.transactions.post(interaction);
     console.log('addEpisode txid:');
-    console.log(txId)
+    console.log(interaction.id)
     if (show.verto) {
       console.log('pushing to Verto')
-      await listEpisodeOnVerto(txId)
+      await listEpisodeOnVerto(interaction.id)
     } else {
       console.log('skipping Verto')
     }
   }
 
-  // const toFixed = (x) => {
-  //   if (Math.abs(x) < 1.0) {
-  //     var e = parseInt(x.toString().split('e-')[1]);
-  //     if (e) {
-  //       x *= Math.pow(10, e - 1);
-  //       x = '0.' + (new Array(e)).join('0') + x.toString().substring(2);
-  //     }
-  //   } else {
-  //     e = parseInt(x.toString().split('+')[1]);
-  //     if (e > 20) {
-  //       e -= 20;
-  //       x /= Math.pow(10, e);
-  //       x += (new Array(e + 1)).join('0');
-  //     }
-  //   }
-  //   return x;
-  // }
 
   const calculateUploadFee = (file) => {
     console.log('fee reached')
@@ -232,11 +211,11 @@ export default function UploadEpisode({ podcast }) {
         <form className="p-4" onSubmit={handleEpisodeUpload}>
           <div className="mb-3">
             <span className="label label-text">{t("uploadepisode.name")}</span>
-            <input className="input input-bordered" required pattern=".{3,50}" title="Between 3 and 50 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
+            <input className="input input-bordered" required pattern=".{3,500}" title="Between 3 and 500 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
           </div>
           <div className="mb-3">
             <span className="label label-text">{t("uploadepisode.description")}</span>
-            <input className="input input-bordered" required maxLength="250" as="textarea" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
+            <input className="input input-bordered" required pattern=".{1,5000}" title="Between 1 and 5000 characters" type="text" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
           </div>
           <div className="mb-5">
             <span className="label label-text">{t("uploadepisode.file")}</span>
