@@ -6,7 +6,7 @@ import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { Podcast } from './podcast';
 
-export function FeaturedEpisode(podcast, episode, colors={}) {
+export function FeaturedEpisode({podcast, episode, themeColor={}}) {
   const [dominantColor, setDominantColor] = useState();
   const [dominantColorAlt, setDominantColorAlt] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +15,6 @@ export function FeaturedEpisode(podcast, episode, colors={}) {
   useEffect(() => {
     setIsLoading(true)
     const fac = new FastAverageColor();
-    podcastImageURL = "https://m.media-amazon.com/images/I/31Lur+LEP-S._AC_SL1500_.jpg"
     fac.getColorAsync(podcastImageURL).then(color => {
       const rgb = replaceDarkColorsRGB(color.rgb)
       const rgb2 = replaceDarkColorsRGB(color.rgb, 0.6)
@@ -29,7 +28,7 @@ export function FeaturedEpisode(podcast, episode, colors={}) {
   return (
     <div className="p-14 grid grid-cols-4 border border-zinc-800 rounded-[24px]">
       {podcast?.cover ? 
-        <img className="cursor-pointer" src={podcastImageURL} alt={podcast.podcastName} />
+        <img className="w-40 h-40 cursor-pointer" src={podcastImageURL} alt={podcast.podcastName} />
         :
         <Cooyub svgStyle="w-40 h-40 rounded-sm cursor-pointer" rectStyle="w-40 h-40" fill="lightskyblue" />
       }
@@ -57,20 +56,6 @@ export function FeaturedEpisode(podcast, episode, colors={}) {
   )
 }
 
-
-export function FeaturedPodcasts ({podcasts}) {
-  let podcastLimit = 3;
-
-  return (
-    <div className="w-full mt-8 grid grid-cols-3 gap-x-24">
-      {podcasts.splice(0, podcastLimit).map((podcast, index) => (
-        <div key={index}>
-          <FeaturedPodcast podcast={podcast} />
-        </div>
-      ))}
-    </div>
-  )
-}
 
 export function FeaturedPodcast({podcast}) {
   console.log(podcast)

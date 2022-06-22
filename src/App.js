@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isDarkMode } from './utils/theme.js';
 import { HashRouter as Router, Route } from "react-router-dom";
 import Sidenav from "./component/sidenav.jsx";
 import Searchbar from "./component/searchbar.jsx";
 import ArConnect from './component/arconnect.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
 import Player from './component/player.jsx';
-import { FeaturedEpisode, FeaturedPodcasts, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
+import { FeaturedEpisode, FeaturedPodcast, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
 import { sortPodcasts } from './utils/podcast.js'
 
 
@@ -15,11 +16,27 @@ export default function App() {
 
   const [podcasts, setPodcasts] = useState();
   const [sortedPodcasts, setSortedPodcasts] = useState();
-  const [loading, setLoading] = useState(true);
-  const [primaryColor, setPrimaryColor] = useState('rgb(255, 255, 0)');
-  const [queue, setQueue] = useState([])
-  const [selection, setSelection] = useState(0)
+  const [loading, setLoading] = useState(true);  
+  const [queue, setQueue] = useState([]);
+  const [selection, setSelection] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const primaryColor = 'rgb(255, 255, 0)';
 
+  const appState = {
+    theme: {
+      primaryColor: 'rgb(255, 255, 0)',
+    },
+    queue: {
+      get: queue,
+      set: setQueue,
+    },
+    playback: {
+      isPlaying: isPlaying,
+      setIsPlaying: setIsPlaying,
+      currentEpisode: null,
+    }
+  }
+  
   const filters = [
       {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
       {type: "episodescount", desc: t("sorting.episodescount")}
@@ -74,9 +91,18 @@ export default function App() {
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
-              <FeaturedEpisode episode={undefined} podcast={undefined} />
-              {!loading ? <FeaturedPodcasts podcasts={podcasts} />: <div>Loading...</div>}
-              <div className="mt-9 grid grid-cols-3 gap-x-24">
+              {!loading ? <FeaturedEpisode episode={undefined} podcast={podcasts[0]} /> : <div>Loading...</div>}
+              {!loading ? (
+                <div className="w-full mt-8 grid grid-cols-3 gap-x-12">
+                  {podcasts.splice(0, 3).map((podcast, index) => (
+                    <div key={index}>
+                      <FeaturedPodcast podcast={podcast} />
+                    </div>
+                  ))}
+                </div>
+              ): <div>Loading...</div>}
+              
+              <div className="mt-9 grid grid-cols-3 gap-x-12">
                 <div className="col-span-2">
                   {!loading ? <RecentlyAdded themeColor={primaryColor} podcasts={podcasts} />: <div>Loading...</div>}
                 </div>
@@ -88,7 +114,7 @@ export default function App() {
           </div>
           <div className="col-span-3 ml-12">
             <ArConnect />
-            {!loading ? <EpisodeQueue themeColor={primaryColor} episodes={podcasts} />: <div>Loading...</div>}
+            {!loading ? <EpisodeQueue themeColor={primaryColor} episodes={podcasts.splice(0, 10)} />: <div>Loading...</div>}
           </div>
         </div>
       </div>
