@@ -3,7 +3,6 @@ import { Cooyub, GlobalPlayButton } from "./icons";
 export function TrackView({episode, appState, includeDescription=false, playButtonSize="20"}) {
   const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
   const queue = appState.queue;
-  const enqueue = () => queue.set([...queue.get(), episode])
 
   return (
     <div className="flex items-center justify-between">
@@ -29,9 +28,9 @@ export function TrackView({episode, appState, includeDescription=false, playButt
         </div>
       </div>
       {playButtonSize == 0 ? null : (
-        <div onClick={enqueue}>
+        <div onClick={() => queue.enqueueAndPlay(episode)}>
           <GlobalPlayButton appState={appState} size={playButtonSize} />
-        </div>      
+        </div>
       )}
     </div>
   )

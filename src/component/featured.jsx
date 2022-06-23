@@ -36,7 +36,7 @@ export function FeaturedEpisode({episode, appState}) {
         <div className="mt-4">
           {!isLoading && dominantColor && (
             <div>
-              <div onClick={() => appState.queue.enqueue(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
+              <div onClick={() => appState.queue.enqueueAndPlay(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
                 <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
                 <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
               </div>
@@ -82,7 +82,7 @@ export function FeaturedPodcast({podcast, appState}) {
               <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
-              <div onClick={() => appState.queue.enqueue(podcast)}>
+              <div onClick={() => appState.queue.enqueueAndPlay(podcast)}>
                 <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
               </div>
               <div className="ml-3">
@@ -101,9 +101,9 @@ export function FeaturedPodcasts({podcasts, appState}) {
   return (
     <>
       {podcasts.map((podcast, index) => (
-        <>
-          <FeaturedPodcast key={index} podcast={podcast} appState={appState} />
-        </>
+        <div key={index}>
+          <FeaturedPodcast podcast={podcast} appState={appState} />
+        </div>
       ))}
     </>
   )

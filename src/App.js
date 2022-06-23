@@ -16,7 +16,13 @@ export default function App() {
 
   const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState(0);
+
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentEpisode, setCurrentEpisode] = useState(null);
+  const playEpisode = (episode) => {
+    setCurrentEpisode(episode);
+    setIsPlaying(true);
+  }
 
   // const [podcasts, setPodcasts] = useState();
   // const [sortedPodcasts, setSortedPodcasts] = useState();
@@ -33,6 +39,7 @@ export default function App() {
       get: () => queue,
       set: setQueue,
       enqueue: (episode) => setQueue([...queue, episode]),
+      enqueueAndPlay: (episode) => {setQueue([...queue, episode]); playEpisode(episode)},
       visibility: queueVisible,
       toggleVisibility: () => setQueueVisible(!queueVisible),
     },
@@ -41,8 +48,8 @@ export default function App() {
     },
     playback: {
       isPlaying: isPlaying,
-      setIsPlaying: setIsPlaying,
-      currentEpisode: null,
+      play: playEpisode,
+      currentEpisode: currentEpisode,
     },
     t: t,
     loading: loading,
@@ -67,6 +74,7 @@ export default function App() {
       const podcasts = sorted[filterTypes[selection]].splice(0, 4)
       const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
       const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
+      setCurrentEpisode(convertedEpisodes[0])
       setRecentlyAdded(convertedEpisodes)
       setFeaturedPodcasts(convertedPodcasts)
       // setSortedPodcasts(sorted)
@@ -102,7 +110,7 @@ export default function App() {
         <div>
           <Sidenav />
           <div className="absolute z-20 bottom-0">
-            <Player episode={recentlyAdded[0]} appState={appState} />
+            {!loading ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
           </div>
           <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
             {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
