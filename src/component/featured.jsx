@@ -146,7 +146,7 @@ export function FeaturedCreators({creators, appState}) {
                 <div className="text-zinc-400 cursor-pointer text-[8px]">@{creator.anshandle}</div>
               </div>
               <div className=" ">
-                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">{appState.t("view")}</p>
+                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[10px] ml-5 cursor-pointer">{appState.t("view")}</p>
               </div>
             </div>
           </div>
