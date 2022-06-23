@@ -167,8 +167,8 @@ export default function ArConnect() {
   }
 
   return (
-    <div className="grid grid-cols-6 mb-4 text-zinc-100 hover:text-white cursor-pointer">
-      <div className="col-start-2 col-span-5">
+    <div className="mb-4 ml-8 text-zinc-300 hover:text-white cursor-pointer">
+      <>
         {(walletConnected && (
           <>
             <div
@@ -194,7 +194,7 @@ export default function ArConnect() {
               🦔 {t("connector.login")}
             </div>
           )}
-      </div>
+      </>
     </div>
   )
 

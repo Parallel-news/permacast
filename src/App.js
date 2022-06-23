@@ -21,6 +21,7 @@ export default function App() {
   // const [podcasts, setPodcasts] = useState();
   // const [sortedPodcasts, setSortedPodcasts] = useState();
   const [queue, setQueue] = useState([]);
+  const [queueVisible, setQueueVisible] = useState(false);
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
 
@@ -31,7 +32,9 @@ export default function App() {
     queue: {
       get: () => queue,
       set: setQueue,
-      enqueue: (episode) => setQueue([...queue, episode])
+      enqueue: (episode) => setQueue([...queue, episode]),
+      visibility: queueVisible,
+      toggleVisibility: () => setQueueVisible(!queueVisible),
     },
     queueHistory: {
       // This can be used for playback history tracking
@@ -98,8 +101,11 @@ export default function App() {
       <div className="flex h-screen">
         <div>
           <Sidenav />
-          <div className="absolute z-10 bottom-0">
-            <Player />
+          <div className="absolute z-20 bottom-0">
+            <Player episode={recentlyAdded[0]} appState={appState} />
+          </div>
+          <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
+            {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
         <div className="overflow-scroll ml-16 pr-10 pt-9 w-screen">
@@ -131,9 +137,6 @@ export default function App() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="hidden absolute right-0 ml-12">
-            {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
       </div>

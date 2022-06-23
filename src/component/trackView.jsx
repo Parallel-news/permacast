@@ -28,9 +28,11 @@ export function TrackView({episode, appState, includeDescription=false, playButt
           </div>
         </div>
       </div>
-      <div onClick={enqueue}>
-        <GlobalPlayButton appState={appState} size={playButtonSize} />
-      </div>
+      {playButtonSize == 0 ? null : (
+        <div onClick={enqueue}>
+          <GlobalPlayButton appState={appState} size={playButtonSize} />
+        </div>      
+      )}
     </div>
   )
 }

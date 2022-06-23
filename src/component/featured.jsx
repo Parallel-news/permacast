@@ -27,8 +27,8 @@ export function FeaturedEpisode({episode, appState}) {
 
   return (
     <div className="p-14 grid grid-cols-4 border border-zinc-800 rounded-[24px]">
-      <img className="w-40 h-40 cursor-pointer" src={episode.cover} alt={episode.title} />
-      <div className="col-span-2 my-3 text-zinc-100 max-w-sm">
+      <img className="w-40 h-40 cursor-pointer mr-4" src={episode.cover} alt={episode.title} />
+      <div className="col-span-2 my-3 text-zinc-100 max-w-md">
         <div className="text-xl font-medium cursor-pointer">{episode?.title} - Episode 1</div>
         <div className="text-sm line-clamp-5">{episode?.description}</div>
       </div>
@@ -75,7 +75,7 @@ export function FeaturedPodcast({podcast, appState}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="xl:last:block sm:last:hidden lg:[&:nth-last-child(2)]:block sm:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="block xl:last:block sm:last:hidden lg:[&:nth-last-child(2)]:block sm:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
             <div className="pt-5 pb-3 text-xs">{podcast.episodes} Episode{podcast.episodes == 1 ? '' : 's'}</div>
             <div className="w-full mb-11">
