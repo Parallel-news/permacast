@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FastAverageColor from 'fast-average-color';
 import { MESON_ENDPOINT } from '../utils/arweave';
 import { replaceDarkColorsRGB, isTooLight } from '../utils/ui';
+import { convertToPodcast } from '../utils/podcast';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { TrackView } from './trackView';
@@ -35,7 +36,7 @@ export function FeaturedEpisode({episode, appState}) {
         <div className="mt-4">
           {!isLoading && dominantColor && (
             <div>
-              <div className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
+              <div onClick={() => appState.queue.enqueue(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
                 <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
                 <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
               </div>
@@ -81,7 +82,9 @@ export function FeaturedPodcast({podcast, appState}) {
               <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
-              <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
+              <div onClick={() => appState.queue.enqueue(podcast)}>
+                <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
+              </div>
               <div className="ml-3">
                 <div className="text-lg line-clamp-1">{podcast.title}</div>
                 <div className="text-xs line-clamp-2 pr-0.5">{podcast.description}</div>

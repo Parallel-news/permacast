@@ -1,5 +1,11 @@
 import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
 
+// finish this later so this could be the default
+// export function mediaRepresentation(podcast, episode) {
+//   return {
+//   }
+// }
+
 export function convertToEpisode(podcast, episode) {
   return {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
@@ -23,6 +29,11 @@ export function convertToPodcast(podcast) {
     creatorANS: podcast.ansOwnerLabel,
   }
 }
+
+// export function getFirstPodcastEpisode(podcast) {
+//   return convertToEpisode(podcast, podcast.episodes[0])
+// }
+
 
 export function filters(t) {
   return [

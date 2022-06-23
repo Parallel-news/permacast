@@ -31,6 +31,7 @@ export default function App() {
     queue: {
       get: () => queue,
       set: setQueue,
+      enqueue: (episode) => setQueue([...queue, episode])
     },
     queueHistory: {
       // This can be used for playback history tracking
