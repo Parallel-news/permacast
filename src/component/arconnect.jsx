@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 import Swal from 'sweetalert2'
 import { shortenAddress } from '../utils/ui'
 import { SortAscendingIcon } from '@heroicons/react/solid'
+import { Transition } from '@headlessui/react'
+
 const requiredPermissions = ['ACCESS_ADDRESS', 'ACCESS_ALL_ADDRESSES', 'SIGNATURE', 'SIGN_TRANSACTION']
 
-import { Transition } from '@headlessui/react'
 
 export function Dropdown({choices, selection, changeSorting}) {
   const [open, setOpen] = useState(false)
