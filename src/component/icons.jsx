@@ -14,9 +14,14 @@ export function PlayButton ({svgStyle, fill, outline, size="20"}) {
   )
 }
 
-export function GlobalPlayButton ({appState,  size="20"}) {
-  const cl = appState.themeColor;
-  const bg = cl.replace('rgb', 'rgba').replace(')', ', 0.1)');
+// make sure to pass RGB values as strings
+export function GlobalPlayButton ({appState, size="20", innerColor=null, outerColor=null}) {
+  let cl;
+  let bg;
+  if (innerColor) cl = innerColor;
+  else cl = appState.themeColor;
+  if (outerColor) bg = outerColor;
+  else bg = cl.replace('rgb', 'rgba').replace(')', ', 0.1)');
   const paddingSize = size * 0.5;
 
   return (

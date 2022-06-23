@@ -4,7 +4,7 @@ import { MESON_ENDPOINT } from '../utils/arweave';
 import { replaceDarkColorsRGB, isTooLight } from '../utils/ui';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
-import { TrackView } from './episodePreview';
+import { TrackView } from './trackView';
 
 export function FeaturedEpisode({episode, appState}) {
   const [dominantColor, setDominantColor] = useState();
@@ -52,7 +52,7 @@ export function FeaturedEpisode({episode, appState}) {
 }
 
 
-export function FeaturedPodcast({podcast}) {
+export function FeaturedPodcast({podcast, appState}) {
   console.log(podcast)
   const [dominantColor, setDominantColor] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -81,9 +81,7 @@ export function FeaturedPodcast({podcast}) {
               <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
-              <div style={{backgroundColor: textColor}} className="p-2 cursor-pointer rounded-[34px]">
-                <PlayButton className="pl-0.5" svgStyle={dominantColor} fill={dominantColor} outline={dominantColor} />
-              </div>
+              <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
               <div className="ml-3">
                 <div className="text-lg line-clamp-1">{podcast.title}</div>
                 <div className="text-xs line-clamp-2 pr-0.5">{podcast.description}</div>
@@ -145,7 +143,7 @@ export function FeaturedCreators({creators, appState}) {
                 <div className="text-zinc-400 cursor-pointer text-[8px]">@{creator.anshandle}</div>
               </div>
               <div className=" ">
-                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">View</p>
+                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">{appState.t("view")}</p>
               </div>
             </div>
           </div>

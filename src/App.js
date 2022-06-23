@@ -32,11 +32,16 @@ export default function App() {
       get: () => queue,
       set: setQueue,
     },
+    queueHistory: {
+      // This can be used for playback history tracking
+    },
     playback: {
       isPlaying: isPlaying,
       setIsPlaying: setIsPlaying,
       currentEpisode: null,
-    }
+    },
+    t: t,
+    loading: loading,
   }
   
   const filters = [
@@ -99,10 +104,10 @@ export default function App() {
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
-              {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} /> : <div>Loading...</div>}
+              {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} /> : <div>Loading...</div>}
               {!loading ? (
                 <div className="w-full mt-8 grid grid-cols-3 gap-x-12">
-                  <FeaturedPodcasts podcasts={featuredPodcasts} />
+                  <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
                 </div>
               ): <div>Loading...</div>}
               
@@ -111,14 +116,14 @@ export default function App() {
                   {!loading ? <RecentlyAdded episodes={recentlyAdded} appState={appState} />: <div>Loading...</div>}
                 </div>
                 <div className="">
-                  <FeaturedCreators appState={appState} creators={creators} />
+                  <FeaturedCreators creators={creators} appState={appState} />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-span-3 ml-12">
             <ArConnect />
-            {!loading ? <EpisodeQueue appState={appState} episodes={queue} />: <div>Loading...</div>}
+            {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
       </div>

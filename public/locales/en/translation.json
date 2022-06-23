@@ -88,5 +88,6 @@
 	"sorting": {
 		"podcastsactivity": "Latest Active podcast",
 		"episodescount": "Episodes Count"
-	}
+	},
+	"view": "View"
 }

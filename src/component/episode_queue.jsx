@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrackView } from './episodePreview';
+import { TrackView } from './trackView';
 
 export default function EpisodeQueue({ episodes, appState }) {
   

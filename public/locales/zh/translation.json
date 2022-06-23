@@ -88,5 +88,6 @@
 	"sorting": {
 		"podcastsactivity": "最新收听最多的播客",
 		"episodescount": "剧集数"
-	}
+	},
+	"view": "看法"
 }

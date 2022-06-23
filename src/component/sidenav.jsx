@@ -1,6 +1,6 @@
 import React from 'react';
 import { HomeIcon, CollectionIcon, TranslateIcon, PlusIcon, QuestionMarkCircleIcon } from '@heroicons/react/outline';
-import {Cooyub} from './icons';
+import { Cooyub } from './icons';
 
 export default function Sidenav() {
   return (
