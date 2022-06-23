@@ -4,21 +4,20 @@ import { MESON_ENDPOINT } from '../utils/arweave';
 import { replaceDarkColorsRGB, isTooLight } from '../utils/ui';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
-import { Podcast } from './podcast';
+import { TrackView } from './episodePreview';
 
-export function FeaturedEpisode({podcast, episode, themeColor={}}) {
+export function FeaturedEpisode({episode, appState}) {
   const [dominantColor, setDominantColor] = useState();
   const [dominantColorAlt, setDominantColorAlt] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  let podcastImageURL = `${MESON_ENDPOINT}/${podcast?.cover}`
 
   useEffect(() => {
     setIsLoading(true)
     const fac = new FastAverageColor();
-    fac.getColorAsync(podcastImageURL).then(color => {
+    fac.getColorAsync(episode.cover).then(color => {
       const rgb = replaceDarkColorsRGB(color.rgb)
       const rgb2 = replaceDarkColorsRGB(color.rgb, 0.6)
-      setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.45)`);
+      setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
       setDominantColorAlt(`rgb(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, 0.8)`);
       console.log('Average color', color, rgb, rgb2);
     })
@@ -27,14 +26,10 @@ export function FeaturedEpisode({podcast, episode, themeColor={}}) {
 
   return (
     <div className="p-14 grid grid-cols-4 border border-zinc-800 rounded-[24px]">
-      {podcast?.cover ? 
-        <img className="w-40 h-40 cursor-pointer" src={podcastImageURL} alt={podcast.podcastName} />
-        :
-        <Cooyub svgStyle="w-40 h-40 rounded-sm cursor-pointer" rectStyle="w-40 h-40" fill="lightskyblue" />
-      }
+      <img className="w-40 h-40 cursor-pointer" src={episode.cover} alt={episode.title} />
       <div className="col-span-2 my-3 text-zinc-100 max-w-sm">
-        <div className="text-xl font-medium cursor-pointer">{episode?.title ||'ETH All Core Devs - Episode 4'}</div>
-        <div className="text-sm line-clamp-5">{episode?.description || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae aliquam vel amet elit rhoncus dolor. Sit volutpat imperdiet ipsum, fermentum massa quam ultrices pulvinar. In blandit ut elit eu mi dolor sapien turpis eu. Aliquam sed habitasse pharetra, donec dignissim. Vitae pellentesque nunc non nunc integer id nisl. Nunc ante id sagittis sed lacus. Quisque non, sit cras urna eget blandit. Eget diam iaculis eu quis morbi a elit. Sit cursus pharetra, tellus, montes.' }</div>
+        <div className="text-xl font-medium cursor-pointer">{episode?.title} - Episode 1</div>
+        <div className="text-sm line-clamp-5">{episode?.description}</div>
       </div>
       <div className="ml-20">
         <div className="mt-4">
@@ -62,13 +57,11 @@ export function FeaturedPodcast({podcast}) {
   const [dominantColor, setDominantColor] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [textColor, setTextColor] = useState();
-  let podcastImageURL = `${MESON_ENDPOINT}/${podcast?.cover}`
-
 
   useEffect(() => {
     setIsLoading(true)
     const fac = new FastAverageColor();
-    fac.getColorAsync(podcastImageURL).then(color => {
+    fac.getColorAsync(podcast.cover).then(color => {
       const rgb = replaceDarkColorsRGB(color.rgb)
       setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
       const newTextColor = isTooLight(rgb) ? 'black' : 'white'
@@ -83,16 +76,16 @@ export function FeaturedPodcast({podcast}) {
       {!isLoading && dominantColor && textColor && (
         <div style={{backgroundColor: dominantColor, color: textColor}} className="backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
-            <div className="pt-5 pb-3 text-xs">{podcast.episodes.length} Episode{podcast.episodes.length == 1 ? '' : 's'}</div>
+            <div className="pt-5 pb-3 text-xs">{podcast.episodes} Episode{podcast.episodes == 1 ? '' : 's'}</div>
             <div className="w-full mb-11">
-              <img className="object-contain h-[180px] w-full" src={podcastImageURL} alt={podcast.podcastName} />
+              <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
               <div style={{backgroundColor: textColor}} className="p-2 cursor-pointer rounded-[34px]">
                 <PlayButton className="pl-0.5" svgStyle={dominantColor} fill={dominantColor} outline={dominantColor} />
               </div>
               <div className="ml-3">
-                <div className="text-lg line-clamp-1">{podcast.podcastName}</div>
+                <div className="text-lg line-clamp-1">{podcast.title}</div>
                 <div className="text-xs line-clamp-2 pr-0.5">{podcast.description}</div>
               </div>
             </div>
@@ -103,15 +96,27 @@ export function FeaturedPodcast({podcast}) {
   )
 }
 
-export function RecentlyAdded({podcasts, themeColor}) {
-  let podcastLimit = 3
+export function FeaturedPodcasts({podcasts, appState}) {
+  return (
+    <>
+      {podcasts.map((podcast, index) => (
+        <div key={index}>
+          <FeaturedPodcast podcast={podcast} appState={appState} />
+        </div>
+      ))}
+    </>
+  )
+}
+
+export function RecentlyAdded({episodes, appState}) {
+ 
   return (
     <div>
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 pb-40 text-zinc-100">
-        {podcasts.splice(0, podcastLimit).map((podcast, index) => (
+        {episodes.map((episode, index) => (
           <div key={index} className="border border-zinc-800 rounded-[24px] p-3 w-full">
-            <Podcast podcast={podcast} themeColor={themeColor} />
+            <TrackView episode={episode} appState={appState} />
           </div>
         ))}
       </div>
@@ -119,8 +124,8 @@ export function RecentlyAdded({podcasts, themeColor}) {
   )
 }
 
-export function FeaturedCreators({themeColor, creators}) {
-  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
+export function FeaturedCreators({creators, appState}) {
+  const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
 
   return (
     <div>
@@ -140,7 +145,7 @@ export function FeaturedCreators({themeColor, creators}) {
                 <div className="text-zinc-400 cursor-pointer text-[8px]">@{creator.anshandle}</div>
               </div>
               <div className=" ">
-                <p style={{backgroundColor: bg, color: themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">View artist</p>
+                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[7px] ml-5 cursor-pointer">View</p>
               </div>
             </div>
           </div>

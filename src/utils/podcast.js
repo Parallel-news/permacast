@@ -1,4 +1,28 @@
-import { WEBSITE_URL } from "./arweave";
+import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
+
+export function convertToEpisode(podcast, episode) {
+  return {
+    cover: MESON_ENDPOINT + '/' + podcast.cover,
+    title: episode.episodeName,
+    description: episode.description,
+    episodes: podcast.episodes.length,
+    creator: podcast.author,
+    creatorAddress: podcast.owner,
+    creatorANS: podcast.ansOwnerLabel,
+  };
+}
+
+export function convertToPodcast(podcast) {
+  return {
+    cover: MESON_ENDPOINT + '/' + podcast.cover,
+    title: podcast.podcastName,
+    description: podcast.description,
+    episodes: podcast.episodes.length,
+    creator: podcast.author,
+    creatorAddress: podcast.owner,
+    creatorANS: podcast.ansOwnerLabel,
+  }
+}
 
 export function filters(t) {
   return [

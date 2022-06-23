@@ -110,15 +110,15 @@ export default function ArConnect() {
               className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md normal-case mb-2"
               onClick={arconnectDisconnect}
             >
+              <span>
+                {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
+              </span>
               {(ansData?.avatar === "") ?
-                <div className="rounded-full h-6 w-6 mr-2 btn-secondary" style={{ backgroundColor: ansData?.address_color }}></div> :
+                <div className="rounded-full h-6 w-6 ml-2 btn-secondary" style={{ backgroundColor: ansData?.address_color }}></div> :
                 // <img className="mx-auto bg-black rounded-full" src={`https://arweave.net/${props.userInfo.avatar}`} />}
                 <div className="rounded-full h-6 w-6 overflow-hidden btn-secondary border-[1px]">
                   <img src={`https://arweave.net/${ansData?.avatar}`} alt="Profile" width="100%" height="100%" />
                 </div>}
-                <span>
-                  {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
-                </span>
             </div>
           </>
         )) || (

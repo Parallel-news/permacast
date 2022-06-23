@@ -14,13 +14,14 @@ export function PlayButton ({svgStyle, fill, outline, size="20"}) {
   )
 }
 
-export function GlobalPlayButton ({themeColor, size="20"}) {
-  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
-  const paddingSize = size * 0.5
+export function GlobalPlayButton ({appState,  size="20"}) {
+  const cl = appState.themeColor;
+  const bg = cl.replace('rgb', 'rgba').replace(')', ', 0.1)');
+  const paddingSize = size * 0.5;
 
   return (
     <div className="cursor-pointer rounded-[34px]" style={{backgroundColor: bg, padding: paddingSize + "px"}}>
-      <PlayButton svgStyle={themeColor} fill={themeColor} outline={themeColor} size={size} />
+      <PlayButton svgStyle={cl} fill={cl} outline={cl} size={size} />
     </div>
   )
 }

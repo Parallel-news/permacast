@@ -7,27 +7,29 @@ import Searchbar from "./component/searchbar.jsx";
 import ArConnect from './component/arconnect.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
 import Player from './component/player.jsx';
-import { FeaturedEpisode, FeaturedPodcast, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
-import { sortPodcasts } from './utils/podcast.js'
+import { FeaturedEpisode, FeaturedPodcasts, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
+import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js'
 
 
 export default function App() {
   const { t } = useTranslation()
 
-  const [podcasts, setPodcasts] = useState();
-  const [sortedPodcasts, setSortedPodcasts] = useState();
   const [loading, setLoading] = useState(true);  
-  const [queue, setQueue] = useState([]);
   const [selection, setSelection] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const primaryColor = 'rgb(255, 255, 0)';
+
+  // const [podcasts, setPodcasts] = useState();
+  // const [sortedPodcasts, setSortedPodcasts] = useState();
+  const [queue, setQueue] = useState([]);
+  const [recentlyAdded, setRecentlyAdded] = useState([]);
+  const [featuredPodcasts, setFeaturedPodcasts] = useState();
 
   const appState = {
+    themeColor: 'rgb(255, 255, 0)',
     theme: {
-      primaryColor: 'rgb(255, 255, 0)',
     },
     queue: {
-      get: queue,
+      get: () => queue,
       set: setQueue,
     },
     playback: {
@@ -38,22 +40,28 @@ export default function App() {
   }
   
   const filters = [
-      {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},
-      {type: "episodescount", desc: t("sorting.episodescount")}
-    ];
+    {type: "episodescount", desc: t("sorting.episodescount")},
+    {type: "podcastsactivity", desc: t("sorting.podcastsactivity")}
+  ];
   const filterTypes = filters.map(f => f.type)
 
-  const changeSorting = (n) => {
-    setPodcasts(podcasts[filterTypes[n]])
-    setSelection(n)
-  }
+  // const changeSorting = (n) => {
+  //   setPodcasts(podcasts[filterTypes[n]])
+  //   setSelection(n)
+  // }
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log('once')
       setLoading(true)
       const sorted = await sortPodcasts(filterTypes)
-      setSortedPodcasts(sorted)
-      setPodcasts(sorted[filterTypes[selection]])
+      const podcasts = sorted[filterTypes[selection]].splice(0, 3)
+      const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
+      const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
+      setRecentlyAdded(convertedEpisodes)
+      setFeaturedPodcasts(convertedPodcasts)
+      // setSortedPodcasts(sorted)
+      // setPodcasts(sorted[filterTypes[selection]])
       setLoading(false)
     }
     fetchData()
@@ -91,30 +99,26 @@ export default function App() {
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
-              {!loading ? <FeaturedEpisode episode={undefined} podcast={podcasts[0]} /> : <div>Loading...</div>}
+              {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} /> : <div>Loading...</div>}
               {!loading ? (
                 <div className="w-full mt-8 grid grid-cols-3 gap-x-12">
-                  {podcasts.splice(0, 3).map((podcast, index) => (
-                    <div key={index}>
-                      <FeaturedPodcast podcast={podcast} />
-                    </div>
-                  ))}
+                  <FeaturedPodcasts podcasts={featuredPodcasts} />
                 </div>
               ): <div>Loading...</div>}
               
               <div className="mt-9 grid grid-cols-3 gap-x-12">
                 <div className="col-span-2">
-                  {!loading ? <RecentlyAdded themeColor={primaryColor} podcasts={podcasts} />: <div>Loading...</div>}
+                  {!loading ? <RecentlyAdded episodes={recentlyAdded} appState={appState} />: <div>Loading...</div>}
                 </div>
                 <div className="">
-                  <FeaturedCreators themeColor={primaryColor} creators={creators} />
+                  <FeaturedCreators appState={appState} creators={creators} />
                 </div>
               </div>
             </div>
           </div>
           <div className="col-span-3 ml-12">
             <ArConnect />
-            {!loading ? <EpisodeQueue themeColor={primaryColor} episodes={podcasts.splice(0, 10)} />: <div>Loading...</div>}
+            {!loading ? <EpisodeQueue appState={appState} episodes={queue} />: <div>Loading...</div>}
           </div>
         </div>
       </div>

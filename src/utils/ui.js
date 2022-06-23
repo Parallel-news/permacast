@@ -12,7 +12,7 @@ export function RGBstringToArray(str) {
 
 export function RGBtoHSL (rgb) {
   let r, g, b;
-  if (typeof(rgb) === 'string') [r, g, b] = rgb.replace(/[^0-9,]/g, '').split(',');
+  if (typeof(rgb) === 'string') [r, g, b] = RGBstringToArray(rgb);
   if (Array.isArray(rgb)) [r, g, b] = rgb;
   if (typeof rgb === 'object') [r, g, b] = RGBobjectToArray(rgb);  
 
