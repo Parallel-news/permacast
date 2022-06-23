@@ -14,7 +14,7 @@ import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcas
 export default function App() {
   const { t } = useTranslation()
 
-  const [loading, setLoading] = useState(true);  
+  const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -61,7 +61,7 @@ export default function App() {
       console.log('once')
       setLoading(true)
       const sorted = await sortPodcasts(filterTypes)
-      const podcasts = sorted[filterTypes[selection]].splice(0, 3)
+      const podcasts = sorted[filterTypes[selection]].splice(0, 4)
       const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
       const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
       setRecentlyAdded(convertedEpisodes)
@@ -88,8 +88,11 @@ export default function App() {
       avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
     }
   ]
+  // Todos: 
+  // place queries inside app component
+  // add a loading indicator
+  // 
 
-  // idea: do the podcast color query logic here, then pass the colors down to components
   return (
     <div className="h-full bg-black overflow-hidden">
       <div className="flex h-screen">
@@ -99,21 +102,28 @@ export default function App() {
             <Player />
           </div>
         </div>
-        <div className="grid grid-cols-12 overflow-scroll ml-16 pr-10 pt-9 w-screen">
-          <div className="col-span-9">
-            <Searchbar />
+        <div className="overflow-scroll ml-16 pr-10 pt-9 w-screen">
+          <div>
+            <div className="grid grid-cols-5">
+              <div className="col-span-4">
+                <Searchbar />
+              </div>
+              <div className="col-span-1">
+                <ArConnect />
+              </div>
+            </div>
             <div className="mt-10">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
               {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} /> : <div>Loading...</div>}
               {!loading ? (
-                <div className="w-full mt-8 grid grid-cols-3 gap-x-12">
+                <div className="w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
                   <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
                 </div>
               ): <div>Loading...</div>}
               
-              <div className="mt-9 grid grid-cols-3 gap-x-12">
-                <div className="col-span-2">
+              <div className="mt-9 grid grid-cols-4 gap-x-12">
+                <div className="col-span-3">
                   {!loading ? <RecentlyAdded episodes={recentlyAdded} appState={appState} />: <div>Loading...</div>}
                 </div>
                 <div className="">
@@ -122,8 +132,7 @@ export default function App() {
               </div>
             </div>
           </div>
-          <div className="col-span-3 ml-12">
-            <ArConnect />
+          <div className="hidden absolute right-0 ml-12">
             {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
           </div>
         </div>

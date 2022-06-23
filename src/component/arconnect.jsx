@@ -167,8 +167,8 @@ export default function ArConnect() {
   }
 
   return (
-    <div className="grid grid-cols-4 mb-4 text-zinc-100 hover:text-white cursor-pointer">
-      <div className="col-start-2 col-span-3">
+    <div className="grid grid-cols-6 mb-4 text-zinc-100 hover:text-white cursor-pointer">
+      <div className="col-start-2 col-span-5">
         {(walletConnected && (
           <>
             <div
@@ -188,7 +188,7 @@ export default function ArConnect() {
           </>
         )) || (
             <div
-              className="bg-zinc-900 hover:bg-zinc-600 p-4 rounded-full text-center"
+              className="bg-zinc-900 hover:bg-zinc-600 py-[14px] px-3 rounded-full text-center"
               onClick={arconnectConnect}
             >
               🦔 {t("connector.login")}

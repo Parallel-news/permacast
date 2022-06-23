@@ -75,7 +75,7 @@ export function FeaturedPodcast({podcast, appState}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="xl:last:block sm:last:hidden lg:[&:nth-last-child(2)]:block sm:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
             <div className="pt-5 pb-3 text-xs">{podcast.episodes} Episode{podcast.episodes == 1 ? '' : 's'}</div>
             <div className="w-full mb-11">
@@ -87,7 +87,7 @@ export function FeaturedPodcast({podcast, appState}) {
               </div>
               <div className="ml-3">
                 <div className="text-lg line-clamp-1">{podcast.title}</div>
-                <div className="text-xs line-clamp-2 pr-0.5">{podcast.description}</div>
+                <div className="text-xs max-w-[85%] line-clamp-2">{podcast.description}</div>
               </div>
             </div>
           </div>
@@ -101,9 +101,9 @@ export function FeaturedPodcasts({podcasts, appState}) {
   return (
     <>
       {podcasts.map((podcast, index) => (
-        <div key={index}>
-          <FeaturedPodcast podcast={podcast} appState={appState} />
-        </div>
+        <>
+          <FeaturedPodcast key={index} podcast={podcast} appState={appState} />
+        </>
       ))}
     </>
   )

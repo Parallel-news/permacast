@@ -1,8 +1,14 @@
 import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
 
-// finish this later so this could be the default
-// export function mediaRepresentation(podcast, episode) {
+// export function content(cover, title, description, episodes, creator, creatorAddress, creatorANS) {
 //   return {
+//     cover: cover,
+//     title: title,
+//     description: description,
+//     episodes: episodes,
+//     creator: creator,
+//     creatorAddress: creatorAddress,
+//     creatorANS: creatorANS,
 //   }
 // }
 
