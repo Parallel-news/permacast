@@ -16,7 +16,7 @@ export function TrackView({episode, appState, includeDescription=false, playButt
               <div className="flex items-center">
                 {/* <img className="h-6 w-6" src={podcast.cover} alt={podcast.podcastName} /> */}
                 <Cooyub className="rounded-full" svgStyle="h-2 w-2" rectStyle="h-6 w-6" fill={'rgb(255, 130, 0)'} />
-                <p style={{color: appState.themeColor}} className="text-[8px] pr-1 ml-1 cursor-pointer">@{episode.creator}</p>
+                <p style={{color: appState.themeColor}} className="text-[8px] pr-1 ml-1 cursor-pointer select-none">@{episode.creator}</p>
               </div>
             </div>
             {includeDescription && (

@@ -26,27 +26,25 @@ export function FeaturedEpisode({episode, appState}) {
   }, [])
 
   return (
-    <div className="p-14 grid grid-cols-4 border border-zinc-800 rounded-[24px]">
-      <img className="w-40 h-40 cursor-pointer mr-4" src={episode.cover} alt={episode.title} />
-      <div className="col-span-2 my-3 text-zinc-100 max-w-md">
-        <div className="text-xl font-medium cursor-pointer">{episode?.title} - Episode 1</div>
+    <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
+      <img className="w-40 cursor-pointer mr-4" src={episode.cover} alt={episode.title} />
+      <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg">
+        <div className="font-medium cursor-pointer line-clamp-1">{episode?.title} - Episode 1</div>
         <div className="text-sm line-clamp-5">{episode?.description}</div>
       </div>
-      <div className="ml-20">
-        <div className="mt-4">
-          {!isLoading && dominantColor && (
-            <div>
-              <div onClick={() => appState.queue.enqueueAndPlay(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
-                <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
-                <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
-              </div>
-              <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
-                <EyeIcon color={dominantColorAlt} className="h-5 w-5" />
-                <div className="ml-1 select-none" style={{color: dominantColorAlt}}>View</div>
-              </div>
+      <div className="ml-auto">
+        {!isLoading && dominantColor && (
+          <div>
+            <div onClick={() => appState.queue.enqueueAndPlay(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
+              <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
+              <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
             </div>
-          )}
-        </div>
+            <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
+              <EyeIcon color={dominantColorAlt} className="h-5 w-5" />
+              <div className="ml-1 select-none" style={{color: dominantColorAlt}}>View</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
@@ -101,9 +99,9 @@ export function FeaturedPodcasts({podcasts, appState}) {
   return (
     <>
       {podcasts.map((podcast, index) => (
-        <div key={index}>
+        <React.Fragment key={index}>
           <FeaturedPodcast podcast={podcast} appState={appState} />
-        </div>
+        </React.Fragment>
       ))}
     </>
   )
@@ -114,7 +112,7 @@ export function RecentlyAdded({episodes, appState}) {
   return (
     <div>
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
-      <div className="grid grid-rows-3 gap-y-4 pb-40 text-zinc-100">
+      <div className="grid grid-rows-3 gap-y-4 text-zinc-100">
         {episodes.map((episode, index) => (
           <div key={index} className="border border-zinc-800 rounded-[24px] p-3 w-full">
             <TrackView episode={episode} appState={appState} />

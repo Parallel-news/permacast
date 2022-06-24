@@ -108,7 +108,9 @@ export default function App() {
     <div className="h-full bg-black overflow-hidden">
       <div className="flex h-screen">
         <div>
-          <Sidenav />
+          <div className="hidden md:block mr-8">
+            <Sidenav />
+          </div>
           <div className="absolute z-20 bottom-0">
             {!loading ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
           </div>
@@ -116,17 +118,17 @@ export default function App() {
             {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
-        <div className="overflow-scroll ml-16 pr-10 pt-9 w-screen">
+        <div className="overflow-scroll ml-8 pr-10 pt-9 w-screen">
           <div>
-            <div className="grid grid-cols-5">
-              <div className="col-span-4">
+            <div className="flex">
+              <div className="w-4/5">
                 <Searchbar />
               </div>
-              <div className="col-span-1">
+              <div className="w-72">
                 <ArConnect />
               </div>
             </div>
-            <div className="mt-10">
+            <div className="mt-10 pb-20">
               <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
               <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
               {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} /> : <div>Loading...</div>}
@@ -135,12 +137,11 @@ export default function App() {
                   <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
                 </div>
               ): <div>Loading...</div>}
-              
-              <div className="mt-9 grid grid-cols-4 gap-x-12">
-                <div className="col-span-3">
+              <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+                <div className="xl:col-span-3 lg:col-span-2 md:col-span-1">
                   {!loading ? <RecentlyAdded episodes={recentlyAdded} appState={appState} />: <div>Loading...</div>}
                 </div>
-                <div className="">
+                <div className="w-full">
                   <FeaturedCreators creators={creators} appState={appState} />
                 </div>
               </div>
