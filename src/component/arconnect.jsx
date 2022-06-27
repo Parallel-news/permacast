@@ -167,12 +167,12 @@ export default function ArConnect() {
   }
 
   return (
-    <div className="mb-4 ml-8 text-zinc-300 hover:text-white cursor-pointer">
+    <div className="ml-8 text-zinc-300 hover:text-white cursor-pointer">
       <>
         {(walletConnected && (
           <>
             <div
-              className="btn btn-outline btn-secondary btn-sm text-sm md:text-base normal-case mb-2"
+              className="flex justify-center bg-zinc-900 hover:bg-zinc-600 py-[14px] px-3 rounded-full w-full mx-auto text-sm md:text-base normal-case"
               onClick={arconnectDisconnect}
             >
               <span>
