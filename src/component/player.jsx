@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import videojs from 'video.js';
 
-import 'video.js/dist/video-js.css';
 import { TrackView } from "./trackView";
 import { GlobalPlayButton } from './icons';
 import { ViewListIcon, ShareIcon, ArrowsExpandIcon, PauseIcon, PlayIcon, FastForwardIcon, RewindIcon } from "@heroicons/react/outline";
