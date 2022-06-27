@@ -172,7 +172,7 @@ export default function ArConnect() {
         {(walletConnected && (
           <>
             <div
-              className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md normal-case mb-2"
+              className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-base normal-case mb-2"
               onClick={arconnectDisconnect}
             >
               <span>

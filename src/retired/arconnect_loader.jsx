@@ -115,7 +115,7 @@ export default function Header() {
         <>
           <UploadShow />
           <div
-            className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-md normal-case"
+            className="btn btn-outline btn-secondary btn-sm md:btn-md text-sm md:text-base normal-case"
             onClick={arconnectDisconnect}
           >
             <span>
@@ -132,7 +132,7 @@ export default function Header() {
         </>
       )) || (
           <div
-            className='btn btn-primary btn-sm md:btn-md text-sm md:text-md'
+            className='btn btn-primary btn-sm md:btn-md text-sm md:text-base'
             onClick={arconnectConnect}
           >
             🦔 {t("connector.login")}
