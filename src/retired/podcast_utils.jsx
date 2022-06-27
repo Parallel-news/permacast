@@ -37,7 +37,7 @@ export function Dropdown({filters, selection, changeSorting}) {
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-95"
       >
-        <div className="origin-top-right absolute right-0 mt-14 w-44 shadow-lg select-none">
+        <div className="origin-top-right absolute right-0 mt-14 w-44 shadow-lg ">
           <ul className="dropdown-content menu p-2 shadow bg-base-100 rounded-box">
             {filters.map((filter, index) => (
               <li key={index} onClick={() => {

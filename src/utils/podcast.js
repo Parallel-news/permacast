@@ -1,26 +1,20 @@
 import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
 
-// export function content(cover, title, description, episodes, creator, creatorAddress, creatorANS) {
-//   return {
-//     cover: cover,
-//     title: title,
-//     description: description,
-//     episodes: episodes,
-//     creator: creator,
-//     creatorAddress: creatorAddress,
-//     creatorANS: creatorANS,
-//   }
-// }
 
 export function convertToEpisode(podcast, episode) {
   return {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
     title: episode.episodeName,
     description: episode.description,
-    episodes: podcast.episodes.length,
+    episodesCount: podcast.episodes.length,
+    // firstTenEpisodes: podcast.episodes.splice(0, 10),
+    // getEpisodes: (start, count) => podcast.episodes.splice(start, count),
     creator: podcast.author,
     creatorAddress: podcast.owner,
     creatorANS: podcast.ansOwnerLabel,
+    contentUrl: MESON_ENDPOINT + '/' + episode.contentTx,
+    mediaType: episode.type,
+    objectType: 'episode',
   };
 }
 
@@ -29,10 +23,15 @@ export function convertToPodcast(podcast) {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
     title: podcast.podcastName,
     description: podcast.description,
-    episodes: podcast.episodes.length,
+    episodesCount: podcast.episodes.length,
+    // firstTenEpisodes: podcast.episodes.splice(0, 10),
+    // getEpisodes: (start, count) => podcast.episodes.splice(start, count),
     creator: podcast.author,
     creatorAddress: podcast.owner,
     creatorANS: podcast.ansOwnerLabel,
+    contentUrl: null,
+    mediaType: null,
+    objectType: 'podcast',
   }
 }
 

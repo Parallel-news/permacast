@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isDarkMode } from './utils/theme.js';
 import { HashRouter as Router, Route } from "react-router-dom";
@@ -12,17 +12,29 @@ import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcas
 
 
 export default function App() {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState(0);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const playerRef = useRef();
+  const videoRef = useRef();
+  const playButtonRef = useRef();
+
   const [currentEpisode, setCurrentEpisode] = useState(null);
   const playEpisode = (episode) => {
+    // if (episode.contentUrl === currentEpisode.contentUrl) {
+    //   // do something here to trigger a re-render maybe or force a re-render for featured episode
+    //   setCurrentEpisode(queue)
+    // }
     setCurrentEpisode(episode);
-    setIsPlaying(true);
-  }
+  };
+
+  window.addEventListener('keydown', function(e) {
+    if(e.key == " " && e.target == document.body) {
+      e.preventDefault();
+    }
+  });
 
   // const [podcasts, setPodcasts] = useState();
   // const [sortedPodcasts, setSortedPodcasts] = useState();
@@ -38,8 +50,10 @@ export default function App() {
     queue: {
       get: () => queue,
       set: setQueue,
-      enqueue: (episode) => setQueue([...queue, episode]),
-      enqueueAndPlay: (episode) => {setQueue([...queue, episode]); playEpisode(episode)},
+      enqueueEpisode: (episode) => setQueue([episode]),
+      enqueuePodcast: (episodes) => setQueue(episodes),
+      play: (episode) => playEpisode(episode),
+      playEpisode: (episode) => {setQueue([episode]); playEpisode(episode)},
       visibility: queueVisible,
       toggleVisibility: () => setQueueVisible(!queueVisible),
     },
@@ -47,8 +61,10 @@ export default function App() {
       // This can be used for playback history tracking
     },
     playback: {
-      isPlaying: isPlaying,
-      play: playEpisode,
+      player: playerRef.current,
+      playerRef: playerRef,
+      videoRef: videoRef,
+      playButtonRef: playButtonRef,
       currentEpisode: currentEpisode,
     },
     t: t,
@@ -68,7 +84,6 @@ export default function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log('once')
       setLoading(true)
       const sorted = await sortPodcasts(filterTypes)
       const podcasts = sorted[filterTypes[selection]].splice(0, 4)
@@ -105,14 +120,15 @@ export default function App() {
   // 
 
   return (
-    <div className="h-full bg-black overflow-hidden">
+    <div className="select-none h-full bg-black overflow-hidden ">
       <div className="flex h-screen">
         <div>
           <div className="hidden md:block mr-8">
             <Sidenav />
           </div>
           <div className="absolute z-20 bottom-0">
-            {!loading ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
+            
+            {!loading && currentEpisode ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
           </div>
           <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
             {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}

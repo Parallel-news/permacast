@@ -20,28 +20,28 @@ export function FeaturedEpisode({episode, appState}) {
       const rgb2 = replaceDarkColorsRGB(color.rgb, 0.6)
       setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
       setDominantColorAlt(`rgb(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, 0.8)`);
-      console.log('Average color', color, rgb, rgb2);
+      // console.log('Average color', color, rgb, rgb2);
     })
     setIsLoading(false)
   }, [])
 
   return (
     <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
-      <img className="w-40 cursor-pointer mr-4" src={episode.cover} alt={episode.title} />
-      <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg">
+      <img className="w-40 cursor-pointer  mr-8" src={episode.cover} alt={episode.title} />
+      <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg mr-2">
         <div className="font-medium cursor-pointer line-clamp-1">{episode?.title} - Episode 1</div>
         <div className="text-sm line-clamp-5">{episode?.description}</div>
       </div>
       <div className="ml-auto">
         {!isLoading && dominantColor && (
           <div>
-            <div onClick={() => appState.queue.enqueueAndPlay(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
+            <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
               <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
-              <div className="ml-1 select-none" style={{color: dominantColorAlt}}>Play</div>
+              <div className="ml-1 " style={{color: dominantColorAlt}}>Play</div>
             </div>
             <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
               <EyeIcon color={dominantColorAlt} className="h-5 w-5" />
-              <div className="ml-1 select-none" style={{color: dominantColorAlt}}>View</div>
+              <div className="ml-1 " style={{color: dominantColorAlt}}>View</div>
             </div>
           </div>
         )}
@@ -52,7 +52,7 @@ export function FeaturedEpisode({episode, appState}) {
 
 
 export function FeaturedPodcast({podcast, appState}) {
-  console.log(podcast)
+  // console.log(podcast)
   const [dominantColor, setDominantColor] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [textColor, setTextColor] = useState();
@@ -64,7 +64,7 @@ export function FeaturedPodcast({podcast, appState}) {
       const rgb = replaceDarkColorsRGB(color.rgb)
       setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
       const newTextColor = isTooLight(rgb) ? 'black' : 'white'
-      console.log(isTooLight(rgb), rgb)
+      // console.log(isTooLight(rgb), rgb)
       setTextColor(newTextColor);
     })
     setIsLoading(false)
@@ -73,14 +73,17 @@ export function FeaturedPodcast({podcast, appState}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="block xl:last:block sm:last:hidden lg:[&:nth-last-child(2)]:block sm:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 block xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
-            <div className="pt-5 pb-3 text-xs">{podcast.episodes} Episode{podcast.episodes == 1 ? '' : 's'}</div>
-            <div className="w-full mb-11">
+            <div className="pt-5 pb-3 text-xs">{podcast.episodesCount} Episode{podcast.episodesCount == 1 ? '' : 's'}</div>
+            <div className="w-full mb-7">
               <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
             </div>
             <div className="h-16 flex items-center">
-              <div onClick={() => appState.queue.enqueueAndPlay(podcast)}>
+              <div onClick={() => {
+                // appState.queue.enqueuePodcast(podcast.firstTenEpisodes);
+                // appState.queue.play(podcast.firstTenEpisodes[0]);
+              }}>
                 <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
               </div>
               <div className="ml-3">
@@ -110,7 +113,7 @@ export function FeaturedPodcasts({podcasts, appState}) {
 export function RecentlyAdded({episodes, appState}) {
  
   return (
-    <div>
+    <div className="">
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 text-zinc-100">
         {episodes.map((episode, index) => (
