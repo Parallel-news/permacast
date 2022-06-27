@@ -81,8 +81,8 @@ export function FeaturedPodcast({podcast, appState}) {
             </div>
             <div className="h-16 flex items-center">
               <div onClick={() => {
-                // appState.queue.enqueuePodcast(podcast.firstTenEpisodes);
-                // appState.queue.play(podcast.firstTenEpisodes[0]);
+                appState.queue.enqueuePodcast(podcast.firstTenEpisodes());
+                appState.queue.play(podcast.firstTenEpisodes()[0]);
               }}>
                 <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
               </div>

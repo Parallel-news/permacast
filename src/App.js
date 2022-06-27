@@ -127,11 +127,10 @@ export default function App() {
             <Sidenav />
           </div>
           <div className="absolute z-20 bottom-0">
-            
             {!loading && currentEpisode ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
           </div>
           <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
-            {!loading ? <EpisodeQueue episodes={queue} appState={appState} />: <div>Loading...</div>}
+            {!loading ? <EpisodeQueue appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
         <div className="overflow-scroll ml-8 pr-10 pt-9 w-screen">
