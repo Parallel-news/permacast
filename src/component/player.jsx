@@ -2,28 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 
 import { TrackView } from "./trackView";
 import { GlobalPlayButton } from './icons';
-import { ViewListIcon, ShareIcon, ArrowsExpandIcon, PauseIcon, PlayIcon, FastForwardIcon, RewindIcon } from "@heroicons/react/outline";
+import { ViewListIcon, ShareIcon, ArrowsExpandIcon, PauseIcon, VolumeUpIcon, FastForwardIcon, RewindIcon } from "@heroicons/react/outline";
 import { MESON_ENDPOINT } from '../utils/arweave';
 
-const keyControls = ({player}) => {
-  window.addEventListener('keydown', (event) => {
-    console.log(event.key)
-    if (event.key == 'ArrowLeft') {
-      player.currentTime(player.currentTime() - 5);
-    }
-    if (event.key == 'ArrowRight') {
-      player.currentTime(player.currentTime() + 5);
-    }
-    if (event.key == ' ') {
-    }
-  })
-}
 
 const AudioPlayer = ({ url, appState }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackProgress, setTrackProgress] = useState(0);
 
-  const queue = appState.queue.get()
   const audioRef = useRef(new Audio(url));
   audioRef.current.preload = true;
 
@@ -32,10 +18,26 @@ const AudioPlayer = ({ url, appState }) => {
 
   // Destructure for conciseness
   const { duration } = audioRef.current;
+  
+  const time = duration ? `${Math.floor(trackProgress / 60)}:${Math.floor(trackProgress % 60)}`: '00:00';
+  const timeLeft = duration ? `${Math.floor((duration) / 60)}:${Math.floor((duration) % 60)}` : '00:00';
 
-  const durationInMinutes = duration
-    ? `${(trackProgress / 60)}`
-    : "00:00";
+  const onReady = () => {
+    let player = audioRef.current;
+    window.addEventListener('keydown', (event) => {
+      console.log(event.key)
+      if (event.key == 'ArrowLeft') {
+        player.currentTime(player.currentTime() - 5);
+      }
+      if (event.key == 'ArrowRight') {
+        player.currentTime(player.currentTime() + 5);
+      }
+      if (event.key == ' ') {
+        setIsPlaying(!isPlaying);
+      }
+    })
+  }
+
 
   const startTimer = () => {
     // Clear any timers already running
@@ -95,7 +97,6 @@ const AudioPlayer = ({ url, appState }) => {
   // Handles cleanup and setup when changing tracks
   useEffect(() => {
     audioRef.current.pause();
-
     audioRef.current = new Audio(url);
     audioRef.current.preload = true;
     setTrackProgress(audioRef.current.currentTime);
@@ -126,21 +127,25 @@ const AudioPlayer = ({ url, appState }) => {
           onPrevClick={toPrevTrack}
           onNextClick={toNextTrack}
           onPlayPauseClick={setIsPlaying}
+          appState={appState}
         />
       </div>
-      <div className="mx-12">
+      <div className=" flex">
         <input
           type="range"
           value={trackProgress}
           step="1"
           min="0"
           max={duration ? duration : `${duration}`}
-          className="w-full"
+          className="w-full mx-2"
           style={{accentColor: appState.themeColor}}
           onChange={(e) => onScrub(e.target.value)}
           onMouseUp={onScrubEnd}
           onKeyUp={onScrubEnd}
         />
+        <span>
+          {timeLeft}
+        </span>
       </div>
     </div>
   );
@@ -150,7 +155,8 @@ const AudioControls = ({
   isPlaying,
   onPlayPauseClick,
   onPrevClick,
-  onNextClick
+  onNextClick,
+  appState,
 }) => (
   <div className="w-full flex justify-between">
     <button
@@ -164,7 +170,6 @@ const AudioControls = ({
     {isPlaying ? (
       <button
         type="button"
-        className="pause"
         onClick={() => onPlayPauseClick(false)}
         aria-label="Pause"
       >
@@ -173,16 +178,14 @@ const AudioControls = ({
     ) : (
       <button
         type="button"
-        className="play"
         onClick={() => onPlayPauseClick(true)}
         aria-label="Play"
       >
-        <PlayIcon height="28" width="28" />
+        <GlobalPlayButton appState={appState} size="14" />
       </button>
     )}
     <button
       type="button"
-      className="next"
       aria-label="Next"
       onClick={onNextClick}
     >
@@ -198,11 +201,11 @@ export default function Player({episode, appState}) {
 
   return (
     <div className="w-screen rounded-t-[24px] h-[84px] pt-4 px-8 bg-zinc-900 text-zinc-200">
-      <div className="flex items-center justify-between">
-        <div className="max-w-xs">
+      <div className="grid grid-cols-12 items-center justify-between">
+        <div className="col-span-3">
           <TrackView episode={episode} appState={appState} playButtonSize="0" />
         </div>
-        <div className="w-full">
+        <div className="col-span-6">
           <div className="flex">
             <AudioPlayer
               url={episode.contentUrl}
@@ -210,10 +213,21 @@ export default function Player({episode, appState}) {
             />
           </div>
         </div>
-        <div className="text-zinc-400 w-28 flex items-center justify-center ">
-          <ShareIcon width="28" height="28" />
-          <ViewListIcon onClick={() => appState.queue.toggleVisibility()} width="28" height="28" />
-          <ArrowsExpandIcon width="28" height="28" />
+        <div className="col-span-3 text-zinc-400 ">
+          <div className="flex items-center justify-center">
+            <VolumeUpIcon width="28" height="28" />
+            <input
+              type="range"
+              step="1"
+              min="0"
+              max="100"
+              value="100"
+              style={{accentColor: appState.themeColor}}
+            />
+            <ShareIcon width="28" height="28" />
+            <ViewListIcon onClick={() => appState.queue.toggleVisibility()} width="28" height="28" />
+            <ArrowsExpandIcon width="28" height="28" />
+          </div>
         </div>
       </div>
     </div>
