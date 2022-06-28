@@ -13,6 +13,7 @@ export default function UploadShow() {
 
   let finalShowObj = {}
   const [show, setShow] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const podcastCoverRef = useRef()
   const { t, i18n } = useTranslation()
   const languages = i18n.language === 'zh' ? languages_zh : languages_en
@@ -125,6 +126,7 @@ export default function UploadShow() {
                 console.log(tx)
                 arweave.transactions.post(tx).then((response) => {
                   console.log(response)
+                  setIsUploading(false)
                 })
               })
             })
@@ -133,6 +135,7 @@ export default function UploadShow() {
             console.log(finalShowObj)
             uploadShow(finalShowObj)
             setShow(false)
+
           } else {
             Swal.fire({
               title: t("uploadshow.swal.uploadfailed.title"),
@@ -194,9 +197,15 @@ export default function UploadShow() {
     let cover = await processFile(podcastCover)
     let showObjSize = JSON.stringify(showObj).length
     let bytes = cover.byteLength + showObjSize + coverFileType.length
+    
+    setIsUploading(true)
+
     if (await userHasEnoughAR(t, bytes) === "all good") {
       await uploadToArweave(cover, coverFileType, showObj)
-    } else console.log('upload failed');
+    } else {
+      console.log('upload failed')
+      setIsUploading(false)
+    };
   }
 
   const languageOptions = () => {
@@ -270,9 +279,16 @@ export default function UploadShow() {
                   <span className="label-text">{t("uploadshow.explicit")}</span>
                 </label>
               </div>
-              <div className="text-yellow-400 bg-slate-600 rounded-lg p-4">Attention! Uploading the show will cost <span className="text-lg font-bold underline">0.25AR</span> + fees.</div>
+              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">Attention! Uploading the show will cost <span className="text-lg font-bold underline">0.25AR</span> + fees.</div>
               <div className="modal-action">
-                <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">{t("uploadshow.upload")}</button>
+                {isUploading ? (
+                  <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
+                    <div className="animate-spin border-t-2 rounded-t-full border-indigo-500 h-5 w-5 mr-3" viewBox="0 0 24 24"></div>
+                    {t("uploadshow.uploading")}
+                  </button>
+                ): (
+                  <button htmlFor="my-modal-2" type="submit" className="btn btn-primary">{t("uploadshow.upload")}</button>
+                )}
                 <label htmlFor="my-modal-2" className="btn" onClick={() => setShow(false)}>{t("uploadshow.cancel")}</label>
               </div>
             </form>

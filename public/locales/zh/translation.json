@@ -46,7 +46,8 @@
 			"uploading": {
 				"title": "上传中，请稍候..."
 			}
-		}
+		},
+		"uploading": "加工..."
 	},
 	"podcasthtml": {
 		"swal": {

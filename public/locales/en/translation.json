@@ -46,7 +46,8 @@
 			"uploading": {
 				"title": "Uploading, please wait a few seconds..."
 			}
-		}
+		},
+		"uploading": "Processing..."
 	},
 	"podcasthtml": {
 		"swal": {
