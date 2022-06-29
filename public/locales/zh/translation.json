@@ -4,8 +4,8 @@
 		"help": "获取帮助",
 		"new": "新功能",
 		"swal": {
-			"title": "Permacast V2 新功能 ✨",
-			"html": "<li>为任何播客生成符合 Spotify 和 Apple 标准的 RSS 源</li><li>剧集作为原子 NFT，可在 Verto 上展示!</li>"
+			"title": "Permacast V3 新功能 ✨",
+			"html": "<li>通过即将推出的 Permacast CLI 导入 iTunes/Spotify 兼容的 RSS</li><li>降低 Gas 成本</li><li>防止重复上传的自动保护措施</li><li><a href='https://github.com/Parallel-news/permacast/issues/46'>阅读完整的更新日志</a></li>"
 		}
 	},
 	"connector": {
