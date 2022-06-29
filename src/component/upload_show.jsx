@@ -200,7 +200,7 @@ export default function UploadShow() {
     
     setIsUploading(true)
 
-    if (await userHasEnoughAR(t, bytes) === "all good") {
+    if (await userHasEnoughAR(t, bytes, 0.25) === "all good") {
       await uploadToArweave(cover, coverFileType, showObj)
     } else {
       console.log('upload failed')
