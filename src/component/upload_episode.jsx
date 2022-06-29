@@ -58,8 +58,10 @@ export default function UploadEpisode({ podcast }) {
       }
       if (uploader.txPosted) {
         const newTx = await arweave.createTransaction({target:"eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0", quantity: arweave.ar.arToWinston('' + serviceFee)})
-        arweave.transactions.sign(newTx)
-        arweave.transactions.post(newTx)
+        console.log(newTx)
+        await arweave.transactions.sign(newTx)
+        console.log(newTx)
+        await arweave.transactions.post(newTx)
         console.log(newTx.response)
         epObj.content = tx.id;
 
@@ -110,6 +112,7 @@ export default function UploadEpisode({ podcast }) {
       calculateStorageFee(bytes).then((cost) => {
         userHasEnoughAR(t, bytes, cost / 10).then((result) => {
           if (result === "all good") {
+            console.log('Fee cost: ' + (cost / 10))
             uploadToArweave(file, fileType, epObj, event, cost / 10)
           } else console.log('upload failed');
         })
@@ -219,14 +222,15 @@ export default function UploadEpisode({ podcast }) {
 
           </div>
           {showUploadFee ? (
-            <>
-              <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p>
-              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">Attention! Uploading an episode will incur an additional fee of 
+            <div className="w-80">
+              <p className="text-gray py-3">~${showUploadFee} {t("uploadepisode.toupload")}</p>
+              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4 w-full">
+                {t("uploadepisode.feeText")}
                 <span className="text-lg font-bold underline">
-                  {(showUploadFee / 10).toFixed(2)} AR
-                </span>.
+                  ${(showUploadFee / 10).toFixed(4)}
+                </span>
               </div>
-            </>
+            </div>
           ) : null}
           <br /><br />
           {!episodeUploading ?

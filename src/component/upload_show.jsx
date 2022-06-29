@@ -2,7 +2,7 @@ import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
 import { genetateFactoryState } from '../utils/initStateGen.js';
-import { processFile, fetchWalletAddress, userHasEnoughAR } from '../utils/shorthands.js';
+import { processFile, fetchWalletAddress, userHasEnoughAR, calculateStorageFee } from '../utils/shorthands.js';
 
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ export default function UploadShow() {
   let finalShowObj = {}
   const [show, setShow] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [cost, setCost] = useState(0);
   const podcastCoverRef = useRef()
   const { t, i18n } = useTranslation()
   const languages = i18n.language === 'zh' ? languages_zh : languages_en
@@ -167,6 +168,9 @@ export default function UploadShow() {
         if (podcastCoverImage.width !== podcastCoverImage.height) {
           resetPodcastCover()
         }
+        calculateStorageFee(event.target.files[0].size).then((fee) => {
+          setCost(fee)
+        })
       }
     }
   }
@@ -279,7 +283,7 @@ export default function UploadShow() {
                   <span className="label-text">{t("uploadshow.explicit")}</span>
                 </label>
               </div>
-              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">Attention! Uploading the show will cost <span className="text-lg font-bold underline">0.25AR</span> + fees.</div>
+              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">{t("uploadshow.feeText")}<span className="text-lg font-bold underline">{(0.25 + cost).toFixed(3)} AR</span></div>
               <div className="modal-action">
                 {isUploading ? (
                   <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>

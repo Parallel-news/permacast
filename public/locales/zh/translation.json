@@ -31,6 +31,7 @@
 		"explicit": "少儿不宜",
 		"upload": "上传",
 		"cancel": "取消",
+		"feeText": "注意力！ 上传节目的费用：",
 		"swal": {
 			"showadded": {
 				"title": "节目已添加",
@@ -78,7 +79,8 @@
 		"toupload": "来进行上传",
 		"upload": "上传",
 		"uploading": "上传中，请耐心等待...",
-		"uploaded": "已完成"
+		"uploaded": "已完成",
+		"feeText": "注意力！ 上传剧集将产生额外费用"
 	},
 	"generalerrors": {
 		"cantfindaddress": {
