@@ -218,7 +218,16 @@ export default function UploadEpisode({ podcast }) {
 
 
           </div>
-          {showUploadFee ? <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p> : null}
+          {showUploadFee ? (
+            <>
+              <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p>
+              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">Attention! Uploading an episode will incur an additional fee of 
+                <span className="text-lg font-bold underline">
+                  {(showUploadFee / 10).toFixed(2)} AR
+                </span>.
+              </div>
+            </>
+          ) : null}
           <br /><br />
           {!episodeUploading ?
             <button
