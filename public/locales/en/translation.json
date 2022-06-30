@@ -31,7 +31,7 @@
 		"explicit": "Contains explicit content",
 		"upload": "Upload",
 		"cancel": "Cancel",
-		"feeText": "Attention! Uploading the show will cost: ",
+		"feeText": "Uploading the show will cost: ",
 		"swal": {
 			"showadded": {
 				"title": "Show added",
@@ -80,7 +80,7 @@
 		"upload": "Upload",
 		"uploading": "Uploading, please wait...",
 		"uploaded": "Uploaded",
-		"feeText": "Attention! Uploading an episode will incur an additional fee of "
+		"feeText": "Uploading an episode will incur an additional fee of "
 	},
 	"generalerrors": {
 		"cantfindaddress": {

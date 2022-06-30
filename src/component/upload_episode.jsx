@@ -2,7 +2,7 @@ import ArDB from 'ardb'
 import Swal from 'sweetalert2'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave, EPISODE_FEE_PERCENTAGE } from '../utils/arweave.js'
 import { processFile, calculateStorageFee, userHasEnoughAR } from '../utils/shorthands.js';
 
 const ardb = new ArDB(arweave)
@@ -110,10 +110,11 @@ export default function UploadEpisode({ podcast }) {
       let epObjSize = JSON.stringify(epObj).length
       let bytes = file.byteLength + epObjSize + fileType.length
       calculateStorageFee(bytes).then((cost) => {
-        userHasEnoughAR(t, bytes, cost / 10).then((result) => {
+        const serviceFee = cost / EPISODE_FEE_PERCENTAGE;
+        userHasEnoughAR(t, bytes, serviceFee).then((result) => {
           if (result === "all good") {
-            console.log('Fee cost: ' + (cost / 10))
-            uploadToArweave(file, fileType, epObj, event, cost / 10)
+            console.log('Fee cost: ' + (serviceFee))
+            uploadToArweave(file, fileType, epObj, event, serviceFee)
           } else console.log('upload failed');
         })
       })
@@ -224,10 +225,10 @@ export default function UploadEpisode({ podcast }) {
           {showUploadFee ? (
             <div className="w-80">
               <p className="text-gray py-3">~${showUploadFee} {t("uploadepisode.toupload")}</p>
-              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4 w-full">
+              <div className="bg-indigo-100 rounded-lg p-4 w-full">
                 {t("uploadepisode.feeText")}
                 <span className="text-lg font-bold underline">
-                  ${(showUploadFee / 10).toFixed(4)}
+                  ${(showUploadFee / EPISODE_FEE_PERCENTAGE).toFixed(4)}
                 </span>
               </div>
             </div>

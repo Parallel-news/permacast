@@ -1,6 +1,6 @@
 import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
-import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
+import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, SHOW_FEE_AR } from '../utils/arweave.js'
 import { genetateFactoryState } from '../utils/initStateGen.js';
 import { processFile, fetchWalletAddress, userHasEnoughAR, calculateStorageFee } from '../utils/shorthands.js';
 
@@ -122,7 +122,7 @@ export default function UploadShow() {
         arweave.transactions.post(tx).then((response) => {
           console.log(response)
           if (response.statusText === "OK") {
-            arweave.createTransaction({target:"eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0", quantity: arweave.ar.arToWinston('0.25')}).then((tx) => {
+            arweave.createTransaction({target:"eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0", quantity: arweave.ar.arToWinston('' + SHOW_FEE_AR)}).then((tx) => {
               arweave.transactions.sign(tx).then(() => {
                 console.log(tx)
                 arweave.transactions.post(tx).then((response) => {
@@ -165,12 +165,12 @@ export default function UploadShow() {
       const podcastCoverImage = new Image()
       podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
       podcastCoverImage.onload = () => {
-        if (podcastCoverImage.width !== podcastCoverImage.height) {
-          resetPodcastCover()
-        }
         calculateStorageFee(event.target.files[0].size).then((fee) => {
           setCost(fee)
         })
+        if (podcastCoverImage.width !== podcastCoverImage.height) {
+          resetPodcastCover()
+        }
       }
     }
   }
@@ -204,7 +204,7 @@ export default function UploadShow() {
     
     setIsUploading(true)
 
-    if (await userHasEnoughAR(t, bytes, 0.25) === "all good") {
+    if (await userHasEnoughAR(t, bytes, SHOW_FEE_AR) === "all good") {
       await uploadToArweave(cover, coverFileType, showObj)
     } else {
       console.log('upload failed')
@@ -283,7 +283,7 @@ export default function UploadShow() {
                   <span className="label-text">{t("uploadshow.explicit")}</span>
                 </label>
               </div>
-              <div className="text-yellow-400 bg-slate-700 rounded-lg p-4">{t("uploadshow.feeText")}<span className="text-lg font-bold underline">{(0.25 + cost).toFixed(3)} AR</span></div>
+              <div className="bg-indigo-100 rounded-lg p-4">{t("uploadshow.feeText")}<span className="text-lg font-bold underline">{(SHOW_FEE_AR + cost).toFixed(3)} AR</span></div>
               <div className="modal-action">
                 {isUploading ? (
                   <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
