@@ -130,18 +130,6 @@ const AudioPlayer = ({ url, appState }) => {
         />
       </div>
       <div className=" flex">
-        <input
-          type="range"
-          value={trackProgress}
-          step="1"
-          min="0"
-          max={duration ? duration : `${duration}`}
-          className="w-full mx-2"
-          style={{accentColor: appState.themeColor}}
-          onChange={(e) => onScrub(e.target.value)}
-          onMouseUp={onScrubEnd}
-          onKeyUp={onScrubEnd}
-        />
         <span>
           {timeLeft}
         </span>

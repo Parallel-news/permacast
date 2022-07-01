@@ -1171,10 +1171,10 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
-"@headlessui/react@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.npmmirror.com/@headlessui/react/-/react-1.5.0.tgz#483b44ba2c8b8d4391e1d2c863898d7dd0cc0296"
-  integrity sha512-aaRnYxBb3MU2FNJf3Ut9RMTUqqU3as0aI1lQhgo2n9Fa67wRu14iOGqx93xB+uMNVfNwZ5B3y/Ndm7qZGuFeMQ==
+"@headlessui/react@^1.6.5":
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.6.5.tgz#5587c537de809cf3146eb2ff263e5e940b1bf69c"
+  integrity sha512-3VkKteDxlxf3fE0KbfO9t60KC1lM7YNpZggLpwzVNg1J/zwL+h+4N7MBlFDVpInZI3rKlZGpNx0PWsG/9c2vQg==
 
 "@heroicons/react@^1.0.6":
   version "1.0.6"
@@ -4206,10 +4206,10 @@ d@~0.1.1:
   dependencies:
     es5-ext "~0.10.2"
 
-daisyui@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.npmmirror.com/daisyui/-/daisyui-2.6.0.tgz#083684710db8f45ada7d5a2e7bd2139ad8c2bf7a"
-  integrity sha512-A728FOsenR+Zgqj8ORprphrP2qI+i9EfSWrfVzlPcSLsyd0jsvgl32jndDYklUk2d/QGG0jxcWJWtRTa0SFL5w==
+daisyui@^2.17.0:
+  version "2.17.0"
+  resolved "https://registry.yarnpkg.com/daisyui/-/daisyui-2.17.0.tgz#4a1016cf5e0d32ee4dec1139f600b06bfd185ceb"
+  integrity sha512-U8eA8IvwH0JSi72WbRZdmJcYZek3ERMPFPAVFhnYc6dGnobeIHLGBz8J4q012I9YVDUqXFrWz13rpn+SBdn7qQ==
   dependencies:
     color "^4.2"
     css-selector-tokenizer "^0.8.0"

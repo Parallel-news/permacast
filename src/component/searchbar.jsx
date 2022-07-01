@@ -25,7 +25,7 @@ export function SearchbarMobile({appState}) {
           <SearchIcon className="h-5 w-5 text-zinc-600" />
         </div>
         <input
-          className="block p-2 pl-10 w-full text-sm placeholder-zinc-600 rounded-lg bg-zinc-900 text-zinc-100 outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+          className="block py-2.5 px-3 pl-10 w-full text-sm placeholder-zinc-600 rounded-lg bg-zinc-900 text-zinc-100 outline-none focus:ring-2 focus:ring-inset focus:ring-white"
           placeholder="Search for anything..."
         />
       </form>

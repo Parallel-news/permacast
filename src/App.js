@@ -145,7 +145,7 @@ export default function App() {
   // add translations
 
   return (
-    <div className="select-none h-full bg-black overflow-hidden ">
+    <div className="select-none h-full bg-black overflow-hidden " data-theme="business">
       <div className="flex h-screen">
         <div className="md:hidden absolute z-10 bottom-0 w-screen">
           {!loading ? <PlayerMobile episode={currentEpisode} appState={appState} /> : <div>Loading...</div>}

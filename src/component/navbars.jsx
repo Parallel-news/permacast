@@ -79,7 +79,7 @@ export function NavBarMobile({appState}) {
           <>
             <div className="navbar flex items-center">
               <div className="flex-1" href="/">
-                <div className="flex items-center ">
+                <div className="flex w-full items-center ">
                   <img className="block h-5 w-auto mr-2" src={YellowRec} alt="permacast" />
                   <div className="w-full mx-2">
                     <SearchbarMobile appState={appState} />

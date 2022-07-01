@@ -3,7 +3,7 @@
   "version": "0.3.2",
   "private": true,
   "dependencies": {
-    "@headlessui/react": "^1.5.0",
+    "@headlessui/react": "^1.6.5",
     "@heroicons/react": "^1.0.6",
     "@tailwindcss/aspect-ratio": "^0.4.0",
     "@tailwindcss/line-clamp": "^0.4.0",
@@ -16,7 +16,7 @@
     "arweave-multihost": "^0.1.0",
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
-    "daisyui": "^2.6.0",
+    "daisyui": "^2.17.0",
     "fast-average-color": "^7.1.0",
     "i18next": "^21.6.13",
     "i18next-browser-languagedetector": "^6.1.3",
