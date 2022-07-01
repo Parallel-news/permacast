@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import FastAverageColor from 'fast-average-color';
 import { MESON_ENDPOINT } from '../utils/arweave';
-import { replaceDarkColorsRGB, isTooLight } from '../utils/ui';
+import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
 import { convertToPodcast } from '../utils/podcast';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { TrackView } from './trackView';
+
+export function Greeting({appState}) {
+  const user = appState.user;
+  const label = user.ANSData?.currentLabel
+  // what about randomizing greetings?
+
+  return (
+    <div>
+      <h1 className="text-zinc-100 text-xl">
+      {label ? (
+        <>
+          Hello {trimANSLabel(label) + '!'}
+        </>
+      ) : 'Welcome!'}
+      </h1>
+      <p className="text-zinc-400 mb-9">Let's see what we have for today</p>
+    </div>
+  )
+}
 
 export function FeaturedEpisode({episode, appState}) {
   const [dominantColor, setDominantColor] = useState();
@@ -73,7 +92,7 @@ export function FeaturedPodcast({podcast, appState}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 block xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden  backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 block xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
             <div className="pt-5 pb-3 text-xs">{podcast.episodesCount} Episode{podcast.episodesCount == 1 ? '' : 's'}</div>
             <div className="w-full mb-7">
@@ -153,6 +172,44 @@ export function FeaturedCreators({creators, appState}) {
           </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+export function FeaturedView({appState}) {
+  const {recentlyAdded, featuredPodcasts, creators} = appState.views.featured; 
+
+  return (
+    <div className="overflow-scroll w-full">
+      <div>
+        <div className="mt-10 pb-20">
+          {!appState.loading && (
+            <Greeting appState={appState} />
+          )}
+          {!appState.loading ? (
+            <div className="hidden md:block">
+              <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} />
+            </div>
+          ): <div>Loading...</div>}
+          {!appState.loading ? (
+            <div className="w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+              <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
+            </div>
+          ): <div>Loading...</div>}
+          <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+            <div className="xl:col-span-3 lg:col-span-2 md:col-span-1 mb-9">
+              {!appState.loading ? (
+                <RecentlyAdded episodes={recentlyAdded} appState={appState} />
+              ): <div>Loading...</div>}
+            </div>
+            {!appState.loading ? (
+            <div className="w-full">
+              <FeaturedCreators creators={creators} appState={appState} />
+            </div>
+            ) : <div>Loading...</div>}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

@@ -1,14 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isDarkMode } from './utils/theme.js';
 import { HashRouter as Router, Route } from "react-router-dom";
-import Sidenav from "./component/sidenav.jsx";
+import {Sidenav, NavBar} from "./component/navbars.jsx";
 import Searchbar from "./component/searchbar.jsx";
 import ArConnect from './component/arconnect.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
-import Player from './component/player.jsx';
-import { FeaturedEpisode, FeaturedPodcasts, RecentlyAdded, FeaturedCreators } from './component/featured.jsx';
-import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js'
+import { Player, PlayerMobile} from './component/player.jsx';
+import { FeaturedView } from './component/featured.jsx';
+import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
 
 
 export default function App() {
@@ -36,16 +35,57 @@ export default function App() {
     }
   });
 
+  const [address, setAddress] = useState();
+  const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
+  const [walletConnected, setWalletConnected] = useState(false)
+
   // const [podcasts, setPodcasts] = useState();
   // const [sortedPodcasts, setSortedPodcasts] = useState();
   const [queue, setQueue] = useState([]);
   const [queueVisible, setQueueVisible] = useState(false);
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
 
   const appState = {
+    t: t,
     themeColor: 'rgb(255, 255, 0)',
-    theme: {
+    loading: loading,
+    theme: {},
+    view: {
+      views: ["featured", ""],
+      currentTabIndex: currentTabIndex,
+      setCurrentTabIndex: setCurrentTabIndex,
+    },
+    views: {
+      featured: {
+        recentlyAdded: recentlyAdded,
+        featuredPodcasts: featuredPodcasts,
+        creators: [
+          {
+            fullname: 'Marton Lederer',
+            anshandle: 'martonlederer',
+            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
+          }, {
+            fullname: 'Marton Lederer',
+            anshandle: 'martonlederer',
+            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
+          }, {
+            fullname: 'Marton Lederer',
+            anshandle: 'martonlederer',
+            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
+          }
+        ],
+      },
+    },
+    user: {
+      address: address,
+      setAddress: setAddress,
+      ANSData: ANSData,
+      setANSData: setANSData,
+      walletConnected: walletConnected,
+      setWalletConnected: setWalletConnected,
     },
     queue: {
       get: () => queue,
@@ -67,8 +107,6 @@ export default function App() {
       playButtonRef: playButtonRef,
       currentEpisode: currentEpisode,
     },
-    t: t,
-    loading: loading,
   }
   
   const filters = [
@@ -99,31 +137,21 @@ export default function App() {
     fetchData()
   }, [])
 
-  let creators = [
-    {
-      fullname: 'Marton Lederer',
-      anshandle: 'martonlederer',
-      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-    }, {
-      fullname: 'Marton Lederer',
-      anshandle: 'martonlederer',
-      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-    }, {
-      fullname: 'Marton Lederer',
-      anshandle: 'martonlederer',
-      avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-    }
-  ]
-  // Todos: 
-  // place queries inside app component
-  // add a loading indicator
-  // 
+  // TODO 
+  // place url queries inside app component
+  // add a loading skeleton for the app
+  // use context api to remove prop drilling
+  // clean up useEffect and appState code
+  // add translations
 
   return (
     <div className="select-none h-full bg-black overflow-hidden ">
       <div className="flex h-screen">
-        <div>
-          <div className="hidden md:block mr-8">
+        <div className="md:hidden absolute z-10 bottom-0 w-screen">
+          {!loading ? <PlayerMobile episode={currentEpisode} appState={appState} /> : <div>Loading...</div>}
+        </div>
+        <div className="hidden md:block">
+          <div className="mr-8">
             <Sidenav />
           </div>
           <div className="absolute z-20 bottom-0">
@@ -133,38 +161,21 @@ export default function App() {
             {!loading ? <EpisodeQueue appState={appState} />: <div>Loading...</div>}
           </div>
         </div>
-        <div className="overflow-scroll ml-8 pr-10 pt-9 w-screen">
-          <div>
-            <div className="flex">
-              <div className="w-4/5">
-                <Searchbar />
-              </div>
-              <div className="w-72">
-                <ArConnect />
-              </div>
-            </div>
-            <div className="mt-10 pb-20">
-              <h1 className="text-zinc-100 text-xl">Hello, Marton!</h1>
-              <p className="text-zinc-400 mb-9">Let's see what we got for today.</p>
-              {!loading ? <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} /> : <div>Loading...</div>}
-              {!loading ? (
-                <div className="w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
-                  <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
+        <div className="overflow-scroll ml-8 pr-8 pt-9 w-screen">
+          <div className="app-view">
+            {!loading ? (
+              <>
+                <NavBar appState={appState} />
+                <div className="pb-20 w-full overflow-hidden">
+                  <FeaturedView appState={appState} />
                 </div>
-              ): <div>Loading...</div>}
-              <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
-                <div className="xl:col-span-3 lg:col-span-2 md:col-span-1">
-                  {!loading ? <RecentlyAdded episodes={recentlyAdded} appState={appState} />: <div>Loading...</div>}
-                </div>
-                <div className="w-full">
-                  <FeaturedCreators creators={creators} appState={appState} />
-                </div>
-              </div>
-            </div>
+              </>
+            ) : <div>Loading...</div>}
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 // <Route exact path="/" render={() => <Index />} />

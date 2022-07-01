@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { TrackView } from "./trackView";
 import { GlobalPlayButton } from './icons';
 import { ViewListIcon, ShareIcon, ArrowsExpandIcon, PauseIcon, VolumeUpIcon, FastForwardIcon, RewindIcon } from "@heroicons/react/outline";
-import { MESON_ENDPOINT } from '../utils/arweave';
 
 
 const AudioPlayer = ({ url, appState }) => {
@@ -194,13 +193,24 @@ const AudioControls = ({
   </div>
 );
 
-
-export default function Player({episode, appState}) {
-
-  // const mediaType = episode.mediaType?.split('/')?.[0];
-
+export function PlayerMobile({ episode, appState }) {
+  // only visual for now
   return (
-    <div className="w-screen rounded-t-[24px] h-[84px] pt-4 px-8 bg-zinc-900 text-zinc-200">
+    <div className="w-full h-20 pt-2 px-4 rounded-t-md bg-zinc-900 text-zinc-200 overflow-y-hidden flex items-center">
+      <div className="flex-1">
+        <TrackView episode={episode} appState={appState} playButtonSize="0" />
+      </div>
+      <div className="flex items-center text-zinc-400">
+         <GlobalPlayButton appState={appState} size="14" />
+         <ViewListIcon onClick={() => appState.queue.toggleVisibility()} width="28" height="28" />
+      </div>
+    </div>
+  )
+};
+
+export function Player({episode, appState}) {
+  return (
+    <div className="w-screen rounded-t-[24px] h-[84px] pt-4 px-8 bg-zinc-900 text-zinc-200 overflow-y-hidden">
       <div className="grid grid-cols-12 items-center justify-between">
         <div className="col-span-3">
           <TrackView episode={episode} appState={appState} playButtonSize="0" />
@@ -216,14 +226,6 @@ export default function Player({episode, appState}) {
         <div className="col-span-3 text-zinc-400 ">
           <div className="flex items-center justify-center">
             <VolumeUpIcon width="28" height="28" />
-            <input
-              type="range"
-              step="1"
-              min="0"
-              max="100"
-              value="100"
-              style={{accentColor: appState.themeColor}}
-            />
             <ShareIcon width="28" height="28" />
             <ViewListIcon onClick={() => appState.queue.toggleVisibility()} width="28" height="28" />
             <ArrowsExpandIcon width="28" height="28" />

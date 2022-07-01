@@ -100,3 +100,8 @@ export function isTooLight(rgbArg, lightness=0.9) {
 export const shortenAddress = (addr) => {
   return addr.substring(0, 4) + '...' + addr.substring(addr.length - 4);
 }
+
+// capitalize first letter, remove ar from label
+export const trimANSLabel = (label) => {
+  return label.replace(/\w/, c => c.toUpperCase()).replace('ar', '')
+}

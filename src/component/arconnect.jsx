@@ -70,11 +70,9 @@ export function Dropdown({choices, selection, changeSorting}) {
 }
 
 
-export default function ArConnect() {
-  const [walletConnected, setWalletConnected] = useState(false)
-  const [address, setAddress] = useState(undefined)
-  const [ansData, setANSData] = useState(undefined)
+export default function ArConnect({appState}) {
   const { t } = useTranslation()
+  const {address, setAddress, ANSData, setANSData, walletConnected, setWalletConnected } = appState.user
 
   useEffect(() => {
     // add ArConnect event listeners
@@ -176,13 +174,13 @@ export default function ArConnect() {
               onClick={arconnectDisconnect}
             >
               <span>
-                {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
+                {ANSData?.currentLabel ? `${ANSData?.currentLabel}.ar` : shortenAddress(address)}
               </span>
-              {(ansData?.avatar === "") ?
-                <div className="rounded-full h-6 w-6 ml-2 btn-secondary" style={{ backgroundColor: ansData?.address_color }}></div> :
+              {(ANSData?.avatar === "") ?
+                <div className="rounded-full h-6 w-6 ml-2 btn-secondary" style={{ backgroundColor: ANSData?.address_color }}></div> :
                 // <img className="mx-auto bg-black rounded-full" src={`https://arweave.net/${props.userInfo.avatar}`} />}
                 <div className="rounded-full h-6 w-6 overflow-hidden btn-secondary border-[1px]">
-                  <img src={`https://arweave.net/${ansData?.avatar}`} alt="Profile" width="100%" height="100%" />
+                  <img src={`https://arweave.net/${ANSData?.avatar}`} alt="Profile" width="100%" height="100%" />
                 </div>}
             </div>
           </>

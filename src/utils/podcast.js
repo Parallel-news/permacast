@@ -35,11 +35,6 @@ export function convertToPodcast(podcast) {
   }
 }
 
-// export function getFirstPodcastEpisode(podcast) {
-//   return convertToEpisode(podcast, podcast.episodes[0])
-// }
-
-
 export function filters(t) {
   return [
     {type: "podcastsactivity", desc: t("sorting.podcastsactivity")},

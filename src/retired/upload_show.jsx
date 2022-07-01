@@ -1,7 +1,7 @@
 import { React, useState, useRef } from 'react';
 import ArDB from 'ardb';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
-import { genetateFactoryState } from '../utils/initStateGen.js';
+import { generateFactoryState } from '../utils/initStateGen.js';
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 const ardb = new ArDB(arweave)
@@ -17,7 +17,7 @@ export default function UploadShow() {
 
   const deployContract = async (address) => {
 
-    const initialState = await genetateFactoryState(address);
+    const initialState = await generateFactoryState(address);
     console.log(initialState)
     const tx = await arweave.createTransaction({ data: initialState })
 

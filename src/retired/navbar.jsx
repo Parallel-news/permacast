@@ -50,16 +50,14 @@ export default function NavBar() {
 
   return (
     <div className="flex gap-x-8 justify-center">
-    <Disclosure as="nav" className="mb-2 shadow-lg rounded-box w-full md:w-2/3">
+    <Disclosure as="nav" className="mb-2 shadow-lg rounded-box w-full">
       {({ open }) =>
         <>
-
-          <div className="navbar">
+          <div className="navbar flex">
             <a className="flex-1 px-2 mx-2" href="/">
               <img className="block h-5 w-auto mt-1" src={YellowRec} alt="permacast" />
               <span>permacast</span>
             </a>
-
             <div className="mx-3 hidden md:flex">
               <a className="mx-3" href="https://t.me/permacast" target="_blank" rel="noreferrer">📨 {t("navbar.help")}</a>
               <span className="mx-3 cursor-pointer" onClick={() => loadWhatsNew()}>✨ {t("navbar.new")}</span>
@@ -83,7 +81,7 @@ export default function NavBar() {
                 ))}
               </ul>
             </div>
-            <div className="-mr-2 flex sm:hidden">
+            <div className="-mr-2 flex md:hidden">
               <Disclosure.Button className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                 <span className="sr-only">Open main menu</span>
                 {open ? (
