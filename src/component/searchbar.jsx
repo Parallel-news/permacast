@@ -1,7 +1,9 @@
 import React from 'react';
 import { SearchIcon } from '@heroicons/react/outline';
+import { useContext } from 'react';
+import { appContext } from '../utils/initStateGen';
 
-export function Searchbar({appState}) {
+export function Searchbar() {
   return (
     <div>
       <form className="relative">
@@ -17,7 +19,7 @@ export function Searchbar({appState}) {
   )
 }
 
-export function SearchbarMobile({appState}) {
+export function SearchbarMobile() {
   return (
     <div>
       <form className="relative">

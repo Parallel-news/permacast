@@ -8,6 +8,7 @@ import EpisodeQueue from '././component/episode_queue.jsx';
 import { Player, PlayerMobile} from './component/player.jsx';
 import { FeaturedView } from './component/featured.jsx';
 import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
+import { appContext } from './utils/initStateGen.js';
 
 
 export default function App() {
@@ -21,19 +22,6 @@ export default function App() {
   const playButtonRef = useRef();
 
   const [currentEpisode, setCurrentEpisode] = useState(null);
-  const playEpisode = (episode) => {
-    // if (episode.contentUrl === currentEpisode.contentUrl) {
-    //   // do something here to trigger a re-render maybe or force a re-render for featured episode
-    //   setCurrentEpisode(queue)
-    // }
-    setCurrentEpisode(episode);
-  };
-
-  window.addEventListener('keydown', function(e) {
-    if(e.key == " " && e.target == document.body) {
-      e.preventDefault();
-    }
-  });
 
   const [address, setAddress] = useState();
   const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
@@ -47,6 +35,47 @@ export default function App() {
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
+  const filters = [
+    {type: "episodescount", desc: t("sorting.episodescount")},
+    {type: "podcastsactivity", desc: t("sorting.podcastsactivity")}
+  ];
+  const filterTypes = filters.map(f => f.type)
+
+  // const changeSorting = (n) => {
+  //   setPodcasts(podcasts[filterTypes[n]])
+  //   setSelection(n)
+  // }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const sorted = await sortPodcasts(filterTypes)
+      const podcasts = sorted[filterTypes[selection]].splice(0, 4)
+      const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
+      const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
+      setCurrentEpisode(convertedEpisodes[0])
+      setRecentlyAdded(convertedEpisodes)
+      setFeaturedPodcasts(convertedPodcasts)
+      // setSortedPodcasts(sorted)
+      // setPodcasts(sorted[filterTypes[selection]])
+      setLoading(false)
+    }
+    fetchData()
+  }, [])
+
+  const playEpisode = (episode) => {
+    // if (episode.contentUrl === currentEpisode.contentUrl) {
+    //   // do something here to trigger a re-render maybe or force a re-render for featured episode
+    //   setCurrentEpisode(queue)
+    // }
+    setCurrentEpisode(episode);
+  };
+
+  window.addEventListener('keydown', function(e) {
+    if(e.key == " " && e.target == document.body) {
+      e.preventDefault();
+    }
+  });
 
   const appState = {
     t: t,
@@ -108,72 +137,41 @@ export default function App() {
       currentEpisode: currentEpisode,
     },
   }
-  
-  const filters = [
-    {type: "episodescount", desc: t("sorting.episodescount")},
-    {type: "podcastsactivity", desc: t("sorting.podcastsactivity")}
-  ];
-  const filterTypes = filters.map(f => f.type)
 
-  // const changeSorting = (n) => {
-  //   setPodcasts(podcasts[filterTypes[n]])
-  //   setSelection(n)
-  // }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      const sorted = await sortPodcasts(filterTypes)
-      const podcasts = sorted[filterTypes[selection]].splice(0, 4)
-      const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
-      const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
-      setCurrentEpisode(convertedEpisodes[0])
-      setRecentlyAdded(convertedEpisodes)
-      setFeaturedPodcasts(convertedPodcasts)
-      // setSortedPodcasts(sorted)
-      // setPodcasts(sorted[filterTypes[selection]])
-      setLoading(false)
-    }
-    fetchData()
-  }, [])
-
-  // TODO 
+  // TODO
   // place url queries inside app component
   // add a loading skeleton for the app
-  // use context api to remove prop drilling
   // clean up useEffect and appState code
   // add translations
 
   return (
     <div className="select-none h-full bg-black overflow-hidden " data-theme="business">
-      <div className="flex h-screen">
-        <div className="md:hidden absolute z-10 bottom-0 w-screen">
-          {!loading ? <PlayerMobile episode={currentEpisode} appState={appState} /> : <div>Loading...</div>}
-        </div>
-        <div className="hidden md:block">
-          <div className="mr-8">
-            <Sidenav />
+      <appContext.Provider value={appState}>
+        <div className="flex h-screen">
+          <div className="md:hidden absolute z-10 bottom-0 w-screen">
+            {!loading ? <PlayerMobile episode={currentEpisode} /> : <div>Loading...</div>}
           </div>
-          <div className="absolute z-20 bottom-0">
-            {!loading && currentEpisode ? <Player episode={currentEpisode} appState={appState} />: <div>Loading...</div>}
+          <div className="hidden md:block">
+            <div className="mr-8">
+              <Sidenav />
+            </div>
+            <div className="absolute z-20 bottom-0">
+              {!loading && currentEpisode ? <Player episode={currentEpisode} />: <div>Loading...</div>}
+            </div>
+            <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
+              {!loading ? <EpisodeQueue />: <div>Loading...</div>}
+            </div>
           </div>
-          <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
-            {!loading ? <EpisodeQueue appState={appState} />: <div>Loading...</div>}
-          </div>
-        </div>
-        <div className="overflow-scroll ml-8 pr-8 pt-9 w-screen">
-          <div className="app-view">
-            {!loading ? (
-              <>
-                <NavBar appState={appState} />
-                <div className="pb-20 w-full overflow-hidden">
-                  <FeaturedView appState={appState} />
-                </div>
-              </>
-            ) : <div>Loading...</div>}
+          <div className="overflow-scroll ml-8 pr-8 pt-9 w-screen">
+            <div className="app-view">
+              {!loading ? <NavBar /> : <div>Loading...</div>}
+              <div className="pb-20 w-full overflow-hidden">
+                <FeaturedView />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </appContext.Provider>
     </div>
   );
 }

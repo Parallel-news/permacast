@@ -1,3 +1,8 @@
+import React from 'react';
+
+export const appContext = React.createContext(null);
+
+
 export async function generateFactoryState(address) {
   return `{
   "podcasts": [],

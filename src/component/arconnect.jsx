@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import Swal from 'sweetalert2'
 import { shortenAddress } from '../utils/ui'
 import { SortAscendingIcon } from '@heroicons/react/solid'
 import { Transition } from '@headlessui/react'
+import { appContext } from '../utils/initStateGen'
 
 const requiredPermissions = ['ACCESS_ADDRESS', 'ACCESS_ALL_ADDRESSES', 'SIGNATURE', 'SIGN_TRANSACTION']
 
@@ -70,10 +71,11 @@ export function Dropdown({choices, selection, changeSorting}) {
 }
 
 
-export default function ArConnect({appState}) {
-  const { t } = useTranslation()
+export default function ArConnect() {
+  const appState = useContext(appContext)
   const {address, setAddress, ANSData, setANSData, walletConnected, setWalletConnected } = appState.user
-
+  const { t } = useTranslation()
+  
   useEffect(() => {
     // add ArConnect event listeners
     window.addEventListener('arweaveWalletLoaded', walletLoadedEvent)

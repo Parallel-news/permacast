@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { appContext } from "../utils/initStateGen";
+
 export function Cooyub({svgStyle, rectStyle, fill}) {
   return (
     <svg className={svgStyle} style={{borderRadius: '4px'}}>
@@ -15,7 +18,9 @@ export function PlayButton ({svgStyle, fill, outline, size="20"}) {
 }
 
 // make sure to pass RGB values as strings
-export function GlobalPlayButton ({appState, size="20", innerColor=null, outerColor=null}) {
+export function GlobalPlayButton ({size="20", innerColor=null, outerColor=null}) {
+  const appState = useContext(appContext);
+
   let cl;
   let bg;
   if (innerColor) cl = innerColor;

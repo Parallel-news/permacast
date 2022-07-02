@@ -1,6 +1,9 @@
+import { useContext } from 'react'
 import { Cooyub, GlobalPlayButton } from "./icons";
+import { appContext } from "../utils/initStateGen";
 
-export function TrackView({episode, appState, includeDescription=false, playButtonSize="20"}) {
+export function TrackView({episode, includeDescription=false, playButtonSize="20"}) {
+  const appState = useContext(appContext);
   const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
   const queue = appState.queue;
 
@@ -29,7 +32,7 @@ export function TrackView({episode, appState, includeDescription=false, playButt
       </div>
       {playButtonSize == 0 ? null : (
         <div onClick={() => queue.playEpisode(episode)}>
-          <GlobalPlayButton appState={appState} size={playButtonSize} />
+          <GlobalPlayButton size={playButtonSize} />
         </div>
       )}
     </div>

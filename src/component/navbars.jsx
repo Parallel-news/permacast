@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext  } from 'react';
 import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import { Disclosure } from '@headlessui/react'
@@ -7,8 +7,9 @@ import YellowRec from '../yellow-rec.svg'
 import { Cooyub } from './icons';
 import ArConnect from './arconnect';
 import {Searchbar, SearchbarMobile} from './searchbar';
+import { appContext } from '../utils/initStateGen';
 
-export function Sidenav({appState}) {
+export function Sidenav() {
   return (
     <div className="w-[100px] h-full pt-11 ">
       <Cooyub svgStyle="ml-9 w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
@@ -23,11 +24,11 @@ export function Sidenav({appState}) {
   )
 }
 
-export function NavBar({appState}) {
+export function NavBar() {
   return (
     <>
       <div className="md:hidden">
-        <NavBarMobile appState={appState} />
+        <NavBarMobile />
       </div>
       <div className="hidden md:block">
         <div className="flex">
@@ -35,7 +36,7 @@ export function NavBar({appState}) {
             <Searchbar />
           </div>
           <div className="w-72">
-            <ArConnect appState={appState} />
+            <ArConnect />
           </div>
         </div>
       </div>
@@ -43,7 +44,8 @@ export function NavBar({appState}) {
   )
 }
 
-export function NavBarMobile({appState}) {
+export function NavBarMobile() {
+  const appState = useContext(appContext);
   const { t, i18n } = useTranslation();
 
   const changeLanguage = (lng) => {
@@ -69,7 +71,6 @@ export function NavBarMobile({appState}) {
       htmlContainer: 'list text-left text-md font-mono'
     }
   })
-  
 
   return (
     <div className="border border-zinc-400 rounded-lg text-white p-2">
@@ -82,7 +83,7 @@ export function NavBarMobile({appState}) {
                 <div className="flex w-full items-center ">
                   <img className="block h-5 w-auto mr-2" src={YellowRec} alt="permacast" />
                   <div className="w-full mx-2">
-                    <SearchbarMobile appState={appState} />
+                    <SearchbarMobile />
                   </div>
                 </div>
               </div>
@@ -131,7 +132,7 @@ export function NavBarMobile({appState}) {
                   as="a"
                   className="block px-3 py-2 rounded-md"
                 >
-                  <ArConnect appState={appState} />
+                  <ArConnect />
                 </Disclosure.Button>
               </div>
             </Disclosure.Panel>
@@ -139,7 +140,7 @@ export function NavBarMobile({appState}) {
         </Disclosure>
         <Disclosure as="nav" className="hidden md:grid">
           <div className="mx-auto mt-2 px-3 mb-2 shadow-lg rounded-box">
-            <ArConnect appState={appState} />
+            <ArConnect />
           </div>
         </Disclosure>
       </div>

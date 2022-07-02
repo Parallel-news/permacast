@@ -1,7 +1,9 @@
-import React from 'react';
+import { useContext } from 'react';
+import { appContext } from '../utils/initStateGen';
 import { TrackView } from './trackView';
 
-export default function EpisodeQueue({ appState }) {
+export default function EpisodeQueue() {
+  const appState = useContext(appContext);
   
   return (
     <div className="rounded-[24px] w-72 text-white h-screen overflow-y-auto p-4 bg-zinc-900">
@@ -9,7 +11,7 @@ export default function EpisodeQueue({ appState }) {
       <div className="overflow-y-auto">
         {appState.queue.get().map((episode, index) => (
           <div key={index} className="grid grid-rows-3 mb-[-80px]">
-            <TrackView episode={episode} appState={appState} playButtonSize="16" />
+            <TrackView episode={episode} playButtonSize="16" />
           </div>
         ))}
         {appState.queue.get().length === 0 && (

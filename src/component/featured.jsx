@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import FastAverageColor from 'fast-average-color';
 import { MESON_ENDPOINT } from '../utils/arweave';
 import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
@@ -6,8 +6,10 @@ import { convertToPodcast } from '../utils/podcast';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { TrackView } from './trackView';
+import { appContext } from '../utils/initStateGen.js';
 
-export function Greeting({appState}) {
+export function Greeting() {
+  const appState = useContext(appContext);
   const user = appState.user;
   const label = user.ANSData?.currentLabel
   // what about randomizing greetings?
@@ -26,7 +28,9 @@ export function Greeting({appState}) {
   )
 }
 
-export function FeaturedEpisode({episode, appState}) {
+export function FeaturedEpisode({episode}) {
+  const appState = useContext(appContext);
+
   const [dominantColor, setDominantColor] = useState();
   const [dominantColorAlt, setDominantColorAlt] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -70,8 +74,9 @@ export function FeaturedEpisode({episode, appState}) {
 }
 
 
-export function FeaturedPodcast({podcast, appState}) {
-  // console.log(podcast)
+export function FeaturedPodcast({podcast}) {
+  const appState = useContext(appContext);
+
   const [dominantColor, setDominantColor] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [textColor, setTextColor] = useState();
@@ -103,7 +108,7 @@ export function FeaturedPodcast({podcast, appState}) {
                 appState.queue.enqueuePodcast(podcast.firstTenEpisodes());
                 appState.queue.play(podcast.firstTenEpisodes()[0]);
               }}>
-                <GlobalPlayButton appState={appState} size="20" innerColor={dominantColor} outerColor={textColor} />
+                <GlobalPlayButton size="20" innerColor={dominantColor} outerColor={textColor} />
               </div>
               <div className="ml-3">
                 <div className="text-lg line-clamp-1">{podcast.title}</div>
@@ -117,39 +122,38 @@ export function FeaturedPodcast({podcast, appState}) {
   )
 }
 
-export function FeaturedPodcasts({podcasts, appState}) {
+export function FeaturedPodcasts({podcasts}) {
   return (
     <>
       {podcasts.map((podcast, index) => (
         <React.Fragment key={index}>
-          <FeaturedPodcast podcast={podcast} appState={appState} />
+          <FeaturedPodcast podcast={podcast} />
         </React.Fragment>
       ))}
     </>
   )
 }
 
-export function FeaturedPodcastsMobile({podcasts, appState}) {
+export function FeaturedPodcastsMobile({podcasts}) {
   return (
     <div className="carousel md:hidden">
       {podcasts.map((podcast, index) => (
         <div className="carousel-item max-w-sm pr-4" key={index}>
-          <FeaturedPodcast podcast={podcast} appState={appState} />
+          <FeaturedPodcast podcast={podcast} />
         </div>
       ))}
     </div>
   )
 }
 
-export function RecentlyAdded({episodes, appState}) {
- 
+export function RecentlyAdded({episodes}) {
   return (
     <div className="">
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 text-zinc-100">
         {episodes.map((episode, index) => (
           <div key={index} className="border border-zinc-800 rounded-[24px] p-3 w-full">
-            <TrackView episode={episode} appState={appState} />
+            <TrackView episode={episode} />
           </div>
         ))}
       </div>
@@ -157,7 +161,8 @@ export function RecentlyAdded({episodes, appState}) {
   )
 }
 
-export function FeaturedCreators({creators, appState}) {
+export function FeaturedCreators({creators}) {
+  const appState = useContext(appContext);
   const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
 
   return (
@@ -188,40 +193,41 @@ export function FeaturedCreators({creators, appState}) {
   )
 }
 
-export function FeaturedView({appState}) {
+export function FeaturedView() {
+  const appState = useContext(appContext)
   const {recentlyAdded, featuredPodcasts, creators} = appState.views.featured; 
 
   return (
     <div className="overflow-scroll w-full">
       <div>
         <div className="mt-10 pb-20">
-          {!appState.loading && (
-            <Greeting appState={appState} />
-          )}
+          {!appState.loading ? (
+            <Greeting />
+          ): <div>Loading...</div>}
           {!appState.loading ? (
             <div className="hidden md:block">
-              <FeaturedEpisode episode={recentlyAdded[0]} appState={appState} />
+              <FeaturedEpisode episode={recentlyAdded[0]} />
             </div>
           ): <div>Loading...</div>}
           {!appState.loading ? (
             <div className="hidden md:grid w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
-              <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
+              <FeaturedPodcasts podcasts={featuredPodcasts} />
             </div>
           ): <div>Loading...</div>}
           {!appState.loading ? (
-            <FeaturedPodcastsMobile podcasts={featuredPodcasts} appState={appState} />
+            <FeaturedPodcastsMobile podcasts={featuredPodcasts} />
           ): <div>Loading...</div>}
           <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
             <div className="xl:col-span-3 lg:col-span-2 md:col-span-1 mb-9">
               {!appState.loading ? (
-                <RecentlyAdded episodes={recentlyAdded} appState={appState} />
+                <RecentlyAdded episodes={recentlyAdded} />
               ): <div>Loading...</div>}
             </div>
             {!appState.loading ? (
               <div className="w-full">
-                <FeaturedCreators creators={creators} appState={appState} />
+                <FeaturedCreators creators={creators} />
               </div>
-            ) : <div>Loading...</div>}
+            ): <div>Loading...</div>}
           </div>
         </div>
       </div>

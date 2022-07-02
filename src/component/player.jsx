@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 
-import { TrackView } from "./trackView";
+import { TrackView } from './trackView';
 import { GlobalPlayButton } from './icons';
 import { ViewListIcon, ShareIcon, ArrowsExpandIcon, PauseIcon, VolumeUpIcon, FastForwardIcon, RewindIcon } from "@heroicons/react/outline";
+import { appContext } from '../utils/initStateGen';
 
+const AudioPlayer = ({ url }) => {
+  const appState = useContext(appContext);
 
-const AudioPlayer = ({ url, appState }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [trackProgress, setTrackProgress] = useState(0);
 
@@ -126,7 +128,6 @@ const AudioPlayer = ({ url, appState }) => {
           onPrevClick={toPrevTrack}
           onNextClick={toNextTrack}
           onPlayPauseClick={setIsPlaying}
-          appState={appState}
         />
       </div>
       <div className=" flex">
@@ -138,76 +139,74 @@ const AudioPlayer = ({ url, appState }) => {
   );
 };
 
-const AudioControls = ({
-  isPlaying,
-  onPlayPauseClick,
-  onPrevClick,
-  onNextClick,
-  appState,
-}) => (
-  <div className="w-full flex justify-between">
-    <button
-      type="button"
-      className="prev"
-      aria-label="Previous"
-      onClick={onPrevClick}
-    >
-      <RewindIcon height="28" width="28" />
-    </button>
-    {isPlaying ? (
+export function AudioControls ({isPlaying, onPlayPauseClick, onPrevClick, onNextClick}) {
+  return (
+    <div className="w-full flex justify-between">
       <button
         type="button"
-        onClick={() => onPlayPauseClick(false)}
-        aria-label="Pause"
+        className="prev"
+        aria-label="Previous"
+        onClick={onPrevClick}
       >
-        <PauseIcon height="28" width="28" />
+        <RewindIcon height="28" width="28" />
       </button>
-    ) : (
+      {isPlaying ? (
+        <button
+          type="button"
+          onClick={() => onPlayPauseClick(false)}
+          aria-label="Pause"
+        >
+          <PauseIcon height="28" width="28" />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onPlayPauseClick(true)}
+          aria-label="Play"
+        >
+          <GlobalPlayButton size="14" />
+        </button>
+      )}
       <button
         type="button"
-        onClick={() => onPlayPauseClick(true)}
-        aria-label="Play"
+        aria-label="Next"
+        onClick={onNextClick}
       >
-        <GlobalPlayButton appState={appState} size="14" />
+        <FastForwardIcon height="28" width="28" />
       </button>
-    )}
-    <button
-      type="button"
-      aria-label="Next"
-      onClick={onNextClick}
-    >
-      <FastForwardIcon height="28" width="28" />
-    </button>
-  </div>
-);
-
-export function PlayerMobile({ episode, appState }) {
+    </div>
+  )
+}
+export function PlayerMobile({ episode }) {
   // only visual for now
+  const appState = useContext(appContext);
+
   return (
     <div className="w-full h-20 pt-2 px-4 rounded-t-md bg-zinc-900 text-zinc-200 overflow-y-hidden flex items-center">
       <div className="flex-1">
-        <TrackView episode={episode} appState={appState} playButtonSize="0" />
+        <TrackView episode={episode} playButtonSize="0" />
       </div>
       <div className="flex items-center text-zinc-400">
-         <GlobalPlayButton appState={appState} size="14" />
+         <GlobalPlayButton size="14" />
          <ViewListIcon onClick={() => appState.queue.toggleVisibility()} width="28" height="28" />
       </div>
     </div>
   )
 };
 
-export function Player({episode, appState}) {
+export function Player({episode}) {
+  const appState = useContext(appContext);
+
   return (
     <div className="w-screen rounded-t-[24px] h-[84px] pt-4 px-8 bg-zinc-900 text-zinc-200 overflow-y-hidden">
       <div className="grid grid-cols-12 items-center justify-between">
         <div className="col-span-3">
-          <TrackView episode={episode} appState={appState} playButtonSize="0" />
+          <TrackView episode={episode} playButtonSize="0" />
         </div>
         <div className="col-span-6">
           <div className="flex">
             <AudioPlayer
               url={episode.contentUrl}
-              appState={appState}
             />
           </div>
         </div>
