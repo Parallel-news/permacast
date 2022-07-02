@@ -82,12 +82,10 @@ export default function App() {
     themeColor: 'rgb(255, 255, 0)',
     loading: loading,
     theme: {},
-    view: {
-      views: ["featured", ""],
+    views: {
+      list: ["featured", "following", "search"],
       currentTabIndex: currentTabIndex,
       setCurrentTabIndex: setCurrentTabIndex,
-    },
-    views: {
       featured: {
         recentlyAdded: recentlyAdded,
         featuredPodcasts: featuredPodcasts,
@@ -107,6 +105,8 @@ export default function App() {
           }
         ],
       },
+      following: {},
+      search: {},
     },
     user: {
       address: address,

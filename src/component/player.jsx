@@ -177,6 +177,7 @@ export function AudioControls ({isPlaying, onPlayPauseClick, onPrevClick, onNext
     </div>
   )
 }
+
 export function PlayerMobile({ episode }) {
   // only visual for now
   const appState = useContext(appContext);

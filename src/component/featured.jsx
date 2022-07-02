@@ -97,7 +97,7 @@ export function FeaturedPodcast({podcast}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
             <div className="pt-5 pb-3 text-xs">{podcast.episodesCount} Episode{podcast.episodesCount == 1 ? '' : 's'}</div>
             <div className="w-full mb-7">
@@ -136,9 +136,9 @@ export function FeaturedPodcasts({podcasts}) {
 
 export function FeaturedPodcastsMobile({podcasts}) {
   return (
-    <div className="carousel md:hidden">
+    <div className="carousel">
       {podcasts.map((podcast, index) => (
-        <div className="carousel-item max-w-sm pr-4" key={index}>
+        <div className="carousel-item max-w-[280px] md:max-w-xs pr-4" key={index}>
           <FeaturedPodcast podcast={podcast} />
         </div>
       ))}
@@ -209,11 +209,11 @@ export function FeaturedView() {
               <FeaturedEpisode episode={recentlyAdded[0]} />
             </div>
           ): <div>Loading...</div>}
-          {!appState.loading ? (
+          {/* {!appState.loading ? (
             <div className="hidden md:grid w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
               <FeaturedPodcasts podcasts={featuredPodcasts} />
             </div>
-          ): <div>Loading...</div>}
+          ): <div>Loading...</div>} */}
           {!appState.loading ? (
             <FeaturedPodcastsMobile podcasts={featuredPodcasts} />
           ): <div>Loading...</div>}

@@ -6,19 +6,34 @@ import { HomeIcon, CollectionIcon, TranslateIcon, PlusIcon, QuestionMarkCircleIc
 import YellowRec from '../yellow-rec.svg'
 import { Cooyub } from './icons';
 import ArConnect from './arconnect';
-import {Searchbar, SearchbarMobile} from './searchbar';
+import { Searchbar, SearchbarMobile } from './searchbar';
 import { appContext } from '../utils/initStateGen';
 
 export function Sidenav() {
+  const appState = useContext(appContext);
+  const current = appState.views?.currentTabIndex;
+  const switchView = i => appState.views?.setCurrentTabIndex(i);
+  const cond = i => current === i;
+
   return (
     <div className="w-[100px] h-full pt-11 ">
-      <Cooyub svgStyle="ml-9 w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
-      <div className="ml-10 mt-10 grid rows-5 gap-10 text-zinc-400">
-        <HomeIcon color="white" width="28" height="28" />
-        <CollectionIcon width="28" height="28" />
-        <TranslateIcon width="28" height="28" />
-        <PlusIcon width="28" height="28" />
-        <QuestionMarkCircleIcon width="28" height="28" />
+      <div className="ml-9 grid rows-5 gap-9 text-zinc-400">
+        <Cooyub svgStyle="mb-10 w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView(0)} style={{color: cond(0) ? 'white': ''}} disabled={cond(0) ? true: false}>
+          <HomeIcon />
+        </button>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView(1)} style={{color: cond(1) ? 'white': ''}} disabled={cond(1) ? true: false}>
+          <CollectionIcon />
+        </button>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
+          <TranslateIcon />
+        </button>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
+          <PlusIcon />
+        </button>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
+          <QuestionMarkCircleIcon />
+        </button>
       </div>
     </div>
   )
