@@ -17,7 +17,7 @@ export function Greeting({appState}) {
       <h1 className="text-zinc-100 text-xl">
       {label ? (
         <>
-          Hello {trimANSLabel(label) + '!'}
+          Hello {trimANSLabel(label)}!
         </>
       ) : 'Welcome!'}
       </h1>
@@ -92,7 +92,7 @@ export function FeaturedPodcast({podcast, appState}) {
   return (
     <>
       {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 block xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden backdrop-blur-md rounded-[24px]">
+        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 xl:last:block md:last:hidden lg:[&:nth-last-child(2)]:block md:[&:nth-last-child(2)]:hidden backdrop-blur-md rounded-[24px]">
           <div className="h-1/6 w-full px-5 pb-2">
             <div className="pt-5 pb-3 text-xs">{podcast.episodesCount} Episode{podcast.episodesCount == 1 ? '' : 's'}</div>
             <div className="w-full mb-7">
@@ -126,6 +126,18 @@ export function FeaturedPodcasts({podcasts, appState}) {
         </React.Fragment>
       ))}
     </>
+  )
+}
+
+export function FeaturedPodcastsMobile({podcasts, appState}) {
+  return (
+    <div className="carousel md:hidden">
+      {podcasts.map((podcast, index) => (
+        <div className="carousel-item max-w-sm pr-4" key={index}>
+          <FeaturedPodcast podcast={podcast} appState={appState} />
+        </div>
+      ))}
+    </div>
   )
 }
 
@@ -192,9 +204,12 @@ export function FeaturedView({appState}) {
             </div>
           ): <div>Loading...</div>}
           {!appState.loading ? (
-            <div className="w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+            <div className="hidden md:grid w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
               <FeaturedPodcasts podcasts={featuredPodcasts} appState={appState} />
             </div>
+          ): <div>Loading...</div>}
+          {!appState.loading ? (
+            <FeaturedPodcastsMobile podcasts={featuredPodcasts} appState={appState} />
           ): <div>Loading...</div>}
           <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
             <div className="xl:col-span-3 lg:col-span-2 md:col-span-1 mb-9">
@@ -203,9 +218,9 @@ export function FeaturedView({appState}) {
               ): <div>Loading...</div>}
             </div>
             {!appState.loading ? (
-            <div className="w-full">
-              <FeaturedCreators creators={creators} appState={appState} />
-            </div>
+              <div className="w-full">
+                <FeaturedCreators creators={creators} appState={appState} />
+              </div>
             ) : <div>Loading...</div>}
           </div>
         </div>
