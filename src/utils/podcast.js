@@ -7,8 +7,8 @@ export async function getColor (url) {
   return color.rgb;
 }
 
-export async function convertToEpisode(podcast, episode) {
-  const rgb = await getColor(MESON_ENDPOINT + '/' + podcast.cover) 
+export async function convertToEpisode(podcast, episode, useColor=true) {
+  const rgb = useColor ? await getColor(MESON_ENDPOINT + '/' + podcast.cover) : 'rgb(0,0,20)';
 
   return {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
@@ -35,7 +35,7 @@ export async function convertToPodcast(podcast) {
     title: podcast.podcastName,
     description: podcast.description,
     episodesCount: podcast.episodes.length,
-    firstTenEpisodes: () => podcast.episodes.splice(0, 10).map(e => convertToEpisode(podcast, e)),
+    firstTenEpisodes: () => podcast.episodes.splice(0, 10).map(e => convertToEpisode(podcast, e, false)),
     getEpisodes: (start, count) => podcast.episodes.splice(start, count),
     creator: podcast.author,
     creatorAddress: podcast.owner,
