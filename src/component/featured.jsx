@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext,  } from 'react';
 import FastAverageColor from 'fast-average-color';
 import { MESON_ENDPOINT } from '../utils/arweave';
 import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
@@ -30,44 +30,31 @@ export function Greeting() {
 
 export function FeaturedEpisode({episode}) {
   const appState = useContext(appContext);
-
-  const [dominantColor, setDominantColor] = useState();
-  const [dominantColorAlt, setDominantColorAlt] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsLoading(true)
-    const fac = new FastAverageColor();
-    fac.getColorAsync(episode.cover).then(color => {
-      const rgb = replaceDarkColorsRGB(color.rgb)
-      const rgb2 = replaceDarkColorsRGB(color.rgb, 0.6)
-      setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
-      setDominantColorAlt(`rgb(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, 0.8)`);
-      // console.log('Average color', color, rgb, rgb2);
-    })
-    setIsLoading(false)
-  }, [])
+  const {cover, title, description} = episode;
+  
+  const rgb = replaceDarkColorsRGB(episode.rgb);
+  const rgb2 = replaceDarkColorsRGB(episode.rgb, 0.6);
+  const mainColor = (`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
+  const altMainColor = (`rgb(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, 0.8)`);
 
   return (
     <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
-      <img className="w-40 cursor-pointer  mr-8" src={episode.cover} alt={episode.title} />
+      <img className="w-40 cursor-pointer  mr-8" src={cover} alt={title} />
       <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg mr-2">
-        <div className="font-medium cursor-pointer line-clamp-1">{episode?.title} - Episode 1</div>
-        <div className="text-sm line-clamp-5">{episode?.description}</div>
+        <div className="font-medium cursor-pointer line-clamp-1">{title} - Episode 1</div>
+        <div className="text-sm line-clamp-5">{description}</div>
       </div>
       <div className="ml-auto">
-        {!isLoading && dominantColor && (
-          <div>
-            <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
-              <PlayButton svgStyle={dominantColorAlt} fill={dominantColorAlt} outline={dominantColorAlt} />
-              <div className="ml-1 " style={{color: dominantColorAlt}}>Play</div>
-            </div>
-            <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: dominantColor}}>
-              <EyeIcon color={dominantColorAlt} className="h-5 w-5" />
-              <div className="ml-1 " style={{color: dominantColorAlt}}>View</div>
-            </div>
+        <div>
+          <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
+            <PlayButton svgStyle={altMainColor} fill={altMainColor} outline={altMainColor} />
+            <div className="ml-1 " style={{color: altMainColor}}>Play</div>
           </div>
-        )}
+          <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
+            <EyeIcon color={altMainColor} className="h-5 w-5" />
+            <div className="ml-1 " style={{color: altMainColor}}>View</div>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -76,48 +63,31 @@ export function FeaturedEpisode({episode}) {
 
 export function FeaturedPodcast({podcast}) {
   const appState = useContext(appContext);
-
-  const [dominantColor, setDominantColor] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [textColor, setTextColor] = useState();
-
-  useEffect(() => {
-    setIsLoading(true)
-    const fac = new FastAverageColor();
-    fac.getColorAsync(podcast.cover).then(color => {
-      const rgb = replaceDarkColorsRGB(color.rgb)
-      setDominantColor(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
-      const newTextColor = isTooLight(rgb) ? 'black' : 'white'
-      // console.log(isTooLight(rgb), rgb)
-      setTextColor(newTextColor);
-    })
-    setIsLoading(false)
-  }, [])
+  const { rgb, episodesCount, cover, podcastName, title, description, firstTenEpisodes } = podcast;
+  const textColor = isTooLight(rgb) ? 'black' : 'white';
 
   return (
     <>
-      {!isLoading && dominantColor && textColor && (
-        <div style={{backgroundColor: dominantColor, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
-          <div className="h-1/6 w-full px-5 pb-2">
-            <div className="pt-5 pb-3 text-xs">{podcast.episodesCount} Episode{podcast.episodesCount == 1 ? '' : 's'}</div>
-            <div className="w-full mb-7">
-              <img className="object-contain h-[180px] w-full" src={podcast.cover} alt={podcast.podcastName} />
+      <div style={{backgroundColor: rgb, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
+        <div className="h-1/6 w-full px-5 pb-2">
+          <div className="pt-5 pb-3 text-xs">{episodesCount} Episode{episodesCount == 1 ? '' : 's'}</div>
+          <div className="w-full mb-7">
+            <img className="object-contain h-[180px] w-full" src={cover} alt={podcastName} />
+          </div>
+          <div className="h-16 flex items-center">
+            <div onClick={() => {
+              appState.queue.enqueuePodcast(firstTenEpisodes());
+              appState.queue.play(firstTenEpisodes()[0]);
+            }}>
+              <GlobalPlayButton size="20" innerColor={rgb} outerColor={textColor} />
             </div>
-            <div className="h-16 flex items-center">
-              <div onClick={() => {
-                appState.queue.enqueuePodcast(podcast.firstTenEpisodes());
-                appState.queue.play(podcast.firstTenEpisodes()[0]);
-              }}>
-                <GlobalPlayButton size="20" innerColor={dominantColor} outerColor={textColor} />
-              </div>
-              <div className="ml-3">
-                <div className="text-lg line-clamp-1">{podcast.title}</div>
-                <div className="text-xs max-w-[85%] line-clamp-2">{podcast.description}</div>
-              </div>
+            <div className="ml-3">
+              <div className="text-lg line-clamp-1">{title}</div>
+              <div className="text-xs max-w-[95%] line-clamp-2">{description}</div>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </>
   )
 }
@@ -193,7 +163,7 @@ export function FeaturedCreators({creators}) {
   )
 }
 
-export function FeaturedView() {
+export default function FeaturedView() {
   const appState = useContext(appContext)
   const {recentlyAdded, featuredPodcasts, creators} = appState.views.featured; 
 

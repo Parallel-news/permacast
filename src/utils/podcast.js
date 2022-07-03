@@ -1,7 +1,15 @@
 import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
+import FastAverageColor from 'fast-average-color'
 
+export async function getColor (url) {
+  const fac = new FastAverageColor();
+  let color = await fac.getColorAsync(url);
+  return color.rgb;
+}
 
-export function convertToEpisode(podcast, episode) {
+export async function convertToEpisode(podcast, episode) {
+  const rgb = await getColor(MESON_ENDPOINT + '/' + podcast.cover) 
+
   return {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
     title: episode.episodeName,
@@ -15,10 +23,13 @@ export function convertToEpisode(podcast, episode) {
     contentUrl: MESON_ENDPOINT + '/' + episode.contentTx,
     mediaType: episode.type,
     objectType: 'episode',
+    rgb: rgb,
   };
 }
 
-export function convertToPodcast(podcast) {
+export async function convertToPodcast(podcast) {
+  const rgb = await getColor(MESON_ENDPOINT + '/' + podcast.cover) 
+
   return {
     cover: MESON_ENDPOINT + '/' + podcast.cover,
     title: podcast.podcastName,
@@ -32,6 +43,7 @@ export function convertToPodcast(podcast) {
     contentUrl: null,
     mediaType: null,
     objectType: 'podcast',
+    rgb: rgb,
   }
 }
 

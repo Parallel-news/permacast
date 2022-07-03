@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HashRouter as Router, Route } from "react-router-dom";
-import {Sidenav, NavBar} from "./component/navbars.jsx";
+import { Sidenav, NavBar } from "./component/navbars.jsx";
 import Searchbar from "./component/searchbar.jsx";
 import ArConnect from './component/arconnect.jsx';
+import UploadPodcastView from './component/uploadPodcast.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
-import { Player, PlayerMobile} from './component/player.jsx';
-import { FeaturedView } from './component/featured.jsx';
+import { Player, PlayerMobile } from './component/player.jsx';
+import FeaturedView from './component/featured.jsx';
 import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
 import { appContext } from './utils/initStateGen.js';
 
@@ -25,7 +26,7 @@ export default function App() {
 
   const [address, setAddress] = useState();
   const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
-  const [walletConnected, setWalletConnected] = useState(false)
+  const [walletConnected, setWalletConnected] = useState(false);
 
   // const [podcasts, setPodcasts] = useState();
   // const [sortedPodcasts, setSortedPodcasts] = useState();
@@ -33,7 +34,7 @@ export default function App() {
   const [queueVisible, setQueueVisible] = useState(false);
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
-  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+  const [currentTab, setCurrentTab] = useState("featured");
 
   const filters = [
     {type: "episodescount", desc: t("sorting.episodescount")},
@@ -51,8 +52,8 @@ export default function App() {
       setLoading(true)
       const sorted = await sortPodcasts(filterTypes)
       const podcasts = sorted[filterTypes[selection]].splice(0, 4)
-      const convertedPodcasts = podcasts.map(p => convertToPodcast(p))
-      const convertedEpisodes = podcasts.map(p => convertToEpisode(p, p.episodes[0]))
+      const convertedPodcasts = await Promise.all(podcasts.map(p => convertToPodcast(p)))
+      const convertedEpisodes = await Promise.all(podcasts.map(p => convertToEpisode(p, p.episodes[0])))
       setCurrentEpisode(convertedEpisodes[0])
       setRecentlyAdded(convertedEpisodes)
       setFeaturedPodcasts(convertedPodcasts)
@@ -83,10 +84,11 @@ export default function App() {
     loading: loading,
     theme: {},
     views: {
-      list: ["featured", "following", "search"],
-      currentTabIndex: currentTabIndex,
-      setCurrentTabIndex: setCurrentTabIndex,
+      list: ["featured", "following", "search", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"],
+      currentTab: currentTab,
+      setCurrentTab: setCurrentTab,
       featured: {
+        html: <FeaturedView />,
         recentlyAdded: recentlyAdded,
         featuredPodcasts: featuredPodcasts,
         creators: [
@@ -105,8 +107,20 @@ export default function App() {
           }
         ],
       },
-      following: {},
-      search: {},
+      following: {
+        html: <h1 className="text-white">following</h1>,
+      },
+      search: {
+        html: <div>SEEEEARRCCHHHHH</div>,
+      },
+      uploadPodcast: {
+        html: <UploadPodcastView />
+      },
+      uploadEpisode: {},
+      podcast: {},
+      episode: {},
+      creator: {},
+      fullscreen: {},
     },
     user: {
       address: address,
@@ -166,7 +180,9 @@ export default function App() {
             <div className="app-view">
               {!loading ? <NavBar /> : <div>Loading...</div>}
               <div className="pb-20 w-full overflow-hidden">
-                <FeaturedView />
+                {appState.views.currentTab === "featured" && appState.views.featured.html}
+                {appState.views.currentTab === "following" && appState.views.following.html}
+                {appState.views.currentTab === "uploadPodcast" && appState.views.uploadPodcast.html}
               </div>
             </div>
           </div>
