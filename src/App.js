@@ -40,6 +40,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState("featured");
   const [searchInput, setSearchInput] = useState("");
 
+
   const filters = [
     {type: "episodescount", desc: t("sorting.episodescount")},
     {type: "podcastsactivity", desc: t("sorting.podcastsactivity")}
@@ -143,6 +144,8 @@ export default function App() {
   // clean up useEffect and appState code
   // add translations
   // improve AR rounding
+  // finish tab switching gradient color animation
+  // make buttons consistent accross app
 
   return (
     <div className="select-none h-full bg-black overflow-hidden " data-theme="business">
@@ -167,7 +170,7 @@ export default function App() {
               <div className="mb-10">
                 {!loading ? <NavBar />: <div>Loading...</div>}
               </div>
-              <div className="pb-20 w-full overflow-hidden">
+              <div className="pb-10 w-full overflow-hidden">
                 {currentView === "featured" && appState.views.featured}
                 {currentView === "searchResults" && appState.views.searchResults}
                 {currentView === "following" && appState.views.following}

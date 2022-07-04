@@ -38,7 +38,7 @@ export function Sidenav() {
           <button tabIndex="0" className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
             <TranslateIcon />
           </button>
-          <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-32">
+          <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg rounded-box w-32">
             {LANGUAGES.map(l => (
               <li key={l.code}>
                 <span onClick={() => changeLanguage(l.code)}>{l.name}</span>
@@ -126,7 +126,7 @@ export function NavBarMobile() {
                   <label tabIndex="0">
                     <TranslateIcon className="h-5 w-5" aria-hidden="true" />
                   </label>
-                  <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-32">
+                  <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg rounded-box w-32">
                     {LANGUAGES.map(l => (
                       <li key={l.code}>
                         <span onClick={() => changeLanguage(l.code)}>{l.name}</span>
