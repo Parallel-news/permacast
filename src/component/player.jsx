@@ -134,7 +134,6 @@ const AudioPlayer = ({ url }) => {
         <span>
           {timeLeft}
         </span>
-        {/* <input type="range" min="0" max="100" value={trackProgress} class="range range-primary" /> */}
       </div>
     </div>
   );
