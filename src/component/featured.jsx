@@ -1,8 +1,5 @@
-import React, { useState, useEffect, useContext,  } from 'react';
-import FastAverageColor from 'fast-average-color';
-import { MESON_ENDPOINT } from '../utils/arweave';
+import React, { useContext } from 'react';
 import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
-import { convertToPodcast } from '../utils/podcast';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { TrackView } from './trackView';
@@ -163,43 +160,38 @@ export function FeaturedCreators({creators}) {
   )
 }
 
-export default function FeaturedView() {
+export default function FeaturedView({recentlyAdded, featuredPodcasts, creators}) {
   const appState = useContext(appContext)
-  const {recentlyAdded, featuredPodcasts, creators} = appState.views.featured; 
 
   return (
     <div className="overflow-scroll w-full">
-      <div>
-        <div className="mt-10 pb-20">
-          {!appState.loading ? (
-            <Greeting />
-          ): <div>Loading...</div>}
-          {!appState.loading ? (
-            <div className="hidden md:block">
-              <FeaturedEpisode episode={recentlyAdded[0]} />
-            </div>
-          ): <div>Loading...</div>}
-          {/* {!appState.loading ? (
-            <div className="hidden md:grid w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
-              <FeaturedPodcasts podcasts={featuredPodcasts} />
-            </div>
-          ): <div>Loading...</div>} */}
-          {!appState.loading ? (
-            <FeaturedPodcastsMobile podcasts={featuredPodcasts} />
-          ): <div>Loading...</div>}
-          <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
-            <div className="xl:col-span-3 lg:col-span-2 md:col-span-1 mb-9">
-              {!appState.loading ? (
-                <RecentlyAdded episodes={recentlyAdded} />
-              ): <div>Loading...</div>}
-            </div>
-            {!appState.loading ? (
-              <div className="w-full">
-                <FeaturedCreators creators={creators} />
-              </div>
-            ): <div>Loading...</div>}
-          </div>
+      {!appState.loading ? (
+        <Greeting />
+      ): <div>Loading...</div>}
+      {!appState.loading ? (
+        <div className="hidden md:block">
+          <FeaturedEpisode episode={recentlyAdded[0]} />
         </div>
+      ): <div>Loading...</div>}
+      {/* {!appState.loading ? (
+        <div className="hidden md:grid w-full mt-8 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+          <FeaturedPodcasts podcasts={featuredPodcasts} />
+        </div>
+      ): <div>Loading...</div>} */}
+      {!appState.loading ? (
+        <FeaturedPodcastsMobile podcasts={featuredPodcasts} />
+      ): <div>Loading...</div>}
+      <div className="my-9 grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 gap-x-12">
+        <div className="xl:col-span-3 lg:col-span-2 md:col-span-1 mb-9">
+          {!appState.loading ? (
+            <RecentlyAdded episodes={recentlyAdded} />
+          ): <div>Loading...</div>}
+        </div>
+        {!appState.loading ? (
+          <div className="w-full">
+            <FeaturedCreators creators={creators} />
+          </div>
+        ): <div>Loading...</div>}
       </div>
     </div>
   )

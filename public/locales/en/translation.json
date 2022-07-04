@@ -13,7 +13,7 @@
 		"logout": "Logout",
 		"swal": {
 			"title": "Install ArConnect to continue",
-			"text": "Permablog uses ArConnect to make it easier to authenticate and send transactions for questions and answers",
+			"text": "Permacast uses ArConnect to make it easier to authenticate and send transactions for questions and answers",
 			"footer": "Download ArConnect here"
 		}
 	},

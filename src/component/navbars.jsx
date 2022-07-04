@@ -6,18 +6,25 @@ import { HomeIcon, CollectionIcon, TranslateIcon, PlusIcon, QuestionMarkCircleIc
 import YellowRec from '../yellow-rec.svg'
 import { Cooyub } from './icons';
 import ArConnect from './arconnect';
-import { Searchbar, SearchbarMobile } from './searchbar';
+import { Searchbar } from './search';
 import { appContext } from '../utils/initStateGen';
+import { LANGUAGES } from '../utils/ui';
 
 export function Sidenav() {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   const appState = useContext(appContext);
-  const current = appState.views?.currentTab;
-  const switchView = i => appState.views?.setCurrentTab(i);
+  const current = appState.currentView;
+  const switchView = i => appState.setCurrentView(i);
   const cond = i => current === i;
 
   return (
-    <div className="w-[100px] h-full pt-11 ">
-      <div className="ml-9 grid rows-5 gap-9 text-zinc-400">
+    <div className="h-full pt-11 ">
+      <div className=" grid rows-5 gap-9 text-zinc-400">
         <button className="w-9 h-9 mb-10 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
           <Cooyub svgStyle="w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
         </button>
@@ -27,15 +34,24 @@ export function Sidenav() {
         <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("following")} style={{color: cond("following") ? 'white': ''}} disabled={cond("following") ? true: false}>
           <CollectionIcon />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
-          <TranslateIcon />
-        </button>
+        <div className="dropdown dropdown-hover mb-[-6px]">
+          <button tabIndex="0" className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
+            <TranslateIcon />
+          </button>
+          <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-32">
+            {LANGUAGES.map(l => (
+              <li key={l.code}>
+                <span onClick={() => changeLanguage(l.code)}>{l.name}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
         <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("uploadPodcast")} style={{color: cond("uploadPodcast") ? 'white': ''}} disabled={cond("uploadPodcast") ? true: false}>
           <PlusIcon />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
+        <a target="_blank" rel="noreferrer" href="https://t.me/permacast" className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
           <QuestionMarkCircleIcon />
-        </button>
+        </a>
       </div>
     </div>
   )
@@ -69,17 +85,6 @@ export function NavBarMobile() {
     i18n.changeLanguage(lng);
   };
 
-  const language = [
-    {
-      "code": "zh",
-      "name": "简体中文"
-    },
-    {
-      "code": "en",
-      "name": "English"
-    }
-  ]
-  
   const loadWhatsNew = () => Swal.fire({
     title: t("navbar.swal.title"),
     html: t("navbar.swal.html"),
@@ -100,7 +105,7 @@ export function NavBarMobile() {
                 <div className="flex w-full items-center ">
                   <img className="block h-5 w-auto mr-2" src={YellowRec} alt="permacast" />
                   <div className="w-full mx-2">
-                    <SearchbarMobile />
+                    <Searchbar />
                   </div>
                 </div>
               </div>
@@ -122,7 +127,7 @@ export function NavBarMobile() {
                     <TranslateIcon className="h-5 w-5" aria-hidden="true" />
                   </label>
                   <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-32">
-                    {language.map(l => (
+                    {LANGUAGES.map(l => (
                       <li key={l.code}>
                         <span onClick={() => changeLanguage(l.code)}>{l.name}</span>
                       </li>
@@ -154,11 +159,6 @@ export function NavBarMobile() {
               </div>
             </Disclosure.Panel>
           </>}
-        </Disclosure>
-        <Disclosure as="nav" className="hidden md:grid">
-          <div className="mx-auto mt-2 px-3 mb-2 shadow-lg rounded-box">
-            <ArConnect />
-          </div>
         </Disclosure>
       </div>
 

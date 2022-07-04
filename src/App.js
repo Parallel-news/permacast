@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HashRouter as Router, Route } from "react-router-dom";
 import { Sidenav, NavBar } from "./component/navbars.jsx";
-import Searchbar from "./component/searchbar.jsx";
+import SearchResultsView from "./component/search.jsx";
 import ArConnect from './component/arconnect.jsx';
 import UploadPodcastView from './component/uploadPodcast.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
@@ -10,6 +10,7 @@ import { Player, PlayerMobile } from './component/player.jsx';
 import FeaturedView from './component/featured.jsx';
 import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
 import { appContext } from './utils/initStateGen.js';
+import { MOCK_CREATORS } from './utils/ui.js';
 
 
 export default function App() {
@@ -24,6 +25,8 @@ export default function App() {
 
   const [currentEpisode, setCurrentEpisode] = useState(null);
 
+  const [themeColor, setThemeColor] = useState('rgb(255, 255, 0)');
+  const [backdropColor, setBackdropColor] = useState()
   const [address, setAddress] = useState();
   const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
   const [walletConnected, setWalletConnected] = useState(false);
@@ -34,7 +37,8 @@ export default function App() {
   const [queueVisible, setQueueVisible] = useState(false);
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
-  const [currentTab, setCurrentTab] = useState("featured");
+  const [currentView, setCurrentView] = useState("featured");
+  const [searchInput, setSearchInput] = useState("");
 
   const filters = [
     {type: "episodescount", desc: t("sorting.episodescount")},
@@ -77,50 +81,32 @@ export default function App() {
       e.preventDefault();
     }
   });
-
+  // finish this transition later on
+  const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
   const appState = {
     t: t,
-    themeColor: 'rgb(255, 255, 0)',
     loading: loading,
     theme: {},
+    themeColor: themeColor,
+    backdropColor: backdropColor,
+    viewsList: ["featured", "following", "searchResults", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"], 
+    currentView: currentView,
+    setCurrentView: setCurrentView,
     views: {
-      list: ["featured", "following", "search", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"],
-      currentTab: currentTab,
-      setCurrentTab: setCurrentTab,
-      featured: {
-        html: <FeaturedView />,
-        recentlyAdded: recentlyAdded,
-        featuredPodcasts: featuredPodcasts,
-        creators: [
-          {
-            fullname: 'Marton Lederer',
-            anshandle: 'martonlederer',
-            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-          }, {
-            fullname: 'Marton Lederer',
-            anshandle: 'martonlederer',
-            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-          }, {
-            fullname: 'Marton Lederer',
-            anshandle: 'martonlederer',
-            avatar: 'https://avatars.githubusercontent.com/u/30638105?v=4',
-          }
-        ],
-      },
-      following: {
-        html: <h1 className="text-white">following</h1>,
-      },
-      search: {
-        html: <div>SEEEEARRCCHHHHH</div>,
-      },
-      uploadPodcast: {
-        html: <UploadPodcastView />
-      },
-      uploadEpisode: {},
-      podcast: {},
-      episode: {},
-      creator: {},
-      fullscreen: {},
+      featured: <FeaturedView recentlyAdded={recentlyAdded} featuredPodcasts={featuredPodcasts} creators={MOCK_CREATORS} />,
+      following: <h1 className="text-white">following</h1>,
+      searchResults: <SearchResultsView />,
+      uploadPodcast: <UploadPodcastView />,
+      uploadEpisode: <>uploadEpisodeView</>,
+      podcast: <>podcastView</>,
+      episode: <>episodeView</>,
+      creator: <>creatorView</>,
+      fullscreen: <>fullscreenView</>,
+    },
+    search: {
+      input: searchInput,
+      setInput: setSearchInput,
+      isGlobal: currentView === "searchResults",
     },
     user: {
       address: address,
@@ -153,10 +139,10 @@ export default function App() {
   }
 
   // TODO
-  // place url queries inside app component
   // add a loading skeleton for the app
   // clean up useEffect and appState code
   // add translations
+  // improve AR rounding
 
   return (
     <div className="select-none h-full bg-black overflow-hidden " data-theme="business">
@@ -166,7 +152,7 @@ export default function App() {
             {!loading ? <PlayerMobile episode={currentEpisode} /> : <div>Loading...</div>}
           </div>
           <div className="hidden md:block">
-            <div className="mr-8">
+            <div className="w-[100px] flex justify-center">
               <Sidenav />
             </div>
             <div className="absolute z-20 bottom-0">
@@ -176,13 +162,16 @@ export default function App() {
               {!loading ? <EpisodeQueue />: <div>Loading...</div>}
             </div>
           </div>
-          <div className="overflow-scroll ml-8 pr-8 pt-9 w-screen">
-            <div className="app-view">
-              {!loading ? <NavBar /> : <div>Loading...</div>}
+          <div className="w-screen overflow-scroll" style={appState.currentView != 'featured' ? transition: {}}>
+            <div className="ml-8 pr-8 pt-9">
+              <div className="mb-10">
+                {!loading ? <NavBar />: <div>Loading...</div>}
+              </div>
               <div className="pb-20 w-full overflow-hidden">
-                {appState.views.currentTab === "featured" && appState.views.featured.html}
-                {appState.views.currentTab === "following" && appState.views.following.html}
-                {appState.views.currentTab === "uploadPodcast" && appState.views.uploadPodcast.html}
+                {currentView === "featured" && appState.views.featured}
+                {currentView === "searchResults" && appState.views.searchResults}
+                {currentView === "following" && appState.views.following}
+                {currentView === "uploadPodcast" && appState.views.uploadPodcast}
               </div>
             </div>
           </div>
