@@ -14,6 +14,7 @@
     "ardb": "^1.1.9",
     "arweave": "^1.10.22",
     "arweave-multihost": "^0.1.0",
+    "arweave-fees.js": "0.0.2",
     "autoprefixer": "^10.4.2",
     "concurrently": "^7.0.0",
     "daisyui": "^2.17.0",
