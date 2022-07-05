@@ -164,7 +164,7 @@ export default function FeaturedView({recentlyAdded, featuredPodcasts, creators}
   const appState = useContext(appContext)
 
   return (
-    <div className="overflow-scroll w-full">
+    <div className="overflow-scroll w-full pb-10">
       {!appState.loading ? (
         <Greeting />
       ): <div>Loading...</div>}

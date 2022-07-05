@@ -130,10 +130,12 @@ const AudioPlayer = ({ url }) => {
           onPlayPauseClick={setIsPlaying}
         />
       </div>
-      <div className=" flex">
+      <div className="flex items-center">
         <span>
           {timeLeft}
         </span>
+        {/* non-seekable for now */}
+        <progress className="progress ml-4 progress-primary w-full bg-gray-700" value={trackProgress} max={duration || 0}></progress>
       </div>
     </div>
   );

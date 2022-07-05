@@ -3,8 +3,7 @@ import { appContext } from '../utils/initStateGen';
 import { React, useState, useRef } from 'react';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, deployContract } from '../utils/arweave'
 import { languages_en, languages_zh, categories_en, categories_zh } from '../utils/languages';
-
-import { processFile } from '../utils/shorthands';
+import { processFile, userHasEnoughAR } from '../utils/shorthands';
 import ArDB from 'ardb';
 import { PhotographIcon } from '@heroicons/react/outline';
 
@@ -14,10 +13,12 @@ const ardb = new ArDB(arweave)
 
 export default function UploadPodcastView() {
   const appState = useContext(appContext);
-  let finalShowObj = {}
+  // remove state from here
   const [show, setShow] = useState(false);
   const [img, setImg] = useState();
+  const [isUploading, setIsUploading] = useState(false);
 
+  let finalShowObj = {}
   const podcastCoverRef = useRef()
   const { t, i18n } = useTranslation()
   const languages = i18n.language === 'zh' ? languages_zh : languages_en
@@ -171,11 +172,20 @@ export default function UploadPodcastView() {
     showObj.lang = podcastLanguage
     // upload cover, send all to Arweave
     let cover = await processFile(podcastCover)
-    await uploadToArweave(cover, coverFileType, showObj)
+    let showObjSize = JSON.stringify(showObj).length
+    let bytes = cover.byteLength + showObjSize + coverFileType.length
+    setIsUploading(true)
+    if (await userHasEnoughAR(t, bytes) === "all good") {
+      await uploadToArweave(cover, coverFileType, showObj)
+    } else {
+      console.log('upload failed')
+      setIsUploading(false)
+    };
   }
 
   const languageOptions = () => {
     const langsArray = Object.entries(languages);
+    //<option disabled defaultValue>Language</option>
     let optionsArr = []
     for (let lang of langsArray) {
       optionsArr.push(
@@ -186,6 +196,7 @@ export default function UploadPodcastView() {
   }
 
   const categoryOptions = () => {
+    // <option disabled defaultValue>Category</option>
     let optionsArr = []
     for (let i in categories) {
       optionsArr.push(
@@ -200,13 +211,13 @@ export default function UploadPodcastView() {
   }
 
   return (
-    <div className="text-zinc-400 h-screen">
+    <div className="text-zinc-400 h-full">
       <h1 className="text-2xl tracking-wider">New Show</h1>
       <div className="form-control">
         <form onSubmit={handleShowUpload}>
           <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />
-          <div className="flex mt-7">
-            <label htmlFor="podcastCover" className="cursor-pointer h-full w-1/6">
+          <div className="md:flex mt-7">
+            <label htmlFor="podcastCover" className="cursor-pointer transition duration-300 ease-in-out hover:text-white md:h-full w-1/6">
               {podcastCoverRef.current?.files?.[0] ? (
                 <div className="cursor-pointer bg-zinc-900 h-48 w-48 rounded-[20px] flex items-center justify-center">
                   <img src={img} className="h-48 w-48" />
@@ -226,28 +237,28 @@ export default function UploadPodcastView() {
                 </div>
               )}
             </label>
-            <div className="ml-10 fields w-5/6">
+            <div className="ml-0 md:ml-10 mt-10 md:mt-0 fields w-5/6">
               <div className="h-48 mb-10">
                 <div className="mb-5">
-                  <input className="py-3 px-5 w-full bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Show name..." required pattern=".{2,500}" title="Between 2 and 500 characters" type="text" name="podcastName" />
+                  <input className="input input-secondary w-full bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Show name..." required pattern=".{2,500}" title="Between 2 and 500 characters" type="text" name="podcastName" />
                 </div>
                 <div>
-                  <textarea className="resize-none py-3 px-5 w-full h-[124px] bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Description..." required pattern=".{10,15000}" title="Between 10 and 15000 characters" name="podcastDescription" />
+                  <textarea className="input input-secondary resize-none py-3 px-5 w-full h-[124px] bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Description..." required pattern=".{10,15000}" title="Between 10 and 15000 characters" name="podcastDescription" />
                 </div>
               </div>
               <div className="mb-5">
-                <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Author name..." name="podcastAuthor" />
+                <input className="input input-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Author name..." name="podcastAuthor" />
               </div>
               <div className="mb-10 ">
-                <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Email..." type="email" name="podcastEmail" />
+                <input className="input input-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Email..." type="email" name="podcastEmail" />
               </div>
               <div className="mb-5">
-                <select className="select select-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastCategory" name="category">
+                <select className="select select-secondary w-1/2 py-3 px-5 font-light bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastCategory" name="category">
                   {categoryOptions()}
                 </select>
               </div>
               <div className="mb-5">
-                <select className="select select-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastLanguage" name="language">
+                <select className="select select-secondary w-1/2 py-3 px-5 font-light	bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastLanguage" name="language">
                   {languageOptions()}
                 </select>
               </div>
@@ -255,8 +266,15 @@ export default function UploadPodcastView() {
                 <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-ghost bg-yellow mr-2" />
                 <span className="label-text cursor-pointer">{t("uploadshow.explicit")}</span>
               </label>
-              <div className="flex place-content-end">
-                <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+              <div className="flex place-content-end pb-20">
+                {isUploading ? (
+                  <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
+                    <div className="animate-spin border-t-3 rounded-t-full border-yellow-100 h-5 w-5 mr-3" viewBox="0 0 24 24"></div>
+                    {t("uploadshow.uploading")}
+                  </button>
+                ): (
+                  <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+                )}
               </div>
             </div>
           </div>

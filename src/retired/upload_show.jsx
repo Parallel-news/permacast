@@ -233,7 +233,7 @@ export default function UploadShow() {
 
   return (
     <>
-      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm modal-button mx-3" onClick={() => setShow(true)} >+ {t("uploadshow.addpoadcast")}</label>
+      <label htmlFor="my-modal-2" className="btn btn-outline btn-primary btn-sm modal-button mx-3" onClick={() => setShow(true)} >+ {t("uploadshow.addpodcast")}</label>
       <input type="checkbox" id="my-modal-2" className="modal-toggle" checked={show ? "checked" : false} readOnly />
       <div className="modal overflow-scroll">
         <div className="modal-box">

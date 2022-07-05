@@ -18,7 +18,7 @@
 		}
 	},
 	"uploadshow": {
-		"addpoadcast": "Add a podcast",
+		"addpodcast": "Add a podcast",
 		"title": "Add a new show",
 		"label": "You'll add episodes to the show next.",
 		"name": "Show name",
@@ -30,6 +30,7 @@
 		"category": "Category",
 		"explicit": "Contains explicit content",
 		"upload": "Upload",
+		"uploading": "Processing...",
 		"cancel": "Cancel",
 		"swal": {
 			"showadded": {

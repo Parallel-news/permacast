@@ -23,7 +23,7 @@ export function Sidenav() {
   const cond = i => current === i;
 
   return (
-    <div className="h-full pt-11 ">
+    <div className="h-full pt-[42px] ">
       <div className=" grid rows-5 gap-9 text-zinc-400">
         <button className="w-9 h-9 mb-10 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
           <Cooyub svgStyle="w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
@@ -80,6 +80,7 @@ export function NavBar() {
 export function NavBarMobile() {
   const appState = useContext(appContext);
   const { t, i18n } = useTranslation();
+  const switchView = i => appState.setCurrentView(i);
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -126,7 +127,7 @@ export function NavBarMobile() {
                   <label tabIndex="0">
                     <TranslateIcon className="h-5 w-5" aria-hidden="true" />
                   </label>
-                  <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-base-100 rounded-lg rounded-box w-32">
+                  <ul tabIndex="0" className="dropdown-content menu p-2 shadow bg-zinc-900 rounded-lg rounded-box w-32">
                     {LANGUAGES.map(l => (
                       <li key={l.code}>
                         <span onClick={() => changeLanguage(l.code)}>{l.name}</span>
@@ -144,12 +145,21 @@ export function NavBarMobile() {
                 </Disclosure.Button>
                 <Disclosure.Button
                   as="a"
-                  className="block px-3 py-2 rounded-md"
+                  className="block px-3 py-2 rounded-md cursor-pointer"
                 >
                   <span onClick={() => loadWhatsNew()}>
-                    ✨ {t("navbar.new")}
+                    {t("navbar.new")}
                   </span>
                 </Disclosure.Button>
+                <Disclosure.Button
+                  as="a"
+                  className="block px-3 py-2 rounded-md cursor-pointer"
+                >
+                  <div onClick={() => switchView("uploadPodcast")}>
+                    {t("uploadshow.addpodcast")}
+                  </div>
+                </Disclosure.Button>
+                
                 <Disclosure.Button
                   as="a"
                   className="block px-3 py-2 rounded-md"

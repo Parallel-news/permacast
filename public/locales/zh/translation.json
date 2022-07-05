@@ -18,7 +18,7 @@
 		}
 	},
 	"uploadshow": {
-		"addpoadcast": "添加播客",
+		"addpodcast": "添加播客",
 		"title": "添加新的节目",
 		"label": "之后您可在节目中添加剧集",
 		"name": "节目名称",
@@ -30,6 +30,7 @@
 		"category": "类别",
 		"explicit": "少儿不宜",
 		"upload": "上传",
+		"uploading": "加工...",
 		"cancel": "取消",
 		"swal": {
 			"showadded": {

@@ -145,7 +145,9 @@ export default function App() {
   // add translations
   // improve AR rounding
   // finish tab switching gradient color animation
-  // make buttons consistent accross app
+  // make buttons and stuff consistent accross app
+  // add Router
+  // mobile view
 
   return (
     <div className="select-none h-full bg-black overflow-hidden " data-theme="permacast">
@@ -170,7 +172,7 @@ export default function App() {
               <div className="mb-10">
                 {!loading ? <NavBar />: <div>Loading...</div>}
               </div>
-              <div className="pb-10 w-full overflow-hidden">
+              <div className="w-full overflow-hidden">
                 {appState.views[appState.currentView]}
               </div>
             </div>
