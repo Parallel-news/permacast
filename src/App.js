@@ -148,7 +148,7 @@ export default function App() {
   // make buttons consistent accross app
 
   return (
-    <div className="select-none h-full bg-black overflow-hidden " data-theme="business">
+    <div className="select-none h-full bg-black overflow-hidden " data-theme="permacast">
       <appContext.Provider value={appState}>
         <div className="flex h-screen">
           <div className="md:hidden absolute z-10 bottom-0 w-screen">
@@ -171,10 +171,7 @@ export default function App() {
                 {!loading ? <NavBar />: <div>Loading...</div>}
               </div>
               <div className="pb-10 w-full overflow-hidden">
-                {currentView === "featured" && appState.views.featured}
-                {currentView === "searchResults" && appState.views.searchResults}
-                {currentView === "following" && appState.views.following}
-                {currentView === "uploadPodcast" && appState.views.uploadPodcast}
+                {appState.views[appState.currentView]}
               </div>
             </div>
           </div>

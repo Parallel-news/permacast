@@ -1,10 +1,13 @@
 import { useContext } from 'react';
-import { PhotographIcon } from '@heroicons/react/outline';
 import { appContext } from '../utils/initStateGen';
 import { React, useState, useRef } from 'react';
+import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, deployContract } from '../utils/arweave'
+import { languages_en, languages_zh, categories_en, categories_zh } from '../utils/languages';
+
+import { processFile } from '../utils/shorthands';
 import ArDB from 'ardb';
-import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, languages_en, languages_zh, categories_en, categories_zh, smartweave } from '../utils/arweave.js'
-import { generateFactoryState } from '../utils/initStateGen.js';
+import { PhotographIcon } from '@heroicons/react/outline';
+
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 const ardb = new ArDB(arweave)
@@ -13,53 +16,12 @@ export default function UploadPodcastView() {
   const appState = useContext(appContext);
   let finalShowObj = {}
   const [show, setShow] = useState(false);
+  const [img, setImg] = useState();
+
   const podcastCoverRef = useRef()
   const { t, i18n } = useTranslation()
   const languages = i18n.language === 'zh' ? languages_zh : languages_en
   const categories = i18n.language === 'zh' ? categories_zh : categories_en
-
-  const deployContract = async (address) => {
-
-    const initialState = await generateFactoryState(address);
-    console.log(initialState)
-    const tx = await arweave.createTransaction({ data: initialState })
-
-
-    tx.addTag("App-Name", "SmartWeaveContract")
-    tx.addTag("App-Version", "0.3.0")
-    tx.addTag("Contract-Src", CONTRACT_SRC)
-    tx.addTag("Permacast-Version", "amber");
-    tx.addTag("Content-Type", "application/json")
-    tx.addTag("Timestamp", Date.now())
-    
-    tx.reward = (+tx.reward * FEE_MULTIPLIER).toString();
-    
-    await arweave.transactions.sign(tx)
-    await arweave.transactions.post(tx)
-    console.log(tx)
-    return tx.id
-  }
-
-  function readFileAsync(file) {
-    return new Promise((resolve, reject) => {
-      let reader = new FileReader();
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
-    })
-  }
-
-  async function processFile(file) {
-    try {
-      let contentBuffer = await readFileAsync(file);
-
-      return contentBuffer
-    } catch (err) {
-      console.log(err);
-    }
-  }
 
   const uploadShow = async (show) => {
     Swal.fire({
@@ -164,23 +126,22 @@ export default function UploadPodcastView() {
     });
   }
 
-  const resetPodcastCover = () => {
-    podcastCoverRef.current.value = ""
-    Swal.fire({
-      text: t("uploadshow.swal.reset.text"),
-      icon: 'warning',
-      confirmButtonText: 'Continue',
-      customClass: "font-mono",
-    })
-  }
-
   const isPodcastCoverSquared = (event) => {
     if (event.target.files.length !== 0) {
       const podcastCoverImage = new Image()
       podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
       podcastCoverImage.onload = () => {
         if (podcastCoverImage.width !== podcastCoverImage.height) {
-          resetPodcastCover()
+          podcastCoverRef.current.value = ""
+          Swal.fire({
+            text: t("uploadshow.swal.reset.text"),
+            icon: 'warning',
+            confirmButtonText: 'Continue',
+            customClass: "font-mono",
+          })
+        }
+        else {
+          setImg(URL.createObjectURL(event.target.files[0]))
         }
       }
     }
@@ -234,62 +195,72 @@ export default function UploadPodcastView() {
     return optionsArr
   }
 
+  const handleChangeImage = e => {
+    isPodcastCoverSquared(e)
+  }
+
   return (
-    <div className="text-white h-screen">
+    <div className="text-zinc-400 h-screen">
       <h1 className="text-2xl tracking-wider">New Show</h1>
       <div className="form-control">
         <form onSubmit={handleShowUpload}>
-        </form>
-      </div>
-      <div className="flex mt-7">
-        <div className="h-full w-1/6 mr-10">
-          <input required type="file" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => isPodcastCoverSquared(e)} name="podcastCover" id="podcastCover" />
-          <div className="bg-zinc-900 h-48 w-48 rounded-[20px]">
-            <label for="podcastCover" className="cursor-pointer outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-              <div className="flex justify-center">
-                <div className="pt-14">
-                  <PhotographIcon className="h-11 w-11" />
+          <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />
+          <div className="flex mt-7">
+            <label htmlFor="podcastCover" className="cursor-pointer h-full w-1/6">
+              {podcastCoverRef.current?.files?.[0] ? (
+                <div className="cursor-pointer bg-zinc-900 h-48 w-48 rounded-[20px] flex items-center justify-center">
+                  <img src={img} className="h-48 w-48" />
+                </div>
+              ) : (
+                <div className="cursor-pointer bg-zinc-900 h-48 w-48 rounded-[20px] flex items-center justify-center">
+                  <div className="cursor-pointer outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                    <div className="flex justify-center">
+                      <div className="cursor-pointer">
+                        <PhotographIcon className="h-11 w-11" />
+                      </div>
+                    </div>
+                    <div className="flex justify-center pt-2">
+                      <div className="text-lg tracking-wider">Cover image</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </label>
+            <div className="ml-10 fields w-5/6">
+              <div className="h-48 mb-10">
+                <div className="mb-5">
+                  <input className="py-3 px-5 w-full bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Show name..." required pattern=".{2,500}" title="Between 2 and 500 characters" type="text" name="podcastName" />
+                </div>
+                <div>
+                  <textarea className="resize-none py-3 px-5 w-full h-[124px] bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Description..." required pattern=".{10,15000}" title="Between 10 and 15000 characters" name="podcastDescription" />
                 </div>
               </div>
-              <div className="flex justify-center pt-2">
-                <div className="text-lg tracking-wider">Cover image</div>
+              <div className="mb-5">
+                <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Author name..." name="podcastAuthor" />
               </div>
-            </label>
-          </div>
-        </div>
-        <div className="fields w-5/6">
-          <div className="h-48 mb-10">
-            <div className="mb-5">
-              <input className="py-3 px-5 w-full bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Show name..." required pattern=".{2,500}" title="Between 2 and 500 characters" type="text" name="podcastName" />
+              <div className="mb-10 ">
+                <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Email..." type="email" name="podcastEmail" />
+              </div>
+              <div className="mb-5">
+                <select className="select select-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastCategory" name="category">
+                  {categoryOptions()}
+                </select>
+              </div>
+              <div className="mb-5">
+                <select className="select select-secondary w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastLanguage" name="language">
+                  {languageOptions()}
+                </select>
+              </div>
+              <label className="flex">
+                <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-ghost bg-yellow mr-2" />
+                <span className="label-text cursor-pointer">{t("uploadshow.explicit")}</span>
+              </label>
+              <div className="flex place-content-end">
+                <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+              </div>
             </div>
-            <div>
-              <input className="py-3 px-5 w-full h-[124px] bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Description..." required pattern=".{10,15000}" title="Between 10 and 15000 characters" name="podcastDescription" />
-            </div>
           </div>
-          <div className="mb-5">
-            <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Author name..." name="podcastAuthor" />
-          </div>
-          <div className="mb-10 ">
-            <input className="w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" placeholder="Email..." type="email" name="podcastEmail" />
-          </div>
-          <div className="mb-5">
-            <select className="select select-bordered w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastCategory" name="category">
-              {categoryOptions()}
-            </select>
-          </div>
-          <div className="mb-5">
-            <select className="select select-bordered w-1/2 py-3 px-5 bg-zinc-900 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" id="podcastLanguage" name="language">
-              {languageOptions()}
-            </select>
-          </div>
-          <label>
-            <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-primary mx-2" />
-            <span className="label-text">{t("uploadshow.explicit")}</span>
-          </label>
-          <div>
-            <button type="submit" className="btn btn-primary rounded-lg">{t("uploadshow.upload")}</button>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   )
