@@ -16,11 +16,18 @@ export async function convertToEpisode(podcast, episode, useColor=true) {
     description: episode.description,
     episodesCount: podcast.episodes.length,
     firstTenEpisodes: () => null,
-    getEpisodes: (start, count) => podcast.episodes.splice(start, count),
+    getEpisodes: () => null,
     creator: podcast.author,
     creatorAddress: podcast.owner,
+    creatorEmail: podcast.email,
     creatorANS: podcast.ansOwnerLabel,
+    createdAt: episode.uploadedAt,
+    explicit: podcast.explicit,
+    visible: episode.isVisible,
+    language: podcast.language,
     contentUrl: MESON_ENDPOINT + '/' + episode.contentTx,
+    contentTX: episode.contentTx,
+    podcastId: podcast.pid,
     mediaType: episode.type,
     objectType: 'episode',
     rgb: rgb,
@@ -36,11 +43,18 @@ export async function convertToPodcast(podcast) {
     description: podcast.description,
     episodesCount: podcast.episodes.length,
     firstTenEpisodes: () => podcast.episodes.splice(0, 10).map(e => convertToEpisode(podcast, e, false)),
-    getEpisodes: (start, count) => podcast.episodes.splice(start, count),
+    getEpisodes: (start, end) => podcast.episodes.splice(start, end).map(e => convertToEpisode(podcast, e, false)),
     creator: podcast.author,
     creatorAddress: podcast.owner,
+    creatorEmail: podcast.email,
     creatorANS: podcast.ansOwnerLabel,
+    createdAt: podcast.createdAt,
+    explicit: podcast.explicit,
+    visible: podcast.isVisible,
+    language: podcast.language,
     contentUrl: null,
+    contentTX: null,
+    podcastId: podcast.pid,
     mediaType: null,
     objectType: 'podcast',
     rgb: rgb,
@@ -57,6 +71,13 @@ export function filters(t) {
 export function filterTypes(filters) { 
   return filters.map(f => f.type)
 }
+
+export const fetchPodcasts = async () => {
+  const json = await (
+    await fetch("https://whispering-retreat-94540.herokuapp.com/feeds/podcasts")
+  ).json();
+  return json.res;
+};
 
 export const sortPodcasts = async (filters) => {
   let url = `${WEBSITE_URL}/feeds/podcasts/sort/`;

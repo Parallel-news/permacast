@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HashRouter as Router, Route } from "react-router-dom";
+import { HashRouter as Router, Route, useLocation } from "react-router-dom";
 import { Sidenav, NavBar } from "./component/navbars.jsx";
 import SearchResultsView from "./component/search.jsx";
 import ArConnect from './component/arconnect.jsx';
 import UploadPodcastView from './component/uploadPodcast.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
+import { PodcastView, Podcast } from './component/podcast.jsx';
 import { Player, PlayerMobile } from './component/player.jsx';
 import FeaturedView from './component/featured.jsx';
 import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
@@ -26,7 +27,7 @@ export default function App() {
   const [currentEpisode, setCurrentEpisode] = useState(null);
 
   const [themeColor, setThemeColor] = useState('rgb(255, 255, 0)');
-  const [backdropColor, setBackdropColor] = useState()
+  const [backdropColor, setBackdropColor] = useState();
   const [address, setAddress] = useState();
   const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
   const [walletConnected, setWalletConnected] = useState(false);
@@ -37,7 +38,6 @@ export default function App() {
   const [queueVisible, setQueueVisible] = useState(false);
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
-  const [currentView, setCurrentView] = useState("featured");
   const [searchInput, setSearchInput] = useState("");
 
 
@@ -82,8 +82,6 @@ export default function App() {
       e.preventDefault();
     }
   });
-  // finish this transition later on
-  const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
   const appState = {
     t: t,
     loading: loading,
@@ -91,23 +89,9 @@ export default function App() {
     themeColor: themeColor,
     backdropColor: backdropColor,
     viewsList: ["featured", "following", "searchResults", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"], 
-    currentView: currentView,
-    setCurrentView: setCurrentView,
-    views: {
-      featured: <FeaturedView recentlyAdded={recentlyAdded} featuredPodcasts={featuredPodcasts} creators={MOCK_CREATORS} />,
-      following: <h1 className="text-white">following</h1>,
-      searchResults: <SearchResultsView />,
-      uploadPodcast: <UploadPodcastView />,
-      uploadEpisode: <>uploadEpisodeView</>,
-      podcast: <>podcastView</>,
-      episode: <>episodeView</>,
-      creator: <>creatorView</>,
-      fullscreen: <>fullscreenView</>,
-    },
     search: {
       input: searchInput,
       setInput: setSearchInput,
-      isGlobal: currentView === "searchResults",
     },
     user: {
       address: address,
@@ -152,35 +136,77 @@ export default function App() {
   return (
     <div className="select-none h-full bg-black overflow-hidden " data-theme="permacast">
       <appContext.Provider value={appState}>
-        <div className="flex h-screen">
-          <div className="md:hidden absolute z-10 bottom-0 w-screen">
-            {!loading ? <PlayerMobile episode={currentEpisode} /> : <div>Loading...</div>}
-          </div>
-          <div className="hidden md:block">
-            <div className="w-[100px] flex justify-center">
-              <Sidenav />
+        <Router>
+          <div className="flex h-screen">
+            <div className="md:hidden absolute z-10 bottom-0 w-screen">
+              {!loading ? <PlayerMobile episode={currentEpisode} /> : <div>Loading...</div>}
             </div>
-            <div className="absolute z-20 bottom-0">
-              {!loading && currentEpisode ? <Player episode={currentEpisode} />: <div>Loading...</div>}
-            </div>
-            <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
-              {!loading ? <EpisodeQueue />: <div>Loading...</div>}
-            </div>
-          </div>
-          <div className="w-screen overflow-scroll" style={appState.currentView != 'featured' ? transition: {}}>
-            <div className="ml-8 pr-8 pt-9">
-              <div className="mb-10">
-                {!loading ? <NavBar />: <div>Loading...</div>}
+            <div className="hidden md:block">
+              <div className="w-[100px] flex justify-center">
+                <Sidenav />
               </div>
-              <div className="w-full overflow-hidden">
-                {appState.views[appState.currentView]}
+              <div className="absolute z-20 bottom-0">
+                {!loading && currentEpisode ? <Player episode={currentEpisode} />: <div>Loading...</div>}
+              </div>
+              <div className="absolute z-10 bottom-0 right-0" style={{display: queueVisible ? 'block': 'none'}}>
+                {!loading ? <EpisodeQueue />: <div>Loading...</div>}
               </div>
             </div>
+            <div className="w-screen overflow-scroll" style={'' ? '' : {}}>
+              <div className="ml-8 pr-8 pt-9">
+                <div className="mb-10">
+                  {!loading ? <NavBar />: <div>Loading...</div>}
+                </div>
+                <div className="w-full overflow-hidden">
+                  <Route
+                    exact
+                    path="/featured"
+                    component={({match}) => <div><FeaturedView recentlyAdded={recentlyAdded} featuredPodcasts={featuredPodcasts} creators={MOCK_CREATORS} /></div>}
+                  />
+                  <Route
+                    exact
+                    path="/uploadpodcast"
+                    component={({match}) => <div><UploadPodcastView /></div>}
+                  />
+                  <Route
+                    exact
+                    path="/following"
+                    component={({match}) => <div>rrrrree</div>}
+                  />
+                  <Route
+                    exact
+                    path="/searchresults"
+                    component={({match}) => <div><SearchResultsView /></div>}
+                  />
+                  <Route
+                    exact
+                    path="/episodes/:podcastId"
+                    render={({ match }) => <Podcast match={match} />}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </Router>
       </appContext.Provider>
     </div>
   );
 }
+
+// export function Background(props) {
+//   const appState = useContext(appContext)
+//   const location = useLocation();
+//   // finish this transition later on
+//   const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
+//   const check = () => location.pathname !== "/featured";
+
+//   return (
+//     <div className="w-screen overflow-scroll" style={check() ? transition : {}}>
+//       <div className="ml-8 pr-8 pt-9">
+//         {props.children}
+//       </div>
+//     </div>
+//   )
+// }
 
 // <Route exact path="/" render={() => <Index />} />

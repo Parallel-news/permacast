@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
 import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
@@ -38,7 +39,7 @@ export function FeaturedEpisode({episode}) {
     <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
       <img className="w-40 cursor-pointer  mr-8" src={cover} alt={title} />
       <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg mr-2">
-        <div className="font-medium cursor-pointer line-clamp-1">{title} - Episode 1</div>
+        <div onClick={() => ('')} className="font-medium cursor-pointer line-clamp-1">{title}</div>
         <div className="text-sm line-clamp-5">{description}</div>
       </div>
       <div className="ml-auto">
@@ -60,8 +61,10 @@ export function FeaturedEpisode({episode}) {
 
 export function FeaturedPodcast({podcast}) {
   const appState = useContext(appContext);
-  const { rgb, episodesCount, cover, podcastName, title, description, firstTenEpisodes } = podcast;
+  const history = useHistory();
+  const { rgb, episodesCount, cover, podcastName, title, description, firstTenEpisodes, podcastId } = podcast;
   const textColor = isTooLight(rgb) ? 'black' : 'white';
+  const {enqueuePodcast, play} = appState.queue;
 
   return (
     <>
@@ -73,13 +76,13 @@ export function FeaturedPodcast({podcast}) {
           </div>
           <div className="h-16 flex items-center">
             <div onClick={() => {
-              appState.queue.enqueuePodcast(firstTenEpisodes());
-              appState.queue.play(firstTenEpisodes()[0]);
+              enqueuePodcast(firstTenEpisodes());
+              play(firstTenEpisodes()[0]);
             }}>
               <GlobalPlayButton size="20" innerColor={rgb} outerColor={textColor} />
             </div>
             <div className="ml-3">
-              <div className="text-lg line-clamp-1">{title}</div>
+              <div className="text-lg line-clamp-1 cursor-pointer" onClick={() => history.push(`/episodes/${podcastId}`)}>{title}</div>
               <div className="text-xs max-w-[95%] line-clamp-2">{description}</div>
             </div>
           </div>

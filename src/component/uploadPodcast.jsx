@@ -217,7 +217,7 @@ export default function UploadPodcastView() {
         <form onSubmit={handleShowUpload}>
           <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />
           <div className="md:flex mt-7">
-            <label htmlFor="podcastCover" className="cursor-pointer transition duration-300 ease-in-out hover:text-white md:h-full w-1/6">
+            <label htmlFor="podcastCover" className="cursor-pointer transition duration-300 ease-in-out hover:text-white flex md:block md:h-full w-48">
               {podcastCoverRef.current?.files?.[0] ? (
                 <div className="cursor-pointer bg-zinc-900 h-48 w-48 rounded-[20px] flex items-center justify-center">
                   <img src={img} className="h-48 w-48" />
@@ -266,7 +266,7 @@ export default function UploadPodcastView() {
                 <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-ghost bg-yellow mr-2" />
                 <span className="label-text cursor-pointer">{t("uploadshow.explicit")}</span>
               </label>
-              <div className="flex place-content-end pb-20">
+              <div className="flex place-content-end pb-28">
                 {isUploading ? (
                   <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
                     <div className="animate-spin border-t-3 rounded-t-full border-yellow-100 h-5 w-5 mr-3" viewBox="0 0 24 24"></div>

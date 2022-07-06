@@ -134,13 +134,15 @@ export default function ArConnect() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch(`https://ans-testnet.herokuapp.com/profile/${address}`)
-        const ans = await response.json()
-        const {address_color, currentLabel, avatar = ""} = ans;
-        setANSData({address_color, currentLabel, avatar})
-      } catch (error) {
-        console.error(error)
+      if (address) {
+        try {
+          const response = await fetch(`https://ans-testnet.herokuapp.com/profile/${address}`)
+          const ans = await response.json()
+          const {address_color, currentLabel, avatar = ""} = ans;
+          setANSData({address_color, currentLabel, avatar})
+        } catch (error) {
+          console.error(error)
+        }  
       }
     };
 

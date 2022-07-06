@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext  } from 'react';
+import { useHistory, useLocation } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import Swal from 'sweetalert2';
 import { Disclosure } from '@headlessui/react'
@@ -12,26 +13,29 @@ import { LANGUAGES } from '../utils/ui';
 
 export function Sidenav() {
   const { t, i18n } = useTranslation();
+  let history = useHistory();
+  let location = useLocation();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
 
   const appState = useContext(appContext);
-  const current = appState.currentView;
-  const switchView = i => appState.setCurrentView(i);
-  const cond = i => current === i;
+  const switchView = i => {
+    history.push("/"+i);
+  };
+  const cond = i => location.pathname === i;
 
   return (
-    <div className="h-full pt-[42px] ">
+    <div className="h-full pt-[42px]">
       <div className=" grid rows-5 gap-9 text-zinc-400">
         <button className="w-9 h-9 mb-10 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
           <Cooyub svgStyle="w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("featured")} style={{color: cond("featured") ? 'white': ''}} disabled={cond("featured") ? true: false}>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("featured")} style={{color: cond("/featured") ? 'white': ''}} disabled={cond("/featured") ? true: false}>
           <HomeIcon />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("following")} style={{color: cond("following") ? 'white': ''}} disabled={cond("following") ? true: false}>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("following")} style={{color: cond("/following") ? 'white': ''}} disabled={cond("/following") ? true: false}>
           <CollectionIcon />
         </button>
         <div className="dropdown dropdown-hover mb-[-6px]">
@@ -46,7 +50,7 @@ export function Sidenav() {
             ))}
           </ul>
         </div>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("uploadPodcast")} style={{color: cond("uploadPodcast") ? 'white': ''}} disabled={cond("uploadPodcast") ? true: false}>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => {switchView("uploadpodcast")}} style={{color: cond("/uploadpodcast") ? 'white': ''}} disabled={cond("/uploadpodcast") ? true: false}>
           <PlusIcon />
         </button>
         <a target="_blank" rel="noreferrer" href="https://t.me/permacast" className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
@@ -80,7 +84,9 @@ export function NavBar() {
 export function NavBarMobile() {
   const appState = useContext(appContext);
   const { t, i18n } = useTranslation();
-  const switchView = i => appState.setCurrentView(i);
+  const switchView = i => history.push("/"+i);
+  let history = useHistory();
+  let location = useLocation();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
