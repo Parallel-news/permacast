@@ -152,7 +152,7 @@ export default function App() {
                 {!loading ? <EpisodeQueue />: <div>Loading...</div>}
               </div>
             </div>
-            <div className="w-screen overflow-scroll" style={'' ? '' : {}}>
+            <Background className="w-screen overflow-scroll" style={'' ? '' : {}}>
               <div className="ml-8 pr-8 pt-9">
                 <div className="mb-10">
                   {!loading ? <NavBar />: <div>Loading...</div>}
@@ -160,7 +160,7 @@ export default function App() {
                 <div className="w-full overflow-hidden">
                   <Route
                     exact
-                    path="/featured"
+                    path={["/", "/featured"]}
                     component={({match}) => <div><FeaturedView recentlyAdded={recentlyAdded} featuredPodcasts={featuredPodcasts} creators={MOCK_CREATORS} /></div>}
                   />
                   <Route
@@ -185,7 +185,7 @@ export default function App() {
                   />
                 </div>
               </div>
-            </div>
+            </Background>
           </div>
         </Router>
       </appContext.Provider>
@@ -193,20 +193,16 @@ export default function App() {
   );
 }
 
-// export function Background(props) {
-//   const appState = useContext(appContext)
-//   const location = useLocation();
-//   // finish this transition later on
-//   const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
-//   const check = () => location.pathname !== "/featured";
+export function Background(props) {
+  const appState = useContext(appContext)
+  const location = useLocation();
+  // finish this transition later on
+  const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
+  const check = () => location.pathname !== "/featured";
 
-//   return (
-//     <div className="w-screen overflow-scroll" style={check() ? transition : {}}>
-//       <div className="ml-8 pr-8 pt-9">
-//         {props.children}
-//       </div>
-//     </div>
-//   )
-// }
-
-// <Route exact path="/" render={() => <Index />} />
+  return (
+    <div className="w-screen overflow-scroll" style={check() ? transition : {}}>
+      {props.children}
+    </div>
+  )
+}
