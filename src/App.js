@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HashRouter as Router, Route, useLocation } from "react-router-dom";
-import { Sidenav, NavBar } from "./component/navbars.jsx";
+import { HashRouter as Router, Route } from 'react-router-dom';
+import { Sidenav, NavBar } from './component/navbars.jsx';
+import Background from './component/background.jsx';
 import SearchResultsView from "./component/search.jsx";
 import ArConnect from './component/arconnect.jsx';
 import UploadPodcastView from './component/uploadPodcast.jsx';
@@ -27,7 +28,9 @@ export default function App() {
   const [currentEpisode, setCurrentEpisode] = useState(null);
 
   const [themeColor, setThemeColor] = useState('rgb(255, 255, 0)');
+  const [currentPodcastColor, setCurrentPodcastColor] = useState(null);
   const [backdropColor, setBackdropColor] = useState();
+
   const [address, setAddress] = useState();
   const [ANSData, setANSData] = useState({address_color: "", currentLabel: "", avatar: ""});
   const [walletConnected, setWalletConnected] = useState(false);
@@ -82,12 +85,16 @@ export default function App() {
       e.preventDefault();
     }
   });
+
   const appState = {
     t: t,
     loading: loading,
-    theme: {},
-    themeColor: themeColor,
-    backdropColor: backdropColor,
+    theme: {
+      themeColor: themeColor,
+      backdropColor: backdropColor,
+      currentPodcastColor: currentPodcastColor,
+      setCurrentPodcastColor: setCurrentPodcastColor,
+    },
     viewsList: ["featured", "following", "searchResults", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"], 
     search: {
       input: searchInput,
@@ -152,7 +159,7 @@ export default function App() {
                 {!loading ? <EpisodeQueue />: <div>Loading...</div>}
               </div>
             </div>
-            <Background className="w-screen overflow-scroll" style={'' ? '' : {}}>
+            <Background className="w-screen overflow-scroll">
               <div className="ml-8 pr-8 pt-9">
                 <div className="mb-10">
                   {!loading ? <NavBar />: <div>Loading...</div>}
@@ -191,18 +198,4 @@ export default function App() {
       </appContext.Provider>
     </div>
   );
-}
-
-export function Background(props) {
-  const appState = useContext(appContext)
-  const location = useLocation();
-  // finish this transition later on
-  const transition = {transition: 'opacity 2.5s ease', backgroundImage: `linear-gradient(${appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)')}, black)`};
-  const check = () => location.pathname !== "/featured";
-
-  return (
-    <div className="w-screen overflow-scroll" style={check() ? transition : {}}>
-      {props.children}
-    </div>
-  )
 }
