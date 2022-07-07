@@ -1,3 +1,14 @@
+export const LANGUAGES = [
+  {
+    "code": "en",
+    "name": "English"
+  },
+  {
+    "code": "zh",
+    "name": "简体中文"
+  },
+]
+
 export const categories_en = [
   "Arts",
   "Business",

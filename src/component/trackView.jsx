@@ -4,7 +4,8 @@ import { appContext } from "../utils/initStateGen";
 
 export function TrackView({episode, includeDescription=false, playButtonSize="20"}) {
   const appState = useContext(appContext);
-  const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
+  const {themeColor} = appState.theme;
+  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
   const queue = appState.queue;
 
   return (
@@ -19,7 +20,7 @@ export function TrackView({episode, includeDescription=false, playButtonSize="20
               <div className="flex items-center">
                 {/* <img className="h-6 w-6" src={podcast.cover} alt={podcast.podcastName} /> */}
                 <Cooyub className="rounded-full" svgStyle="h-2 w-2" rectStyle="h-6 w-6" fill={'rgb(255, 130, 0)'} />
-                <p style={{color: appState.themeColor}} className="text-[8px] pr-1 ml-1 cursor-pointer ">@{episode.creator}</p>
+                <p style={{color: themeColor}} className="text-[8px] pr-1 ml-1 cursor-pointer ">@{episode.creator}</p>
               </div>
             </div>
             {includeDescription && (

@@ -106,17 +106,6 @@ export const trimANSLabel = (label) => {
   return label.replace(/\w/, c => c.toUpperCase()).replace('ar', '')
 }
 
-export const LANGUAGES = [
-  {
-    "code": "en",
-    "name": "English"
-  },
-  {
-    "code": "zh",
-    "name": "简体中文"
-  },
-]
-
 export const MOCK_CREATORS = [
   {
     fullname: 'Marton Lederer',

@@ -30,6 +30,7 @@ export async function convertToEpisode(podcast, episode, useColor=true) {
     podcastId: podcast.pid,
     mediaType: episode.type,
     objectType: 'episode',
+    superAdmins: podcast.superAdmins,
     rgb: rgb,
   };
 }
@@ -57,6 +58,7 @@ export async function convertToPodcast(podcast) {
     podcastId: podcast.pid,
     mediaType: null,
     objectType: 'podcast',
+    superAdmins: podcast.superAdmins,
     rgb: rgb,
   }
 }

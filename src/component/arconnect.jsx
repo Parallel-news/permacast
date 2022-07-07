@@ -174,7 +174,7 @@ export default function ArConnect() {
         {(walletConnected && (
           <>
             <div
-              className="btn btn-seconary flex justify-center bg-zinc-900 hover:bg-zinc-600 py-[14px] px-3 rounded-full w-full mx-auto text-sm md:text-base normal-case"
+              className="btn btn-seconary flex justify-center bg-zinc-900 hover:bg-zinc-600 px-3 rounded-full w-full mx-auto text-sm md:text-base normal-case"
               onClick={arconnectDisconnect}
             >
               <span>
@@ -190,7 +190,7 @@ export default function ArConnect() {
           </>
         )) || (
             <div
-              className="btn btn-secondary bg-zinc-900 hover:bg-zinc-600 py-[14px] px-3 rounded-full text-center w-full"
+              className="btn btn-secondary bg-zinc-900 hover:bg-zinc-600 px-3 rounded-full text-center w-full"
               onClick={arconnectConnect}
             >
               🦔 {t("connector.login")}

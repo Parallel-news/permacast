@@ -69,20 +69,22 @@ export function FeaturedPodcast({podcast}) {
   return (
     <>
       <div style={{backgroundColor: rgb, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
-        <div className="h-1/6 w-full px-5 pb-2">
-          <div className="pt-5 pb-3 text-xs">{episodesCount} Episode{episodesCount == 1 ? '' : 's'}</div>
-          <div className="w-full mb-7">
-            <img className="object-contain h-[180px] w-full" src={cover} alt={podcastName} />
+        <div className="h-1/6 w-full px-5 pb-2 cursor-pointer">
+          <div onClick={() => history.push(`/episodes/${podcastId}`)}>
+            <div className="pt-5 pb-3 text-xs">{episodesCount} Episode{episodesCount == 1 ? '' : 's'}</div>
+            <div className="w-full mb-7">
+              <img className="object-contain h-[180px] w-full" src={cover} alt={podcastName} />
+            </div>
           </div>
           <div className="h-16 flex items-center">
-            <div onClick={() => {
+            <div className="z-10" onClick={() => {
               enqueuePodcast(firstTenEpisodes());
               play(firstTenEpisodes()[0]);
             }}>
               <GlobalPlayButton size="20" innerColor={rgb} outerColor={textColor} />
             </div>
-            <div className="ml-3">
-              <div className="text-lg line-clamp-1 cursor-pointer" onClick={() => history.push(`/episodes/${podcastId}`)}>{title}</div>
+            <div className="ml-3" onClick={() => history.push(`/episodes/${podcastId}`)}>
+              <div className="text-lg line-clamp-1 cursor-pointer">{title}</div>
               <div className="text-xs max-w-[95%] line-clamp-2">{description}</div>
             </div>
           </div>
@@ -133,7 +135,8 @@ export function RecentlyAdded({episodes}) {
 
 export function FeaturedCreators({creators}) {
   const appState = useContext(appContext);
-  const bg = appState.themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
+  const {themeColor} = appState.theme;
+  const bg = themeColor.replace('rgb', 'rgba').replace(')', ', 0.1)')
 
   return (
     <div>
@@ -153,7 +156,7 @@ export function FeaturedCreators({creators}) {
                 <div className="text-zinc-400 cursor-pointer text-[8px]">@{creator.anshandle}</div>
               </div>
               <div className=" ">
-                <p style={{backgroundColor: bg, color: appState.themeColor}} className="px-3 py-2 rounded-full text-[10px] ml-5 cursor-pointer">{appState.t("view")}</p>
+                <p style={{backgroundColor: bg, color: themeColor}} className="px-3 py-2 rounded-full text-[10px] ml-5 cursor-pointer">{appState.t("view")}</p>
               </div>
             </div>
           </div>
