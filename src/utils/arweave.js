@@ -34,6 +34,8 @@ export const smartweave = SmartWeaveWebFactory.memCached(arweave);
 export const CONTRACT_SRC = "-SoIrUzyGEBklizLQo1w5AnS7uuOB87zUrg-kN1QWw4"
 export const NFT_SRC = "-xoIBH2TxLkVWo6XWAjdwXZmTbUH09_hPYD6itHFeZY";
 export const FEE_MULTIPLIER = 3;
+export const EPISODE_FEE_PERCENTAGE = 10;
+export const SHOW_FEE_AR = 0.25;
 // PROD CONTRACT:
 //export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
 export const NEWS_CONTRACT = "HJFEnaWHLMp2ryrR0nzDKb0DSW7aBplDjcs3vQoVbhw";

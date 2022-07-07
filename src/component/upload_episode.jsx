@@ -2,8 +2,8 @@ import ArDB from 'ardb'
 import Swal from 'sweetalert2'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
-import { processFile, userHasEnoughAR } from '../utils/shorthands.js';
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave, EPISODE_FEE_PERCENTAGE } from '../utils/arweave.js'
+import { processFile, calculateStorageFee, userHasEnoughAR } from '../utils/shorthands.js';
 
 const ardb = new ArDB(arweave)
 
@@ -26,7 +26,7 @@ export default function UploadEpisode({ podcast }) {
     await contract.writeInteraction(input);
   }
 
-  const uploadToArweave = async (data, fileType, epObj, event) => { 
+  const uploadToArweave = async (data, fileType, epObj, event, serviceFee) => { 
     const wallet = await window.arweaveWallet.getActiveAddress();
     console.log(wallet);
     if (!wallet) {
@@ -57,6 +57,12 @@ export default function UploadEpisode({ podcast }) {
         setUploadPercentComplete(uploader.pctComplete)
       }
       if (uploader.txPosted) {
+        const newTx = await arweave.createTransaction({target:"eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0", quantity: arweave.ar.arToWinston('' + serviceFee)})
+        console.log(newTx)
+        await arweave.transactions.sign(newTx)
+        console.log(newTx)
+        await arweave.transactions.post(newTx)
+        console.log(newTx.response)
         epObj.content = tx.id;
 
         console.log('txPosted:')
@@ -103,10 +109,14 @@ export default function UploadEpisode({ podcast }) {
     processFile(episodeFile).then((file) => {
       let epObjSize = JSON.stringify(epObj).length
       let bytes = file.byteLength + epObjSize + fileType.length
-      userHasEnoughAR(t, bytes).then((result) => {
-        if (result === "all good") {
-          uploadToArweave(file, fileType, epObj, event)
-        } else console.log('upload failed');
+      calculateStorageFee(bytes).then((cost) => {
+        const serviceFee = cost / EPISODE_FEE_PERCENTAGE;
+        userHasEnoughAR(t, bytes, serviceFee).then((result) => {
+          if (result === "all good") {
+            console.log('Fee cost: ' + (serviceFee))
+            uploadToArweave(file, fileType, epObj, event, serviceFee)
+          } else console.log('upload failed');
+        })
       })
     })
     setEpisodeUploading(false)
@@ -212,7 +222,17 @@ export default function UploadEpisode({ podcast }) {
 
 
           </div>
-          {showUploadFee ? <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p> : null}
+          {showUploadFee ? (
+            <div className="w-80">
+              <p className="text-gray py-3">~${showUploadFee} {t("uploadepisode.toupload")}</p>
+              <div className="bg-indigo-100 rounded-lg p-4 w-full">
+                {t("uploadepisode.feeText")}
+                <span className="text-lg font-bold underline">
+                  ${(showUploadFee / EPISODE_FEE_PERCENTAGE).toFixed(4)}
+                </span>
+              </div>
+            </div>
+          ) : null}
           <br /><br />
           {!episodeUploading ?
             <button
