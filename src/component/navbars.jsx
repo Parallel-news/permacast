@@ -35,9 +35,11 @@ export function Sidenav() {
         <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("featured")} style={{color: cond("/featured") ? 'white': ''}} disabled={cond("/featured") ? true: false}>
           <HomeIcon />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("following")} style={{color: cond("/following") ? 'white': ''}} disabled={cond("/following") ? true: true}>
-          <CollectionIcon />
-        </button>
+        <div className="tooltip" data-tip="Coming soon!">
+          <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("following")} style={{color: cond("/following") ? 'white': ''}} disabled={cond("/following") ? true: true}>
+            <CollectionIcon />
+          </button>
+        </div>
         <div className="dropdown dropdown-hover mb-[-6px]">
           <button tabIndex="0" className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
             <TranslateIcon />

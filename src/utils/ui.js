@@ -85,16 +85,25 @@ export function replaceLightColorsRGB(rgbArg, lightness=0.9) {
   return rgb;
 }
 
+// re-write to not use array
 /** @param {Array} rgbArg - example: [255, 255, 255] */
 export function isTooDark (rgbArg, lightness=0.25) {
   let hsl = RGBtoHSL(rgbArg);
   return hsl.l < lightness;
 }
 
+// re-write to not use array
 /** @param {Array} rgbArg - example: [255, 255, 255] */
 export function isTooLight(rgbArg, lightness=0.9) {
   let hsl = RGBtoHSL(rgbArg);
   return hsl.l > lightness;
+}
+
+export function getButtonRGBs(rgb) {
+  const replacedRGB = RGBobjectToString(replaceDarkColorsRGB(rgb, 0.45));
+  const iconColor = replacedRGB?.replace('rgb', 'rgba')?.replace(')', ', 0.8)');
+  const background = replacedRGB?.replace('rgb', 'rgba')?.replace(')', ', 0.15)');
+  return {backgroundColor: background, color: iconColor}
 }
 
 export const shortenAddress = (addr) => {

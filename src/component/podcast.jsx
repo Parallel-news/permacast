@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaRss, FaRegGem } from 'react-icons/fa';
+import { PlusIcon, HeartIcon } from '@heroicons/react/solid';
 import Swal from 'sweetalert2';
 import Shikwasa from 'shikwasa';
 import 'shikwasa/dist/shikwasa.min.css';
@@ -9,12 +10,11 @@ import { tipPrompt } from './tipPrompt.jsx';
 import UploadEpisode from './uploadEpisode.jsx';
 import * as SmartWeaveSdk from 'redstone-smartweave';
 import { contract } from 'redstone-smartweave';
-import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js';
-import { convertToPodcast, convertToEpisode } from '../utils/podcast.js';
+import { arweave, smartweave, NEWS_CONTRACT, MESON_ENDPOINT } from '../utils/arweave.js';
+import { convertToPodcast, convertToEpisode, fetchPodcasts } from '../utils/podcast.js';
+import { getButtonRGBs } from '../utils/ui.js';
 import { appContext } from '../utils/initStateGen.js';
-import { MESON_ENDPOINT } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js';
-import { fetchPodcasts } from '../utils/podcast.js';
 
 export function PodcastHtml({ name, link, description, image, rss, smallImage = false, truncated = false }) {
     const { t } = useTranslation()
@@ -74,15 +74,16 @@ export function PodcastHtml({ name, link, description, image, rss, smallImage = 
 }
 
 export function Podcast(props) {
-  const appState = useContext(appContext);
-  const {setCurrentPodcastColor, currentPodcastColor} = appState.theme;
-  const [loading, setLoading] = useState(true)
-  const [showEpisodeForm, setShowEpisodeForm] = useState(false)
-  const [addr, setAddr] = useState('')
-  const [thePodcast, setThePodcast] = useState(null)
-  const [podcastHtml, setPodcastHtml] = useState(null)
-  const [podcastEpisodes, setPodcastEpisodes] = useState([])
   const { t } = useTranslation()
+  const appState = useContext(appContext);
+  const {address, setAddress} = appState.user;
+  const [loading, setLoading] = useState(true);
+
+  const [thePodcast, setThePodcast] = useState(null);
+  const [podcastHtml, setPodcastHtml] = useState(null);
+  const [podcastEpisodes, setPodcastEpisodes] = useState([]);
+  const [showEpisodeForm, setShowEpisodeForm] = useState(false);
+  const {setCurrentPodcastColor, currentPodcastColor} = appState.theme;
 
   const getPodcastEpisodes = async () => {
     const pid = props.match.params.podcastId;
@@ -115,7 +116,7 @@ export function Podcast(props) {
   }
   const loadRss = () => {
     // console.log(rss)
-    window.open(`https://whispering-retreat-94540.herokuapp.com/feeds/${thePodcast.podcastId}`, '_blank')
+    window.open(`https://whispering-retreat-94540.herokuapp.com/feeds/rss/${thePodcast.podcastId}`, '_blank')
   }
 
   // let p = podcasts.find(podcastId => Object.values(podcasts).pid === podcastId)
@@ -160,23 +161,22 @@ export function Podcast(props) {
     />
   }
 
-  const tryAddressConnecting = async () => {
-    let addr;
-    try {
-      addr = await window.arweaveWallet.getActiveAddress();
-      return addr;
-    } catch (error) {
-      console.log("🦔Displaying feed for non-ArConnect installed users🦔");
-      //  address retrived from the top list of https://viewblock.io/arweave/addresses
-      addr = "dRFuVE-s6-TgmykU4Zqn246AR2PIsf3HhBhZ0t5-WXE";
-      return addr;
-    }
-  };
+  // const tryAddressConnecting = async () => {
+  //   let addr;
+  //   try {
+  //     addr = await window.arweaveWallet.getActiveAddress();
+  //     return addr;
+  //   } catch (error) {
+  //     console.log("🦔Displaying feed for non-ArConnect installed users🦔");
+  //     //  address retrived from the top list of https://viewblock.io/arweave/addresses
+  //     addr = "dRFuVE-s6-TgmykU4Zqn246AR2PIsf3HhBhZ0t5-WXE";
+  //     return addr;
+  //   }
+  // };
 
   const loadEpisodes = async (podcast, episodes) => {
     console.log(podcast)
     const episodeList = []
-    const addr = await tryAddressConnecting();
     for (let i in episodes) {
       let e = episodes[i]
       // console.log("episode", e)
@@ -218,8 +218,7 @@ export function Podcast(props) {
   }
 
   const checkEpisodeForm = async (podObj) => {
-    let addr = await window.arweaveWallet.getActiveAddress();
-    if (addr === podObj.owner || podObj.superAdmins.includes(addr)) {
+    if (address === podObj.creatorAddress || podObj.superAdmins.includes(address)) {
       setShowEpisodeForm(true)
       window.scrollTo(0, 0)
     } else {
@@ -280,27 +279,38 @@ export function Podcast(props) {
       setCurrentPodcastColor(convertedPodcast?.rgb)
       // setPodcastHtml(loadPodcastHtml(p))
       setPodcastEpisodes(convertedEpisodes)
-      setAddr(await tryAddressConnecting())
+      // setAddr(await tryAddressConnecting())
       setLoading(false)
     }
     fetchData()
   }, [])
 
+  const isOwner = (thePodcast?.creatorAddress === address || thePodcast?.superAdmins?.includes(address))
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center mb-20">
       {!loading && (
         <div className="p-14 flex items-center w-full">
           <img className="w-40 cursor-pointer  mr-8" src={thePodcast.cover} alt={thePodcast.title} />
           <div className="col-span-2 my-3 text-zinc-100 w-3/6 mr-2">
-            <div className="font-medium select-text line-clamp-1">{thePodcast?.title}</div>
-            <div className="text-sm line-clamp-5 select-text">{thePodcast?.description}</div>
+            <div className="text-lg font-medium tracking-wide select-text line-clamp-1">{thePodcast?.title}</div>
+            <div className="line-clamp-5 select-text">{thePodcast?.description}</div>
           </div>
           <div className="ml-auto">
             <div className="flex items-center justify-between">
-              <button className="btn btn-primary btn-sm" onClick={() => loadRss()}><FaRss /></button> 
-              <button className="btn btn-primary btn-sm ml-4" onClick={() => tipPrompt(t)}><FaRegGem className="mr-2" /> Tip</button>
-              {thePodcast && (thePodcast.creatorAddress === addr || thePodcast.superAdmins.includes(addr)) && (
-                <button className='btn btn-sm btn-outline ml-4' onClick={() => checkEpisodeForm(thePodcast)}>{t("podcast.newepisode")}</button>
+              <button className="btn btn-primary btn-sm normal-case rounded-xl border-0" style={getButtonRGBs(currentPodcastColor)} onClick={() => loadRss()}>
+                <FaRss className="mr-2 w-3 h-3" /><span className="font-normal">RSS</span>
+              </button>
+              {!isOwner && (
+                <div className="tooltip" data-tip="Coming soon!">
+                  <button disabled className="btn btn-outline btn-sm normal-case rounded-xl border-0 ml-4" style={getButtonRGBs(currentPodcastColor)} onClick={() => tipPrompt(t)}>
+                    <HeartIcon className="mr-2 w-4 h-4" /><span className="font-normal">Tip</span>
+                  </button>
+                </div>
+              )}
+              {thePodcast && isOwner && (
+                <button className="btn btn-outline btn-sm normal-case rounded-xl border-0 ml-4" style={getButtonRGBs(currentPodcastColor)} onClick={() => checkEpisodeForm(thePodcast)}>
+                  <PlusIcon className="mr-2 w-4 h-4" /><span className="font-normal">{t("podcast.newepisode")}</span>
+                </button>
               )}
             </div>
           </div>
@@ -310,10 +320,11 @@ export function Podcast(props) {
       {loading && <h5 className="p-5">{t("loadingEpisodes")}</h5>}
       <div className="w-full">
         {podcastEpisodes && podcastEpisodes.map((e, i) => (
-          <div className="mb-6 p-2 border rounded-xl border-zinc-600">
-            <TrackView episode={e} key={i} />
+          <div key={i} className="mb-6 p-2.5 border rounded-xl border-zinc-600">
+            <TrackView episode={e} />
           </div>
         ))}
+        {!loading && podcastEpisodes.length === 0 && <h5 className="p-5">{t("podcast.noepisodes")}</h5>}
       </div>
       < div className="podcast-player sticky bottom-0 w-screen" />
     </div>

@@ -3,8 +3,12 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
+import { FaPlay } from 'react-icons/fa';
+import { FiEye } from 'react-icons/fi';
+
 import { TrackView } from './trackView';
 import { appContext } from '../utils/initStateGen.js';
+import { getButtonRGBs } from '../utils/ui';
 
 export function Greeting() {
   const appState = useContext(appContext);
@@ -44,12 +48,12 @@ export function FeaturedEpisode({episode}) {
       </div>
       <div className="ml-auto">
         <div>
-          <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 py-2 pl-4 my-6 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
-            <PlayButton svgStyle={altMainColor} fill={altMainColor} outline={altMainColor} />
-            <div className="ml-1 " style={{color: altMainColor}}>Play</div>
+          <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 btn btn-primary border-0 my-5 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={getButtonRGBs(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}>
+            <FaPlay className="w-3 h-3" />
+            <div className="ml-2">Play</div>
           </div>
-          <div className="w-24 py-2 pl-4 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
-            <EyeIcon color={altMainColor} className="h-5 w-5" />
+          <div className="w-24 btn btn-primary border-0 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
+            <FiEye color={altMainColor} className="h-5 w-5" />
             <div className="ml-1 " style={{color: altMainColor}}>View</div>
           </div>
         </div>

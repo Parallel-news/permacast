@@ -95,7 +95,6 @@ export default function App() {
       currentPodcastColor: currentPodcastColor,
       setCurrentPodcastColor: setCurrentPodcastColor,
     },
-    viewsList: ["featured", "following", "searchResults", "uploadPodcast", "uploadEpisode", "podcast", "episode", "creator", "fullscreen"], 
     search: {
       input: searchInput,
       setInput: setSearchInput,
