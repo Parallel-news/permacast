@@ -1,10 +1,10 @@
-import { useContext } from 'react';
+import { React, useState, useRef, useContext } from 'react';
+import ArDB from 'ardb';
 import { appContext } from '../utils/initStateGen';
-import { React, useState, useRef } from 'react';
 import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, deployContract } from '../utils/arweave'
 import { languages_en, languages_zh, categories_en, categories_zh } from '../utils/languages';
 import { processFile, userHasEnoughAR } from '../utils/shorthands';
-import ArDB from 'ardb';
+import ArConnect from './arconnect'; 
 import { PhotographIcon } from '@heroicons/react/outline';
 
 import Swal from 'sweetalert2';
@@ -17,7 +17,7 @@ export default function UploadPodcastView() {
   const [show, setShow] = useState(false);
   const [img, setImg] = useState();
   const [isUploading, setIsUploading] = useState(false);
-
+  const isLoggedIn = appState.user.address;
   let finalShowObj = {}
   const podcastCoverRef = useRef()
   const { t, i18n } = useTranslation()
@@ -267,13 +267,21 @@ export default function UploadPodcastView() {
                 <span className="label-text cursor-pointer">{t("uploadshow.explicit")}</span>
               </label>
               <div className="flex place-content-end pb-28">
-                {isUploading ? (
-                  <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
-                    <div className="animate-spin border-t-3 rounded-t-full border-yellow-100 h-5 w-5 mr-3" viewBox="0 0 24 24"></div>
-                    {t("uploadshow.uploading")}
-                  </button>
-                ): (
-                  <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+                {isLoggedIn ? (
+                  <>
+                    {isUploading ? (
+                      <button type="button" className="btn btn-primary p-2 rounded-lg" disabled>
+                        <div className="animate-spin border-t-3 rounded-t-full border-yellow-100 h-5 w-5 mr-3" viewBox="0 0 24 24"></div>
+                        {t("uploadshow.uploading")}
+                      </button>
+                    ): (
+                      <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+                    )}
+                  </>
+                ) : (
+                  <div className="w-60">
+                    <ArConnect />
+                  </div>
                 )}
               </div>
             </div>
