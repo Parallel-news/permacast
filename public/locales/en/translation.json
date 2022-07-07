@@ -81,9 +81,10 @@
 		"uploaded": "Uploaded"
 	},
 	"podcast": {
-		"newepisode": "add new episode"
+		"newepisode": "Add episode"
 	},
-	"loading": "Loading podcasts...",
+	"loadingPodcasts": "Loading podcasts...",
+	"loadingEpisodes": "Loading episodes...",
 	"nopodcasts": "No podcasts here yet. Upload one!",
 	"sortpodcastsby": "Sort podcasts by",
 	"sorting": {
