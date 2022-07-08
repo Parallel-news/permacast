@@ -1,20 +1,17 @@
 import { useContext } from 'react';
-import { useLocation } from 'react-router-dom';
 import { Cooyub, GlobalPlayButton } from './icons';
 import { appContext } from '../utils/initStateGen';
 import { getButtonRGBs } from './../utils/ui';
 import { FaPlay } from 'react-icons/fa';
 
-export function TrackView({episode, includeDescription=false, playButtonSize="20"}) {
+export function TrackView({episode, includeDescription=false, playButtonSize="20", color=""}) {
   const appState = useContext(appContext);
-  const location = useLocation();
-  const { currentPodcastColor } = appState.theme;
   const { cover, title, creatorName, description } = episode;
   const queue = appState.queue;
-  const c = currentPodcastColor;
+  const c = color ? color : episode?.rgb;
 
   return (
-    <div className="flex items-center justify-between ">
+    <div className="flex items-center justify-between">
       <div className="flex items-center">
         <img className="w-14 h-14 rounded-lg" src={cover} alt={title} />
         <div className="ml-4 flex flex-col">

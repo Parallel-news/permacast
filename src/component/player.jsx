@@ -199,12 +199,13 @@ export function PlayerMobile({ episode }) {
 
 export function Player({episode}) {
   const appState = useContext(appContext);
+  const { themeColor } = appState.theme;
 
   return (
     <div className="w-screen rounded-t-[24px] h-[84px] pt-4 px-8 bg-zinc-900 text-zinc-200 overflow-y-hidden">
       <div className="grid grid-cols-12 items-center justify-between">
         <div className="col-span-3">
-          <TrackView episode={episode} playButtonSize="0" />
+          <TrackView episode={episode} playButtonSize="0" color={themeColor} />
         </div>
         <div className="col-span-6">
           <div className="flex">
