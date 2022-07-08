@@ -59,7 +59,7 @@ export default function App() {
     const fetchData = async () => {
       setLoading(true)
       const sorted = await sortPodcasts(filterTypes)
-      const podcasts = sorted[filterTypes[selection]].splice(0, 4)
+      const podcasts = sorted[filterTypes[selection]].splice(0, 6)
       const convertedPodcasts = await Promise.all(podcasts.map(p => convertToPodcast(p)))
       const convertedEpisodes = await Promise.all(podcasts.map(p => convertToEpisode(p, p.episodes[0])))
       setCurrentEpisode(convertedEpisodes[0])
@@ -136,7 +136,6 @@ export default function App() {
   // improve AR rounding
   // finish tab switching gradient color animation
   // make buttons and stuff consistent accross app
-  // add Router
   // mobile view
 
   return (
@@ -186,7 +185,7 @@ export default function App() {
                   />
                   <Route
                     exact
-                    path="/episodes/:podcastId"
+                    path="/podcast/:podcastId"
                     render={({ match }) => <Podcast match={match} />}
                   />
                 </div>

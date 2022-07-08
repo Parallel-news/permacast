@@ -33,7 +33,7 @@ export function Greeting() {
 export function FeaturedEpisode({episode}) {
   const appState = useContext(appContext);
   const {cover, title, description} = episode;
-  
+
   const rgb = replaceDarkColorsRGB(episode.rgb);
   const rgb2 = replaceDarkColorsRGB(episode.rgb, 0.6);
   const mainColor = (`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
@@ -74,7 +74,7 @@ export function FeaturedPodcast({podcast}) {
     <>
       <div style={{backgroundColor: rgb, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
         <div className="h-1/6 w-full px-5 pb-2 cursor-pointer">
-          <div onClick={() => history.push(`/episodes/${podcastId}`)}>
+          <div onClick={() => history.push(`/podcast/${podcastId}`)}>
             <div className="pt-5 pb-3 text-xs">{episodesCount} Episode{episodesCount == 1 ? '' : 's'}</div>
             <div className="w-full mb-7">
               <img className="object-contain h-[180px] w-full" src={cover} alt={podcastName} />
@@ -87,7 +87,7 @@ export function FeaturedPodcast({podcast}) {
             }}>
               <GlobalPlayButton size="20" innerColor={rgb} outerColor={textColor} />
             </div>
-            <div className="ml-3" onClick={() => history.push(`/episodes/${podcastId}`)}>
+            <div className="ml-3" onClick={() => history.push(`/podcast/${podcastId}`)}>
               <div className="text-lg line-clamp-1 cursor-pointer">{title}</div>
               <div className="text-xs max-w-[95%] line-clamp-2">{description}</div>
             </div>

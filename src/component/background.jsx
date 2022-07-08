@@ -8,7 +8,7 @@ export default function Background(props) {
   const { themeColor, currentPodcastColor, setCurrentPodcastColor } = appState.theme;
   const location = useLocation();
   
-  const color = location.pathname.includes("episodes") ? currentPodcastColor?.replace('rgb', 'rgba')?.replace(')', ', 0.4)') : themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
+  const color = location.pathname.includes("podcast") ? currentPodcastColor?.replace('rgb', 'rgba')?.replace(')', ', 0.4)') : themeColor.replace('rgb', 'rgba').replace(')', ', 0.2)');
   const check = () => location.pathname !== "/featured";
 
   useEffect(() => {

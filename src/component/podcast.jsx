@@ -289,9 +289,9 @@ export function Podcast(props) {
   return (
     <div className="flex flex-col items-center justify-center mb-20">
       {!loading && (
-        <div className="p-14 flex items-center w-full">
+        <div className="px-14 pb-14 flex items-center w-full">
           <img className="w-40 cursor-pointer  mr-8" src={thePodcast.cover} alt={thePodcast.title} />
-          <div className="col-span-2 my-3 text-zinc-100 w-3/6 mr-2">
+          <div className="col-span-2 my-3 text-zinc-100 w-4/6 mr-2">
             <div className="text-lg font-medium tracking-wide select-text line-clamp-1">{thePodcast?.title}</div>
             <div className="line-clamp-5 select-text">{thePodcast?.description}</div>
           </div>
