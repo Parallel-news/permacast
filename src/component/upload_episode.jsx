@@ -39,6 +39,7 @@ export default function UploadEpisode({ podcast }) {
       tx.addTag("App-Version", "0.3.0");
       tx.addTag("Contract-Src", NFT_SRC);
       tx.addTag("Init-State", initState);
+      tx.addTag("Permacast-Version", "amber")
       // Verto aNFT listing
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
@@ -167,7 +168,7 @@ export default function UploadEpisode({ podcast }) {
     const contract = podcast?.newChildOf ? podcast.newChildOf : podcast.childOf;
     console.log("CONTRACT CHILDOF")
     console.log(contract)
-    let tags = { "Contract": contract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input) }
+    let tags = { "Contract": contract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input), "Permacast-Version": "amber" }
     // let contract = smartweave.contract(theContractId).connect("use_wallet");
     // let txId = await contract.writeInteraction(input, tags);
     const interaction = await arweave.createTransaction({data: show.desc});
