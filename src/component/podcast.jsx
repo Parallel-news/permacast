@@ -274,7 +274,7 @@ export function Podcast(props) {
       // console.log(p)
       const ep = await getPodcastEpisodes()
       const convertedPodcast = await convertToPodcast(p)
-      const convertedEpisodes = await Promise.all(ep.map(e => convertToEpisode(p, e, false)))
+      const convertedEpisodes = await Promise.all(ep.map(e => convertToEpisode(convertedPodcast, e, false)))
       setThePodcast(convertedPodcast)
       setCurrentPodcastColor(convertedPodcast?.rgb)
       // setPodcastHtml(loadPodcastHtml(p))

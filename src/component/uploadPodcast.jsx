@@ -231,7 +231,7 @@ export default function UploadPodcastView() {
                       </div>
                     </div>
                     <div className="flex justify-center pt-2">
-                      <div className="text-lg tracking-wider">Cover image</div>
+                      <div className="text-lg cursor-pointer tracking-wider">Cover image</div>
                     </div>
                   </div>
                 </div>

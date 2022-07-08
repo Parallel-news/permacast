@@ -28,7 +28,7 @@ export default function App() {
   const [currentEpisode, setCurrentEpisode] = useState(null);
 
   const [themeColor, setThemeColor] = useState('rgb(255, 255, 0)');
-  const [currentPodcastColor, setCurrentPodcastColor] = useState(null);
+  const [currentPodcastColor, setCurrentPodcastColor] = useState('rgb(255, 255, 0)');
   const [backdropColor, setBackdropColor] = useState();
 
   const [address, setAddress] = useState();
