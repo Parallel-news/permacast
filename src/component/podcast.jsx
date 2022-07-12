@@ -15,6 +15,89 @@ import { convertToPodcast, convertToEpisode, fetchPodcasts } from '../utils/podc
 import { getButtonRGBs } from '../utils/ui.js';
 import { appContext } from '../utils/initStateGen.js';
 import { isDarkMode } from '../utils/theme.js';
+import { Dialog, Transition } from '@headlessui/react'
+import { Fragment } from 'react'
+
+export function UploadEpisodeModal() {
+  let [isOpen, setIsOpen] = useState(true)
+
+  function closeModal() {
+    setIsOpen(false)
+  }
+
+  function openModal() {
+    setIsOpen(true)
+  }
+
+  return (
+    <>
+      <div className="fixed inset-0 flex items-center justify-center">
+        <button
+          type="button"
+          onClick={openModal}
+          className="rounded-md bg-black bg-opacity-20 px-4 py-2 text-sm font-medium text-white hover:bg-opacity-30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75"
+        >
+          Open dialog
+        </button>
+      </div>
+
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black bg-opacity-25" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900"
+                  >
+                    Payment successful
+                  </Dialog.Title>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Your payment has been successfully submitted. We’ve sent
+                      you an email with all of the details of your order.
+                    </p>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                      onClick={closeModal}
+                    >
+                      Got it, thanks!
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+    </>
+  )
+}
 
 export function PodcastHtml({ name, link, description, image, rss, smallImage = false, truncated = false }) {
     const { t } = useTranslation()
@@ -77,6 +160,7 @@ export function Podcast(props) {
   const { t } = useTranslation()
   const appState = useContext(appContext);
   const {address, setAddress} = appState.user;
+  const {setIsOpen} = appState.globalModal;
   const [loading, setLoading] = useState(true);
 
   const [thePodcast, setThePodcast] = useState(null);
@@ -289,7 +373,7 @@ export function Podcast(props) {
   return (
     <div className="flex flex-col items-center justify-center mb-20">
       {!loading && (
-        <div className="px-14 pb-14 flex items-center w-full">
+        <div className="px-14 pb-14 flex flex-col justify-center md:flex-row md:items-center w-full">
           <img className="w-40 cursor-pointer  mr-8" src={thePodcast.cover} alt={thePodcast.title} />
           <div className="col-span-2 my-3 text-zinc-100 w-4/6 mr-2">
             <div className="text-lg font-medium tracking-wide select-text line-clamp-1">{thePodcast?.title}</div>
@@ -302,21 +386,21 @@ export function Podcast(props) {
               </button>
               {!isOwner && (
                 <div className="tooltip" data-tip="Coming soon!">
-                  <button disabled className="btn btn-outline btn-sm normal-case rounded-xl border-0 ml-4" style={getButtonRGBs(currentPodcastColor)} onClick={() => tipPrompt(t)}>
+                  <button disabled className="btn btn-outline btn-sm normal-case rounded-xl border-0 ml-4 min-w-max" style={getButtonRGBs(currentPodcastColor)} onClick={() => tipPrompt(t)}>
                     <HeartIcon className="mr-2 w-4 h-4" /><span className="font-normal">Tip</span>
                   </button>
                 </div>
               )}
               {thePodcast && isOwner && (
-                <button className="btn btn-outline btn-sm normal-case rounded-xl border-0 ml-4" style={getButtonRGBs(currentPodcastColor)} onClick={() => checkEpisodeForm(thePodcast)}>
-                  <PlusIcon className="mr-2 w-4 h-4" /><span className="font-normal">{t("podcast.newepisode")}</span>
+                <button className="btn btn-outline btn-sm normal-case rounded-xl border-0 flex cursor-pointer font-normal ml-4" style={getButtonRGBs(currentPodcastColor)} onClick={() => setIsOpen(true)}>
+                  <PlusIcon className="mr-2 w-4 h-4" /> {t("podcast.newepisode")}
                 </button>
               )}
             </div>
           </div>
         </div>
       )}
-      {showEpisodeForm ? <UploadEpisode podcast={thePodcast} /> : null}
+      <UploadEpisode podcast={thePodcast} />
       {loading && <h5 className="p-5">{t("loadingEpisodes")}</h5>}
       <div className="w-full">
         {podcastEpisodes && podcastEpisodes.map((e, i) => (

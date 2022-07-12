@@ -17,7 +17,7 @@ export function TrackView({episode, includeDescription=false, playButtonSize="20
         <div className="ml-4 flex flex-col">
           <div className="cursor-pointer line-clamp-1 pr-2 text-sm">{title}</div>
           <div className="flex items-center">
-            <p className="text-zinc-400 text-[6px]">by</p>
+            <p className="text-zinc-400 text-[8px]">by</p>
             <div style={{backgroundColor: getButtonRGBs(c)?.backgroundColor}} className="ml-1.5 p-1 rounded-full">
               <div className="flex items-center">
                 {/* <img className="h-6 w-6" src={cover} alt={title} /> */}

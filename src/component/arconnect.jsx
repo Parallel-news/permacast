@@ -169,7 +169,7 @@ export default function ArConnect() {
   }
 
   return (
-    <div className="ml-8 text-zinc-300 hover:text-white cursor-pointer">
+    <div className="text-zinc-300 hover:text-white cursor-pointer">
       <>
         {(walletConnected && (
           <>

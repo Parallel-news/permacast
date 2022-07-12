@@ -1,14 +1,62 @@
 import ArDB from 'ardb'
 import Swal from 'sweetalert2'
 import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
-import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Fragment, useState, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Transition, Dialog } from '@headlessui/react';
+import { FiFile } from 'react-icons/fi';
+import { appContext } from '../utils/initStateGen';
+import { UploadIcon } from '@heroicons/react/outline';
 
 const ardb = new ArDB(arweave)
 
+
+export function Modal(props) {
+  const { t } = useTranslation();
+  const appState = useContext(appContext);
+  const {isOpen, setIsOpen} = appState.globalModal;
+
+  return (
+    <Transition appear show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10 " open={isOpen} onClose={() => setIsOpen(false)}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black backdrop-blur bg-opacity-25" />
+        </Transition.Child>
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-zinc-900 transition-all">
+                {props.children}
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition>
+  )
+}
+
 export default function UploadEpisode({ podcast }) {
-  console.log(podcast)
   const { t } = useTranslation()
+  const appState = useContext(appContext);
+  const {isOpen, setIsOpen} = appState.globalModal;
+  const [episodeFileName, setEpisodeFileName] = useState(null);
   const [showUploadFee, setShowUploadFee] = useState(null)
   const [episodeUploading, setEpisodeUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(false)
@@ -86,6 +134,7 @@ export default function UploadEpisode({ podcast }) {
         console.log(epObj)
         uploadShow(epObj);
         event.target.reset();
+        setIsOpen(false)
         Swal.fire({
           title: t("uploadepisode.swal.uploadcomplete.title"),
           text: t("uploadepisode.swal.uploadcomplete.text"),
@@ -197,6 +246,12 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
+  const onFileUpload = (file) => {
+    if (file) {
+      setEpisodeFileName(file.name)
+      calculateUploadFee(file)  
+    }
+  }
 
   const calculateUploadFee = (file) => {
     console.log('fee reached')
@@ -205,51 +260,67 @@ export default function UploadEpisode({ podcast }) {
   }
 
   return (
-    <div className="flex items-center justify-center shadow-md flex-col mb-10 px-10 rounded-xl">
-      <div className="label block uppercase text-center">{t("uploadepisode.title")} {podcast?.podcastName}</div>
-      <div className="form-control">
-        <form className="p-4" onSubmit={handleEpisodeUpload}>
-          <div className="mb-3">
-            <span className="label label-text">{t("uploadepisode.name")}</span>
-            <input className="input input-bordered" required pattern=".{3,500}" title="Between 3 and 500 characters" type="text" name="episodeName" placeholder="EP1: Introduction" />
+    <Modal>
+      <div className="bg-zinc-900" data-theme="permacast">
+        <div className="relative mt-6 mb-3">
+          <div className="font-semibold">
+            Add Episode
           </div>
-          <div className="mb-3">
-            <span className="label label-text">{t("uploadepisode.description")}</span>
-            <input className="input input-bordered" required pattern=".{1,5000}" title="Between 1 and 5000 characters" type="text" name="episodeShowNotes" placeholder="In this episode..." rows={3} />
+          <div className="absolute text-2xl right-10 btn btn-sm btn-ghost top-[-6px]" onClick={() => setIsOpen(false)}>
+            ×
           </div>
-          <div className="mb-5">
-            <span className="label label-text">{t("uploadepisode.file")}</span>
-            <input required type="file" onChange={(e) => calculateUploadFee(e.target.files[0])} name="episodeMedia" />
+        </div>
+        <div className="flex items-center justify-center flex-col rounded-xl">
+          <div className="py-6 px-10 w-full form-control">
+            <form className="" onSubmit={handleEpisodeUpload}>
+              <div className="mb-5">
+                <input className="input input-secondary w-full py-3 px-5 bg-zinc-800 border-0 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" required pattern=".{3,500}" title="Between 3 and 500 characters" type="text" name="episodeName" placeholder="Episode title..." />
+              </div>
+              <div className="mb-5">
+                <textarea className="input input-secondary resize-none w-full h-28 pb-12 py-3 px-5 bg-zinc-800 border-0 rounded-xl outline-none focus:ring-2 focus:ring-inset focus:ring-white" required pattern=".{1,5000}" title="Between 1 and 5000 characters" type="text" name="episodeShowNotes" placeholder="Episode description..."></textarea>
+              </div>
+              <div className="mb-5 bg-zinc-800 rounded-xl cursor-pointer">
+                <input className="opacity-0 absolute z-[-1]" id="file" required type="file" onChange={(e) => onFileUpload(e.target.files?.[0])} name="episodeMedia" />
+                <label htmlFor="file" className="flex items-center text-zinc-400 transition duration-300 ease-in-out hover:text-white my-4 py-6 px-3 w-full cursor-pointer">
+                  <FiFile className="w-7 h-6 cursor-pointer rounded-lg mx-2" />
+                  <div>
+                    {episodeFileName ? episodeFileName : "Episode Media"}
+                  </div>
+                </label>
+              </div>
+              {uploadProgress && (
+                <>
+                  <div className="text-xl text-white">{t("uploadepisode.uploaded")}</div>
+                  <progress className="progress-primary mt-3" value={uploadPercentComplete} max="100"></progress>
+                </>)}
+              {/* {showUploadFee ? <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p> : null} */}
+              <div className="mt-8 flex items-center justify-between text-zinc-200">
+                <label className="cursor-pointer label flex justify-start">
+                  <input className="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />
+                  <span className="label-text transition duration-300 ease-in-out hover:text-white">{t("uploadepisode.verto")}</span>
+                </label>
+                {!episodeUploading ?
+                  <button
+                    className="btn btn-secondary bg-zinc-800 hover:bg-zinc-600 transition duration-300 ease-in-out hover:text-white rounded-xl px-8"
+                    type="submit"
+                  >
+                    <UploadIcon className="h-5 w-5 mr-2" />
+                    {t("uploadepisode.upload")}
+                  </button>
+                  :
+                  <button
+                    className="btn btn-outline rounded-xl"
+                    disabled
+                    type="submit"
+                  >
+                    {t("uploadepisode.uploading")}
+                  </button>
+                }
+              </div>
+            </form>
           </div>
-          <div className="mt-5">
-            <label className="cursor-pointer label flex justify-start mt-3">
-              <input className="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />
-              <span className="label-text">{t("uploadepisode.verto")}</span>
-            </label>
-
-
-          </div>
-          {showUploadFee ? <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p> : null}
-          <br /><br />
-          {!episodeUploading ?
-            <button
-              className="btn btn-primary"
-              type="submit"
-            >
-              {t("uploadepisode.upload")}
-            </button>
-            :
-            <button
-              className="btn btn-outline"
-              disabled
-              type="submit"
-            >
-              {t("uploadepisode.uploading")}
-            </button>
-          }
-          {uploadProgress && <div className="mt-3">{t("uploadepisode.uploaded")} {uploadPercentComplete}%</div>}
-        </form>
+        </div>
       </div>
-    </div>
+    </Modal>
   )
 }

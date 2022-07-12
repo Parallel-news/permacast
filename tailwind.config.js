@@ -8,7 +8,7 @@ module.exports = {
     themes: [
       "business",
       {
-        permacast: {
+        "permacast": {
           primary: "#FFFF00",
           secondary: "#18181b",
         }

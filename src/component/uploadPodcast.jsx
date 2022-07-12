@@ -212,7 +212,7 @@ export default function UploadPodcastView() {
 
   return (
     <div className="text-zinc-400 h-full">
-      <h1 className="text-2xl tracking-wider">New Show</h1>
+      <h1 className="text-2xl tracking-wider text-white">New Show</h1>
       <div className="form-control">
         <form onSubmit={handleShowUpload}>
           <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />

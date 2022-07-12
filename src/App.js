@@ -42,7 +42,7 @@ export default function App() {
   const [recentlyAdded, setRecentlyAdded] = useState([]);
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
   const [searchInput, setSearchInput] = useState("");
-
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   const filters = [
     {type: "episodescount", desc: t("sorting.episodescount")},
@@ -89,6 +89,10 @@ export default function App() {
   const appState = {
     t: t,
     loading: loading,
+    globalModal: {
+      isOpen: modalIsOpen,
+      setIsOpen: setModalIsOpen,
+    },
     theme: {
       themeColor: themeColor,
       backdropColor: backdropColor,

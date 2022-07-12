@@ -74,7 +74,7 @@ export function NavBar() {
           <div className="w-4/5">
             <Searchbar />
           </div>
-          <div className="w-72">
+          <div className="ml-8 w-72">
             <ArConnect />
           </div>
         </div>
@@ -170,7 +170,7 @@ export function NavBarMobile() {
                 
                 <Disclosure.Button
                   as="a"
-                  className="block px-3 py-2 rounded-md"
+                  className="block py-2 rounded-md"
                 >
                   <ArConnect />
                 </Disclosure.Button>

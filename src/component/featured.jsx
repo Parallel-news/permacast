@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { replaceDarkColorsRGB, isTooLight, trimANSLabel } from '../utils/ui';
+import { replaceDarkColorsRGB, isTooLight, trimANSLabel, RGBobjectToString } from '../utils/ui';
 import { Cooyub, PlayButton, GlobalPlayButton } from './icons';
 import { EyeIcon } from '@heroicons/react/outline';
 import { FaPlay } from 'react-icons/fa';
@@ -34,10 +34,7 @@ export function FeaturedEpisode({episode}) {
   const appState = useContext(appContext);
   const {cover, title, description} = episode;
 
-  const rgb = replaceDarkColorsRGB(episode.rgb);
-  const rgb2 = replaceDarkColorsRGB(episode.rgb, 0.6);
-  const mainColor = (`rgb(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`);
-  const altMainColor = (`rgb(${rgb2.r}, ${rgb2.g}, ${rgb2.b}, 0.8)`);
+  const rgb = RGBobjectToString(replaceDarkColorsRGB(episode.rgb))
 
   return (
     <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
@@ -47,16 +44,16 @@ export function FeaturedEpisode({episode}) {
         <div className="text-sm line-clamp-5">{description}</div>
       </div>
       <div className="ml-auto">
-        <div>
-          <div onClick={() => appState.queue.playEpisode(episode)} className="w-24 btn btn-primary border-0 my-5 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={getButtonRGBs(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`)}>
+        <>
+          <div className="w-24 btn btn-primary border-0 mt-5 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={getButtonRGBs(rgb)} onClick={() => 'appState.queue.playEpisode(episode)'}>
             <FaPlay className="w-3 h-3" />
             <div className="ml-2">Play</div>
           </div>
-          <div className="w-24 btn btn-primary border-0 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={{backgroundColor: mainColor}}>
-            <FiEye color={altMainColor} className="h-5 w-5" />
-            <div className="ml-1 " style={{color: altMainColor}}>View</div>
+          <div className="w-24 btn btn-primary border-0 mt-5 rounded-full flex items-center cursor-pointer backdrop-blur-md" style={getButtonRGBs(rgb)}>
+            <FiEye className="h-5 w-5" />
+            <div className="ml-2">View</div>
           </div>
-        </div>
+        </>
       </div>
     </div>
   )

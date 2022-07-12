@@ -74,7 +74,7 @@
 		"name": "Episode name",
 		"description": "Episode description",
 		"file": "Audio file",
-		"verto": "List as an Atomic NFT on Verto?",
+		"verto": "Upload to Verto",
 		"toupload": "to upload",
 		"upload": "Upload",
 		"uploading": "Uploading, please wait...",
