@@ -163,7 +163,7 @@ export function NavBarMobile() {
                   as="a"
                   className="block px-3 py-2 rounded-md cursor-pointer"
                 >
-                  <div onClick={() => switchView("uploadPodcast")}>
+                  <div onClick={() => switchView("uploadpodcast")}>
                     {t("uploadshow.addpodcast")}
                   </div>
                 </Disclosure.Button>

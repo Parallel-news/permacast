@@ -32,6 +32,7 @@
 		"upload": "上传",
 		"uploading": "加工...",
 		"cancel": "取消",
+		"feeText": "上传节目的费用：",
 		"swal": {
 			"showadded": {
 				"title": "节目已添加",
@@ -70,6 +71,8 @@
 				"text": "检查您的 AR 余额和网络连接"
 			}
 		},
+		"feeText": "上传剧集将花费：",
+		"feeExplanation": "我们收取固定费用以防止垃圾邮件",
 		"title": "添加新的剧集到",
 		"name": "剧集名称",
 		"description": "剧集描述",

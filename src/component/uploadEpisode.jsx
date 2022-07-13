@@ -1,14 +1,16 @@
-import ArDB from 'ardb'
-import Swal from 'sweetalert2'
-import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave } from '../utils/arweave.js'
+
+import ArDB from 'ardb';
+import Swal from 'sweetalert2';
 import { Fragment, useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Transition, Dialog } from '@headlessui/react';
 import { FiFile } from 'react-icons/fi';
 import { appContext } from '../utils/initStateGen';
 import { UploadIcon } from '@heroicons/react/outline';
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave, EPISODE_UPLOAD_FEE_PERCENTAGE, TREASURY_ADDRESS } from '../utils/arweave.js';
+import { processFile, calculateStorageFee, fetchWalletAddress, userHasEnoughAR } from '../utils/shorthands.js';
 
-const ardb = new ArDB(arweave)
+const ardb = new ArDB(arweave);
 
 
 export function Modal(props) {
@@ -57,7 +59,7 @@ export default function UploadEpisode({ podcast }) {
   const appState = useContext(appContext);
   const {isOpen, setIsOpen} = appState.globalModal;
   const [episodeFileName, setEpisodeFileName] = useState(null);
-  const [showUploadFee, setShowUploadFee] = useState(null)
+  const [episodeUploadFee, setEpisodeUploadFee] = useState(0)
   const [episodeUploading, setEpisodeUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(false)
   const [uploadPercentComplete, setUploadPercentComplete] = useState(0)
@@ -73,32 +75,8 @@ export default function UploadEpisode({ podcast }) {
     await contract.writeInteraction(input);
   }
 
-  const readFileAsync = (file) => {
-    return new Promise((resolve, reject) => {
-      let reader = new FileReader();
-
-      reader.onload = () => {
-        resolve(reader.result);
-      };
-
-      reader.onerror = reject;
-
-      reader.readAsArrayBuffer(file);
-    })
-  }
-
-  const processFile = async (file) => {
-    try {
-      let contentBuffer = await readFileAsync(file);
-      console.log(contentBuffer)
-      return contentBuffer
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  const uploadToArweave = async (data, fileType, epObj, event) => { 
-    const wallet = await window.arweaveWallet.getActiveAddress();
+  const uploadToArweave = async (data, fileType, epObj, event, serviceFee) => {
+    const wallet = await fetchWalletAddress() // window.arweaveWallet.getActiveAddress();
     console.log(wallet);
     if (!wallet) {
       return null;
@@ -110,6 +88,7 @@ export default function UploadEpisode({ podcast }) {
       tx.addTag("App-Version", "0.3.0");
       tx.addTag("Contract-Src", NFT_SRC);
       tx.addTag("Init-State", initState);
+      tx.addTag("Permacast-Version", "amber");
       // Verto aNFT listing
       tx.addTag("Exchange", "Verto");
       tx.addTag("Action", "marketplace/create");
@@ -128,6 +107,12 @@ export default function UploadEpisode({ podcast }) {
         setUploadPercentComplete(uploader.pctComplete)
       }
       if (uploader.txPosted) {
+        const newTx = await arweave.createTransaction({target:TREASURY_ADDRESS, quantity: arweave.ar.arToWinston('' + serviceFee)})
+        console.log(newTx)
+        await arweave.transactions.sign(newTx)
+        console.log(newTx)
+        await arweave.transactions.post(newTx)
+        console.log(newTx.response)
         epObj.content = tx.id;
 
         console.log('txPosted:')
@@ -141,7 +126,7 @@ export default function UploadEpisode({ podcast }) {
           icon: "success",
           customClass: "font-mono",
         });
-        setShowUploadFee(null);
+        setEpisodeUploadFee(null);
       } else {
         Swal.fire(
           {
@@ -173,7 +158,17 @@ export default function UploadEpisode({ podcast }) {
     let fileType = episodeFile.type
     console.log(fileType)
     processFile(episodeFile).then((file) => {
-      uploadToArweave(file, fileType, epObj, event)
+      let epObjSize = JSON.stringify(epObj).length;
+      let bytes = file.byteLength + epObjSize + fileType.length;
+      calculateStorageFee(bytes).then((cost) => {
+        const serviceFee = cost / EPISODE_UPLOAD_FEE_PERCENTAGE;
+        userHasEnoughAR(t, bytes, serviceFee).then((result) => {
+          if (result === "all good") {
+            console.log('Fee cost: ' + (serviceFee))
+            uploadToArweave(file, fileType, epObj, event, serviceFee)
+          } else console.log('upload failed');
+        })
+      })
     })
     setEpisodeUploading(false)
   }
@@ -223,7 +218,7 @@ export default function UploadEpisode({ podcast }) {
     const contract = podcast?.newChildOf ? podcast.newChildOf : podcast.childOf;
     console.log("CONTRACT CHILDOF")
     console.log(contract)
-    let tags = { "Contract": contract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input) }
+    let tags = { "Contract": contract, "App-Name": "SmartWeaveAction", "App-Version": "0.3.0", "Content-Type": "text/plain", "Input": JSON.stringify(input), "Permacast-Version": "amber" }
     // let contract = smartweave.contract(theContractId).connect("use_wallet");
     // let txId = await contract.writeInteraction(input, tags);
     const interaction = await arweave.createTransaction({data: show.desc});
@@ -246,17 +241,14 @@ export default function UploadEpisode({ podcast }) {
     }
   }
 
-  const onFileUpload = (file) => {
+  const onFileUpload = async(file) => {
     if (file) {
-      setEpisodeFileName(file.name)
-      calculateUploadFee(file)  
+      setEpisodeFileName(file?.name)
+      const uploadPrice = await calculateStorageFee(file?.byteLength);
+      const serviceFee = uploadPrice / EPISODE_UPLOAD_FEE_PERCENTAGE;
+      const totalFee = uploadPrice + serviceFee
+      setEpisodeUploadFee(totalFee)
     }
-  }
-
-  const calculateUploadFee = (file) => {
-    console.log('fee reached')
-    const fee = 0.0124 * ((file.size / 1024 / 1024) * 3).toFixed(4)
-    setShowUploadFee(fee)
   }
 
   return (
@@ -292,8 +284,23 @@ export default function UploadEpisode({ podcast }) {
                 <>
                   <div className="text-xl text-white">{t("uploadepisode.uploaded")}</div>
                   <progress className="progress-primary mt-3" value={uploadPercentComplete} max="100"></progress>
-                </>)}
-              {/* {showUploadFee ? <p className="text-gray p-3">~${showUploadFee} {t("uploadepisode.toupload")}</p> : null} */}
+                </>
+              )}
+              <div className="bg-zinc-700 rounded-lg p-4">
+                {t("uploadshow.feeText")}
+                <span className="text-lg font-bold underline">{(episodeUploadFee).toFixed(3)} AR</span>
+              </div>
+              {episodeUploadFee ? (
+                <div className="w-80">
+                  <p className="text-gray py-3">{episodeUploadFee} {t("uploadepisode.toupload")}</p>
+                  <div className="bg-zinc-800 rounded-lg w-full">
+                    {t("uploadepisode.feeText")}
+                    <span className="text-lg font-bold underline">
+                      {(episodeUploadFee / EPISODE_UPLOAD_FEE_PERCENTAGE).toFixed(3)} AR
+                    </span>
+                  </div>
+                </div>
+              ) : null}
               <div className="mt-8 flex items-center justify-between text-zinc-200">
                 <label className="cursor-pointer label flex justify-start">
                   <input className="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />

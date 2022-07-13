@@ -1,5 +1,6 @@
 import ArweaveMultihost from "arweave-multihost";
 import Arweave from "arweave";
+import ArDB from 'ardb';
 import { SmartWeaveWebFactory } from "redstone-smartweave";
 import { generateFactoryState } from "./initStateGen";
 /*
@@ -17,6 +18,8 @@ export const arweave = Arweave.init({
   protocol: "https",
   timeout: 60000,
 });
+
+const ardb = new ArDB(arweave);
 
 export const smartweave = SmartWeaveWebFactory.memCached(arweave);
 
@@ -41,6 +44,10 @@ export const NEWS_CONTRACT = "HJFEnaWHLMp2ryrR0nzDKb0DSW7aBplDjcs3vQoVbhw";
 export const MESON_ENDPOINT = "https://coldcdn.com/api/cdn/f38vax";
 export const WEBSITE_URL = "https://whispering-retreat-94540.herokuapp.com";
 
+export const TREASURY_ADDRESS = 'eBYuvy8mlxUsm8JZNTpV6fisNaJt0cEbg-znvPeQ4A0';
+export const SHOW_UPLOAD_FEE = 0.25;
+export const EPISODE_UPLOAD_FEE_PERCENTAGE = 10;
+
 export const queryObject = {
   query: `query {
       transactions(
@@ -58,23 +65,45 @@ export const queryObject = {
   }`,
 };
 
-export async function deployContract (address) {
+
+export async function compoundTreasury(amount, callback, debug=false) {
+  arweave.createTransaction({target: TREASURY_ADDRESS, quantity: arweave.ar.arToWinston('' + amount)}).then((tx) => {
+    arweave.transactions.sign(tx).then(() => {
+      if (debug) console.log(tx)
+      arweave.transactions.post(tx).then((response) => {
+        if (debug) console.log(response)
+        callback()
+      })
+    })
+  })
+}
+
+export async function queryTXs(address) {
+  return ardb.search('transactions')
+    .from(address)
+    .tag('App-Name', 'SmartWeaveContract')
+    .tag('Permacast-Version', 'amber')
+    .tag('Contract-Src', CONTRACT_SRC)
+    .find();
+}
+
+export async function deployContract(address, debug=false) {
 
   const initialState = await generateFactoryState(address);
-  console.log(initialState)
-  const tx = await arweave.createTransaction({ data: initialState })
+  if (debug) console.log(initialState);
+  const tx = await arweave.createTransaction({ data: initialState });
 
-  tx.addTag("App-Name", "SmartWeaveContract")
-  tx.addTag("App-Version", "0.3.0")
-  tx.addTag("Contract-Src", CONTRACT_SRC)
+  tx.addTag("App-Name", "SmartWeaveContract");
+  tx.addTag("App-Version", "0.3.0");
+  tx.addTag("Contract-Src", CONTRACT_SRC);
   tx.addTag("Permacast-Version", "amber");
-  tx.addTag("Content-Type", "application/json")
-  tx.addTag("Timestamp", Date.now())
-  
+  tx.addTag("Content-Type", "application/json");
+  tx.addTag("Timestamp", Date.now());
+
   tx.reward = (+tx.reward * FEE_MULTIPLIER).toString();
   
   await arweave.transactions.sign(tx)
   await arweave.transactions.post(tx)
-  console.log(tx)
+  if (debug) console.log(tx)
   return tx.id
 }

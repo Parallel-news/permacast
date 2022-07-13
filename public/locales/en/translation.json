@@ -29,9 +29,11 @@
 		"language": "Podcast language",
 		"category": "Category",
 		"explicit": "Contains explicit content",
-		"upload": "Upload",
+		"upload": "Create",
 		"uploading": "Processing...",
 		"cancel": "Cancel",
+		"feeText": "Uploading the show will cost: ",
+		"feeExplanation": "We charge a flat fee to prevent spam",
 		"swal": {
 			"showadded": {
 				"title": "Show added",
@@ -70,6 +72,7 @@
 				"text": "Check your AR balance and network connection"
 			}
 		},
+		"feeText": "Uploading the episode will cost: ",
 		"title": "Add new episode to",
 		"name": "Episode name",
 		"description": "Episode description",

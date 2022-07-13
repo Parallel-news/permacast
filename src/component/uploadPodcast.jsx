@@ -1,9 +1,10 @@
 import { React, useState, useRef, useContext } from 'react';
 import ArDB from 'ardb';
 import { appContext } from '../utils/initStateGen';
-import { CONTRACT_SRC, FEE_MULTIPLIER, arweave, deployContract } from '../utils/arweave'
+import { BsArrowRightShort } from 'react-icons/bs';
+import { CONTRACT_SRC, FEE_MULTIPLIER, SHOW_UPLOAD_FEE, arweave, deployContract, queryTXs, compoundTreasury, TREASURY_ADDRESS } from '../utils/arweave'
 import { languages_en, languages_zh, categories_en, categories_zh } from '../utils/languages';
-import { processFile, userHasEnoughAR } from '../utils/shorthands';
+import { processFile, userHasEnoughAR, fetchWalletAddress, calculateStorageFee } from '../utils/shorthands';
 import ArConnect from './arconnect'; 
 import { PhotographIcon } from '@heroicons/react/outline';
 
@@ -17,6 +18,7 @@ export default function UploadPodcastView() {
   const [show, setShow] = useState(false);
   const [img, setImg] = useState();
   const [isUploading, setIsUploading] = useState(false);
+  const [cost, setCost] = useState(0);
   const isLoggedIn = appState.user.address;
   let finalShowObj = {}
   const podcastCoverRef = useRef()
@@ -32,15 +34,10 @@ export default function UploadPodcastView() {
     })
     let contractId
 
-    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "SIGNATURE"])
-    let addr = await window.arweaveWallet.getActiveAddress()
-
-    if (!addr) {
-      await window.arweaveWallet.connect(["ACCESS_ADDRESS"]);
-      addr = await window.arweaveWallet.getActiveAddress()
-    }
+    let addr = await fetchWalletAddress()
     console.log("ADDRESSS")
     console.log(addr)
+    // const tx = await queryTXs(addr) // TODO test
     const tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveContract')
@@ -50,7 +47,7 @@ export default function UploadPodcastView() {
 
     console.log(tx)
     if (tx.length !== 0) {
-      contractId = tx[0].id
+      contractId = tx[0].id;
     }
     if (!contractId) {
       console.log('not contractId - deploying new contract')
@@ -109,6 +106,15 @@ export default function UploadPodcastView() {
         arweave.transactions.post(tx).then((response) => {
           console.log(response)
           if (response.statusText === "OK") {
+            // compoundTreasury(SHOW_UPLOAD_FEE) // TODO TEST
+            arweave.createTransaction({target: TREASURY_ADDRESS, quantity: arweave.ar.arToWinston('' + SHOW_UPLOAD_FEE)}).then((tx) => {
+              arweave.transactions.sign(tx).then(() => {
+                arweave.transactions.post(tx).then((response) => {
+                  console.log(response)
+                  setIsUploading(false)
+                })
+              })
+            })
             showObj.cover = tx.id
             finalShowObj = showObj;
             console.log(finalShowObj)
@@ -132,6 +138,9 @@ export default function UploadPodcastView() {
       const podcastCoverImage = new Image()
       podcastCoverImage.src = window.URL.createObjectURL(event.target.files[0])
       podcastCoverImage.onload = () => {
+        calculateStorageFee(event.target.files[0].size).then((fee) => {
+          setCost(fee)
+        })
         if (podcastCoverImage.width !== podcastCoverImage.height) {
           podcastCoverRef.current.value = ""
           Swal.fire({
@@ -175,7 +184,7 @@ export default function UploadPodcastView() {
     let showObjSize = JSON.stringify(showObj).length
     let bytes = cover.byteLength + showObjSize + coverFileType.length
     setIsUploading(true)
-    if (await userHasEnoughAR(t, bytes) === "all good") {
+    if (await userHasEnoughAR(t, bytes, SHOW_UPLOAD_FEE) === "all good") {
       await uploadToArweave(cover, coverFileType, showObj)
     } else {
       console.log('upload failed')
@@ -215,7 +224,7 @@ export default function UploadPodcastView() {
       <h1 className="text-2xl tracking-wider text-white">New Show</h1>
       <div className="form-control">
         <form onSubmit={handleShowUpload}>
-          <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />
+          <input required type="file" accept="image/*" className="opacity-0 z-index-[-1] absolute cursor-pointer" ref={podcastCoverRef} onChange={e => handleChangeImage(e)} name="podcastCover" id="podcastCover" />
           <div className="md:flex mt-7">
             <label htmlFor="podcastCover" className="cursor-pointer transition duration-300 ease-in-out hover:text-white flex md:block md:h-full w-48">
               {podcastCoverRef.current?.files?.[0] ? (
@@ -262,11 +271,17 @@ export default function UploadPodcastView() {
                   {languageOptions()}
                 </select>
               </div>
-              <label className="flex">
+              <label className="flex mb-5">
                 <input id="podcastExplicit" type="checkbox" className="checkbox checkbox-ghost bg-yellow mr-2" />
                 <span className="label-text cursor-pointer">{t("uploadshow.explicit")}</span>
               </label>
-              <div className="flex place-content-end pb-28">
+              <div className="flex items-center place-content-end pb-28">
+                <div className="bg-zinc-800 rounded-lg px-4 py-[9px] mr-4">
+                  {t("uploadshow.feeText")}
+                  <span className="text-lg font-bold underline">
+                    {(SHOW_UPLOAD_FEE + cost).toFixed(3)} AR
+                  </span>
+                </div>
                 {isLoggedIn ? (
                   <>
                     {isUploading ? (
@@ -275,7 +290,10 @@ export default function UploadPodcastView() {
                         {t("uploadshow.uploading")}
                       </button>
                     ): (
-                      <button type="submit" className="btn btn-secondary">{t("uploadshow.upload")}</button>
+                      <button type="submit" className="btn btn-secondary">
+                        {t("uploadshow.upload")}
+                        <BsArrowRightShort className="w-7 h-7" />
+                      </button>
                     )}
                   </>
                 ) : (
