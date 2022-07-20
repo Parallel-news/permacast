@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { Sidenav, NavBar } from './component/navbars.jsx';
 import Background from './component/background.jsx';
-import SearchResultsView from "./component/search.jsx";
+import SearchView from "./component/search.jsx";
 import ArConnect from './component/arconnect.jsx';
 import UploadPodcastView from './component/uploadPodcast.jsx';
 import EpisodeQueue from '././component/episode_queue.jsx';
@@ -61,7 +61,7 @@ export default function App() {
       const sorted = await sortPodcasts(filterTypes)
       const podcasts = sorted[filterTypes[selection]].splice(0, 6)
       const convertedPodcasts = await Promise.all(podcasts.map(p => convertToPodcast(p)))
-      const convertedEpisodes = await Promise.all(podcasts.map(p => convertToEpisode(p, p.episodes[0])))
+      const convertedEpisodes = await Promise.all(podcasts.splice(0, 3).map(p => convertToEpisode(p, p.episodes[0])))
       setCurrentEpisode(convertedEpisodes[0])
       setRecentlyAdded(convertedEpisodes)
       setFeaturedPodcasts(convertedPodcasts)
@@ -177,15 +177,15 @@ export default function App() {
                     path="/uploadpodcast"
                     component={({match}) => <div><UploadPodcastView /></div>}
                   />
-                  <Route
+                  {/* <Route
                     exact
                     path="/following"
-                    component={({match}) => <div>rrrrree</div>}
-                  />
+                    component={({match}) => <div className="text-3xl">Coming soon!</div>}
+                  /> */}
                   <Route
                     exact
-                    path="/searchresults"
-                    component={({match}) => <div><SearchResultsView /></div>}
+                    path="/search"
+                    component={({match}) => <div><SearchView /></div>}
                   />
                   <Route
                     exact

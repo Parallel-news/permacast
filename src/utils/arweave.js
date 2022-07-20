@@ -78,7 +78,7 @@ export async function compoundTreasury(amount, callback, debug=false) {
   })
 }
 
-export async function queryTXs(address) {
+export async function queryTXsByAddress(address) {
   return ardb.search('transactions')
     .from(address)
     .tag('App-Name', 'SmartWeaveContract')

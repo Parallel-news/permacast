@@ -32,7 +32,7 @@ export function Sidenav() {
         <button className="w-9 h-9 mb-10 btn btn-ghost btn-sm btn-square hover:text-zinc-200">
           <Cooyub svgStyle="w-9 h-9" rectStyle="w-9 h-9" fill="#ffff00" />
         </button>
-        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("featured")} style={{color: cond("/featured") ? 'white': ''}} disabled={cond("/featured") ? true: false}>
+        <button className="w-9 h-9 btn btn-ghost btn-sm btn-square hover:text-zinc-200" onClick={() => switchView("featured")} style={{color: cond("/featured") || cond("/") ? 'white': ''}} disabled={cond("/featured") || cond("/") ? true: false}>
           <HomeIcon />
         </button>
         <div className="tooltip" data-tip="Coming soon!">

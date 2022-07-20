@@ -37,7 +37,7 @@ export function FeaturedEpisode({episode}) {
   const rgb = RGBobjectToString(replaceDarkColorsRGB(episode.rgb))
 
   return (
-    <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
+    <div className="p-14 flex w-full border border-zinc-800 rounded-3xl">
       <img className="w-40 cursor-pointer  mr-8" src={cover} alt={title} />
       <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg mr-2">
         <div onClick={() => ('')} className="font-medium cursor-pointer line-clamp-1">{title}</div>
@@ -69,7 +69,7 @@ export function FeaturedPodcast({podcast}) {
 
   return (
     <>
-      <div style={{backgroundColor: rgb, color: textColor}} className="mt-4 backdrop-blur-md rounded-[24px]">
+      <div style={{backgroundColor: rgb, color: textColor}} className="mt-4 backdrop-blur-md rounded-3xl">
         <div className="h-1/6 w-full px-5 pb-2 cursor-pointer">
           <div onClick={() => history.push(`/podcast/${podcastId}`)}>
             <div className="pt-5 pb-3 text-xs">{episodesCount} Episode{episodesCount == 1 ? '' : 's'}</div>
@@ -125,7 +125,7 @@ export function RecentlyAdded({episodes}) {
       <h2 className="text-zinc-400 mb-4">Recently Added</h2>
       <div className="grid grid-rows-3 gap-y-4 text-zinc-100">
         {episodes.map((episode, index) => (
-          <div key={index} className="border border-zinc-800 rounded-[24px] p-3 w-full">
+          <div key={index} className="border border-zinc-800 rounded-3xl p-3 w-full">
             <TrackView episode={episode} />
           </div>
         ))}

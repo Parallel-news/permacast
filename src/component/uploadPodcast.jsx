@@ -2,10 +2,10 @@ import { React, useState, useRef, useContext } from 'react';
 import ArDB from 'ardb';
 import { appContext } from '../utils/initStateGen';
 import { BsArrowRightShort } from 'react-icons/bs';
-import { CONTRACT_SRC, FEE_MULTIPLIER, SHOW_UPLOAD_FEE, arweave, deployContract, queryTXs, compoundTreasury, TREASURY_ADDRESS } from '../utils/arweave'
+import { CONTRACT_SRC, FEE_MULTIPLIER, SHOW_UPLOAD_FEE, arweave, deployContract, queryTXsByAddress, compoundTreasury, TREASURY_ADDRESS } from '../utils/arweave'
 import { languages_en, languages_zh, categories_en, categories_zh } from '../utils/languages';
 import { processFile, userHasEnoughAR, fetchWalletAddress, calculateStorageFee } from '../utils/shorthands';
-import ArConnect from './arconnect'; 
+import ArConnect from './arconnect';
 import { PhotographIcon } from '@heroicons/react/outline';
 
 import Swal from 'sweetalert2';
@@ -37,7 +37,7 @@ export default function UploadPodcastView() {
     let addr = await fetchWalletAddress()
     console.log("ADDRESSS")
     console.log(addr)
-    // const tx = await queryTXs(addr) // TODO test
+    // const tx = await queryTXsByAddress(addr) // TODO test
     const tx = await ardb.search('transactions')
       .from(addr)
       .tag('App-Name', 'SmartWeaveContract')

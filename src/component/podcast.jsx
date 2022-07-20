@@ -423,7 +423,7 @@ export function PodcastView({podcast}) {
 
   return (
     <div className="h-full">
-      <div className="p-14 flex w-full border border-zinc-800 rounded-[24px]">
+      <div className="p-14 flex w-full border border-zinc-800 rounded-3xl">
         <div className="col-span-2 my-3 text-zinc-100 max-w-xs md:max-w-lg mr-2">
           <div className="font-medium cursor-pointer line-clamp-1"></div>
           <div className="text-sm line-clamp-5"></div>
