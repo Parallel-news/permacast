@@ -10,7 +10,7 @@ import EpisodeQueue from '././component/episode_queue.jsx';
 import { PodcastView, Podcast } from './component/podcast.jsx';
 import { Player, PlayerMobile } from './component/player.jsx';
 import FeaturedView from './component/featured.jsx';
-import { convertToEpisode, convertToPodcast, sortPodcasts } from './utils/podcast.js';
+import { fetchPodcastTitles, convertToEpisode, convertToPodcast, convertSearchItem, sortPodcasts } from './utils/podcast.js';
 import { appContext } from './utils/initStateGen.js';
 import { MOCK_CREATORS } from './utils/ui.js';
 
@@ -43,6 +43,7 @@ export default function App() {
   const [featuredPodcasts, setFeaturedPodcasts] = useState();
   const [searchInput, setSearchInput] = useState("");
   const [modalIsOpen, setModalIsOpen] = useState(false)
+  const [titles, setTitles] = useState([]);
 
   const filters = [
     {type: "episodescount", desc: t("sorting.episodescount")},
@@ -62,6 +63,8 @@ export default function App() {
       const podcasts = sorted[filterTypes[selection]].splice(0, 6)
       const convertedPodcasts = await Promise.all(podcasts.map(p => convertToPodcast(p)))
       const convertedEpisodes = await Promise.all(podcasts.splice(0, 3).map(p => convertToEpisode(p, p.episodes[0])))
+      const searchTitles = await Promise.all((await fetchPodcastTitles()).map(p => convertSearchItem(p)))
+      setTitles(searchTitles)
       setCurrentEpisode(convertedEpisodes[0])
       setRecentlyAdded(convertedEpisodes)
       setFeaturedPodcasts(convertedPodcasts)
@@ -102,6 +105,7 @@ export default function App() {
     search: {
       input: searchInput,
       setInput: setSearchInput,
+      titles: titles,
     },
     user: {
       address: address,

@@ -1,5 +1,5 @@
 import { WEBSITE_URL, MESON_ENDPOINT } from "./arweave";
-import FastAverageColor from 'fast-average-color'
+import FastAverageColor from 'fast-average-color';
 
 export async function getColor (url) {
   const fac = new FastAverageColor();
@@ -33,6 +33,17 @@ export async function convertToEpisode(podcast, episode, useColor=true) {
     superAdmins: podcast?.superAdmins || null,
     rgb: useColor ? rgb: podcast?.rgb,
   };
+}
+
+export async function convertSearchItem(podcast, useColor=true) {
+  const rgb = await getColor(MESON_ENDPOINT + '/' + podcast.cover) 
+  return {
+    cover: MESON_ENDPOINT + '/' + podcast.cover,
+    title: podcast.title,
+    podcastId: podcast.id,
+    type: podcast.type,
+    rgb: rgb,
+  }
 }
 
 export async function convertToPodcast(podcast) {
@@ -76,10 +87,17 @@ export function filterTypes(filters) {
 
 export const fetchPodcasts = async () => {
   const json = await (
-    await fetch("https://whispering-retreat-94540.herokuapp.com/feeds/podcasts")
+    await fetch(`${WEBSITE_URL}/feeds/podcasts`)
   ).json();
   return json.res;
 };
+
+export const fetchPodcastTitles = async () => {
+  const json = await (
+    await fetch(`${WEBSITE_URL}/feeds/content/mapping`)
+  ).json();
+  return json.res;
+}
 
 export const sortPodcasts = async (filters) => {
   let url = `${WEBSITE_URL}/feeds/podcasts/sort/`;
