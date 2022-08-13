@@ -40,7 +40,7 @@ export const SHOW_FEE_AR = 0.25;
 //export const CONTRACT_SRC = "aDDvmtV6Rg15LZ5Hp1yjL6strnyCsVbmhpfPe0gT21Y"
 export const NEWS_CONTRACT = "HJFEnaWHLMp2ryrR0nzDKb0DSW7aBplDjcs3vQoVbhw";
 // + tag { name: "Protocol", values: "permacast-testnet-v3"}
-export const MESON_ENDPOINT = "https://coldcdn.com/api/cdn/f38vax";
+export const MESON_ENDPOINT = "https://pz-yyxfhb.meson.network"
 export const queryObject = {
   query: `query {
       transactions(
