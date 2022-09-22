@@ -18,7 +18,11 @@ const language = [
   {
     "code": "en",
     "name": "English"
-  }
+  },
+  {
+    "code": "uk",
+    "name": "український"
+  },
 ]
 
 export default function NavBar() {
