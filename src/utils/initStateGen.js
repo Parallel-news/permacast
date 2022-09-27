@@ -6,6 +6,7 @@ export async function genetateFactoryState(address) {
     "kaYP9bJtpqON8Kyy3RbqnqdtDBDUsPTQTNUCvZtKiFI"
   ],
   "maintainers": [],
+  "oracle_address": "8K77MdQ855XCjdbwAO-SjeB89z3tlWGQYDowAHR45pA",
   "contractOwner": "${address}",
   "ownerSwapped": false,
   "limitations": {
