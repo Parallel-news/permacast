@@ -62,9 +62,9 @@ export default function Header() {
 
   const getAddr = () => window.arweaveWallet.getActiveAddress()
 
-  const shortenAddress = (addr) => {
+  const shortenAddress = (addr, len = 4) => {
     if (addr) {
-      return addr.substring(0, 4) + '...' + addr.substring(addr.length - 4)
+      return addr.substring(0, len) + '...' + addr.substring(addr.length - len)
     }
     return addr
   }
@@ -110,7 +110,7 @@ export default function Header() {
   }
 
   return (
-    <>
+    <div className="flex -ml-4">
       {(walletConnected && (
         <>
           <UploadShow />
@@ -119,11 +119,10 @@ export default function Header() {
             onClick={arconnectDisconnect}
           >
             <span>
-              {ansData?.currentLabel ? `${ansData?.currentLabel}.ar` : shortenAddress(address)}
+              {ansData?.currentLabel ? `${(ansData?.currentLabel.length > 8) ? shortenAddress(ansData?.currentLabel, 2) : ansData?.currentLabel}.ar` : shortenAddress(address)}
             </span>
             {(ansData?.avatar === "") ?
               <div className="mx-auto rounded-full h-6 w-6 ml-2 btn-secondary border-[1px]" style={{ backgroundColor: ansData?.address_color }}></div> :
-              // <img className="mx-auto bg-black rounded-full" src={`https://arweave.net/${props.userInfo.avatar}`} />}
               <div className="mx-auto rounded-full h-6 w-6 overflow-hidden ml-2 btn-secondary border-[1px]">
                 <img src={`https://arweave.net/${ansData?.avatar}`} alt="Profile" width="100%" height="100%" />
               </div>}
@@ -138,7 +137,7 @@ export default function Header() {
             🦔 {t("connector.login")}
           </div>
         )}
-    </>
+    </div>
   )
 
 }
