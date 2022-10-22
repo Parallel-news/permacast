@@ -13,7 +13,7 @@
  *
  *                     SWC as first level data registery for Arweave hosted podcasts.
  *
- * @version: TESTNET V3 - Amber Version
+ * @version TESTNET V3 - Amber Version
  * @author charmful0x
  * @website permacast.net
  * @license MIT
