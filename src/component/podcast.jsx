@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import PodcastHtml from './podcast_html.jsx'
 import UploadEpisode from './upload_episode.jsx'
-import * as SmartWeaveSdk from 'redstone-smartweave';
 import 'shikwasa/dist/shikwasa.min.css'
 import Swal from 'sweetalert2'
 import Shikwasa from 'shikwasa'

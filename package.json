@@ -30,7 +30,6 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
-    "redstone-smartweave": "^0.4.29",
     "shikwasa": "^2.1.2",
     "smartweave": "^0.4.41",
     "sweetalert2": "^11.4.0",

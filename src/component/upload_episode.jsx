@@ -2,7 +2,7 @@ import ArDB from 'ardb'
 import Swal from 'sweetalert2'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, smartweave, EPISODE_FEE_PERCENTAGE } from '../utils/arweave.js'
+import { CONTRACT_SRC, NFT_SRC, FEE_MULTIPLIER, arweave, EPISODE_FEE_PERCENTAGE } from '../utils/arweave.js'
 import { processFile, calculateStorageFee, userHasEnoughAR } from '../utils/shorthands.js';
 
 const ardb = new ArDB(arweave)
@@ -14,17 +14,6 @@ export default function UploadEpisode({ podcast }) {
   const [episodeUploading, setEpisodeUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(false)
   const [uploadPercentComplete, setUploadPercentComplete] = useState(0)
-
-  const listEpisodeOnVerto = async (episodeId) => {
-    const vertoContractId = 't9T7DIOGxx4VWXoCEeYYarFYeERTpWIC1V3y-BPZgKE';
-    const input = {
-      "function": "list",
-      "id": episodeId,
-      "type": "art"
-    };
-    const contract = smartweave.contract(vertoContractId).connect('use_wallet');
-    await contract.writeInteraction(input);
-  }
 
   const uploadToArweave = async (data, fileType, epObj, event, serviceFee) => { 
     const wallet = await window.arweaveWallet.getActiveAddress();
@@ -40,9 +29,6 @@ export default function UploadEpisode({ podcast }) {
       tx.addTag("Contract-Src", NFT_SRC);
       tx.addTag("Init-State", initState);
       tx.addTag("Permacast-Version", "amber")
-      // Verto aNFT listing
-      tx.addTag("Exchange", "Verto");
-      tx.addTag("Action", "marketplace/create");
       tx.addTag("Thumbnail", podcast.cover);
      
       tx.reward = (+tx.reward * FEE_MULTIPLIER).toString();
@@ -103,7 +89,7 @@ export default function UploadEpisode({ podcast }) {
     epObj.name = event.target.episodeName.value
     epObj.desc = event.target.episodeShowNotes.value
     epObj.index = podcast.index
-    epObj.verto = event.target.verto.checked
+    epObj.verto = false
     let episodeFile = event.target.episodeMedia.files[0]
     let fileType = episodeFile.type
     console.log(fileType)
@@ -183,12 +169,6 @@ export default function UploadEpisode({ podcast }) {
     await arweave.transactions.post(interaction);
     console.log('addEpisode txid:');
     console.log(interaction.id)
-    if (show.verto) {
-      console.log('pushing to Verto')
-      await listEpisodeOnVerto(interaction.id)
-    } else {
-      console.log('skipping Verto')
-    }
   }
 
 
@@ -216,11 +196,6 @@ export default function UploadEpisode({ podcast }) {
             <input required type="file" onChange={(e) => calculateUploadFee(e.target.files[0])} name="episodeMedia" />
           </div>
           <div className="mt-5">
-            <label className="cursor-pointer label flex justify-start mt-3">
-              <input className="checkbox checkbox-primary mx-2" type="checkbox" id="verto" />
-              <span className="label-text">{t("uploadepisode.verto")}</span>
-            </label>
-
 
           </div>
           {showUploadFee ? (
