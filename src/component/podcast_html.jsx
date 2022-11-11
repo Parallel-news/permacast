@@ -1,7 +1,6 @@
 import { React, } from 'react';
 import { FaRss, FaRegGem } from 'react-icons/fa';
-import { contract } from 'redstone-smartweave';
-import { arweave, smartweave, NEWS_CONTRACT } from '../utils/arweave.js'
+// import { arweave, NEWS_CONTRACT } from '../utils/arweave.js'
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next';
 
