@@ -8,6 +8,8 @@ import { MESON_ENDPOINT } from '../utils/arweave.js'
 import { isDarkMode } from '../utils/theme.js'
 import { fetchPodcasts } from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
+import useUnload from '../utils/useUnload.js';
+import { useLocation, useHistory } from 'react-router-dom';
 
 export default function Podcast(props) {
   const [loading, setLoading] = useState(true)
@@ -179,8 +181,8 @@ export default function Podcast(props) {
     })
   }
 
-  const showPlayer = (podcast, e) => {
-    const player = new Shikwasa({
+  const showPlayer = (podcast, e, startAt = 0) => {
+    const player = window.PlayerState = new Shikwasa({
       container: () => document.querySelector('.podcast-player'),
       themeColor: 'gray',
       theme: `${isDarkMode() ? 'dark' : 'light'}`,
@@ -190,12 +192,58 @@ export default function Podcast(props) {
         artist: podcast.podcastName,
         cover: `${MESON_ENDPOINT}/${podcast.cover}`,
         src: `${MESON_ENDPOINT}/${e.contentTx}`,
+        startAt: startAt
       },
       download: true
     })
-    player.play()
+    // 
+    player.play().then(()=>{
+      if (startAt !== 0) {
+        player.seek(startAt);
+        console.log(startAt);
+      }
+      if(window.localStorage){
+        window.localStorage.setItem("lastPlayed", JSON.stringify({e, podcast}));
+      }
+    })
+
     window.scrollTo(0, document.body.scrollHeight)
   }
+
+  
+  //save current time of video playback.
+  const location = useLocation();
+  const history = useHistory();
+  useUnload((e) => {
+      e.preventDefault();
+      const currentTime = window.PlayerState.currentTime;
+      if(location.pathname.includes('/podcasts/'))
+        try {
+          const episodeData = JSON.parse(window.localStorage.getItem('lastPlayed'));
+          window.localStorage.setItem("lastPlayed", JSON.stringify({
+            ...episodeData,
+            currentTime: currentTime,
+            location: location,
+          }));
+        } catch (error) {
+          
+        }
+      // const exit = window.confirm('Are you sure you want to leave?');
+      // if (exit) window.close();
+  })
+
+  useEffect(() => {
+    if(location.search.includes("continue=true")){
+      if(typeof window.localStorage.getItem('lastPlayed') === "string" &&
+      typeof JSON.parse(window.localStorage.getItem('lastPlayed')) === "object"
+      ){
+        const castDetails = JSON.parse(window.localStorage.getItem("lastPlayed"))
+        showPlayer(castDetails.podcast, castDetails.e, castDetails.currentTime)
+      }
+      window.localStorage.removeItem('lastPlayed');
+      history.push(location.pathname)
+    }
+  }, [location, history])
 
   useEffect(() => {
     async function fetchData() {
@@ -223,7 +271,7 @@ export default function Podcast(props) {
       </div>
       <div>{podcastEpisodes}</div>
       {!loading && (thePodcast.owner === addr || thePodcast.superAdmins.includes(addr)) && <button className='btn' onClick={() => checkEpisodeForm(thePodcast)}>{t("add new episode")}</button>}
-      < div className="podcast-player sticky bottom-0 w-screen" />
+      < div className="podcast-player fixed bottom-0 w-screen" />
     </div>
 
   )

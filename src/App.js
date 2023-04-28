@@ -3,6 +3,7 @@ import NavBar from "./component/navbar.jsx";
 import Podcast from "./component/podcast.jsx";
 import Index from "./component/index.jsx";
 import PodcastRss from "./component/podcast_rss.jsx";
+import Resume from "./component/Resume.jsx";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           path="/podcasts/:podcastId/rss"
           render={({ match }) => <PodcastRss match={match} />}
         />
+        <Resume />
       </Router>
     </div>
   );

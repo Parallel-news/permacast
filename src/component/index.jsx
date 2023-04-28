@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react'
+import React,{  useState, useEffect } from 'react'
 import PodcastHtml from './podcast_html.jsx'
 import { MESON_ENDPOINT } from '../utils/arweave.js'
 import { useTranslation } from 'react-i18next'
